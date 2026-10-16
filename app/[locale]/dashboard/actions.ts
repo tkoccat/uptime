@@ -10,7 +10,7 @@ import { requireUser } from "@/lib/auth/current-user";
 import { signToken } from "@/lib/crypto";
 import { renderEmail } from "@/lib/email/render";
 import { sendEmail } from "@/lib/email/send";
-import { AppError, PlanLimitError } from "@/lib/errors";
+import { AppError, PlanLimitError, ValidationError } from "@/lib/errors";
 import { EMAIL_PREF_KEYS } from "@/lib/notify/prefs";
 import { readChannelConfig, sendToExternalChannel } from "@/lib/notify/channels";
 import { prisma } from "@/lib/prisma";
@@ -41,6 +41,8 @@ async function go(href: string): Promise<never> {
 // Hata kodunu kullanıcıya gösterilecek anahtara çevirir (ayrıntı sızdırmaz)
 function errorCode(err: unknown): string {
   if (err instanceof PlanLimitError) return `plan_limit_${err.limit}`;
+  // Doğrulama hatalarında asıl neden "kod~neden" olarak eklenir (Flash ayırıp gösterir)
+  if (err instanceof ValidationError) return `validation~${encodeURIComponent(err.message.slice(0, 160))}`;
   if (err instanceof AppError) return err.code;
   console.error("[dashboard] beklenmeyen hata", err);
   return "unknown";

@@ -23,6 +23,12 @@ describe("readMonitorForm", () => {
     expect(parsed.data).toMatchObject({ method: "GET", retries: 1, followRedirects: true, ignoreTls: false, dnsType: "A" });
   });
 
+  it("şemasız HTTP adresine https:// eklenir; diğer türlere dokunulmaz", () => {
+    expect(readMonitorForm(form({ ...httpForm, url: " example.com/health " })).url).toBe("https://example.com/health");
+    expect(readMonitorForm(form({ ...httpForm, url: "http://example.com" })).url).toBe("http://example.com");
+    expect(readMonitorForm(form({ name: "p", type: "PING", url: "example.com", interval: "60" })).url).toBe("example.com");
+  });
+
   it("PING/DNS formunda HTTP alanları olmasa da geçerlidir ve onay kutuları varsayılanda kalır", () => {
     const input = readMonitorForm(form({ name: "p", type: "DNS", url: "example.com", interval: "300", opt_present: "1", opt_retries: "2", opt_dnsType: "MX", opt_dnsServer: "8.8.8.8" }));
     const parsed = monitorOptionsSchema.parse(input.options);

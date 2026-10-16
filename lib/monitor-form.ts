@@ -8,12 +8,17 @@ const num = (fd: FormData, key: string) => (str(fd, key).trim() === "" ? undefin
 
 /** Monitör formunu (oluşturma ve düzenleme) servis katmanının beklediği girdiye çevirir. */
 export function readMonitorForm(fd: FormData): MonitorInput {
+  // HTTP adreslerinde şema yazılmadıysa (example.com) https:// varsayılır
+  const type = str(fd, "type");
+  let url = str(fd, "url").trim();
+  if ((type === "HTTP" || type === "KEYWORD") && url && !/^[a-z][a-z0-9+.-]*:\/\//i.test(url)) url = `https://${url}`;
+
   // Gelişmiş ayarlar yalnızca form bunları gönderdiyse (heartbeat'te gönderilmez) okunur
   const hasOptions = fd.get("opt_present") === "1";
   return {
     name: str(fd, "name"),
-    url: str(fd, "url"),
-    type: str(fd, "type") as "HTTP",
+    url,
+    type: type as "HTTP",
     interval: Number(str(fd, "interval")),
     keyword: str(fd, "keyword") || undefined,
     grace: str(fd, "grace") ? Number(str(fd, "grace")) : 0,

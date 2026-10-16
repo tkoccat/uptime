@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Uptime SaaS
 
-## Getting Started
+Uptime Kuma'yı "motor" olarak kullanan, self-serve SaaS izleme platformu.
+Next.js 14 (App Router) + Tailwind + shadcn/ui, Prisma + PostgreSQL, Supabase Auth, Stripe.
 
-First, run the development server:
+## Kurulum
 
 ```bash
+npm install
+cp .env.example .env.local   # Windows: Copy-Item .env.example .env.local
+# .env.local içindeki değerleri doldurun
+npx prisma generate
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Uygulama http://localhost:3000 adresinde açılır.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Servisler: PostgreSQL (Neon veya yerel Docker), Redis (Upstash veya yerel Docker), Supabase projesi.
+Uptime Kuma ayrı çalışır (Dokploy üzerinde) ve veritabanı olarak kendi MariaDB'sini kullanır;
+SaaS katmanının PostgreSQL'i ile karıştırılmaz.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Veritabanı
 
-## Learn More
+```bash
+npx prisma migrate deploy   # mevcut migration'ları uygular
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Komutlar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Komut | Açıklama |
+| --- | --- |
+| `npm run dev` | Geliştirme sunucusu |
+| `npm run build` | Üretim derlemesi |
+| `npm run lint` | ESLint |
+| `npm run legal:dpa` | DPA PDF'ini yeniden üretir (`public/legal/dpa.pdf`) |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Yasal sayfalar - AVUKAT İNCELEMESİ GEREKLİ
 
-## Deploy on Vercel
+`/terms`, `/privacy`, `/cookies`, `/refunds`, `/dpa` ve `/sub-processors` **taslak şablonlardır**,
+hukuki danışmanlık değildir. Yayına almadan önce:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. `lib/company.json` içindeki köşeli parantezli şirket bilgilerini doldurun.
+2. Metinleri İngiltere'de yetkili bir avukata inceletin (özellikle şartlar, gizlilik, DPA).
+3. Sub-processor listesindeki konum ve sağlayıcıları gerçek kurulumunuza göre doğrulayın.
+4. `npm run legal:dpa` ile PDF'i yeniden üretin.
+5. İnceleme bitince `.env.local` içine `LEGAL_REVIEWED=true` ekleyin; sayfalardaki taslak uyarısı kalkar.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Çerez onayı
+
+`lib/consent.ts` onay durumunu `cookie_consent` çerezinde tutar. Google Ads ve Meta Pixel betikleri
+(Adım 15) yüklenmeden önce `hasAnalyticsConsent()` ile kontrol edilmelidir.
+
+## Deploy
+
+Dokploy rehberi Adım 13'te eklenecek.

@@ -225,7 +225,8 @@
       "rate_limited": "Trop de tentatives. Veuillez réessayer plus tard.",
       "missing_fields": "Veuillez remplir tous les champs.",
       "callback_failed": "Le lien est invalide ou a expiré.",
-      "unknown": "Une erreur s'est produite. Veuillez réessayer."
+      "unknown": "Une erreur s'est produite. Veuillez réessayer.",
+      "not_configured": "La connexion n'est pas encore disponible. Le site est en cours de configuration."
     },
     "info": {
       "check_email": "Consultez votre e-mail pour continuer.",

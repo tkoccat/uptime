@@ -225,7 +225,8 @@
       "rate_limited": "Çok fazla deneme yapıldı. Lütfen daha sonra tekrar deneyin.",
       "missing_fields": "Lütfen tüm alanları doldurun.",
       "callback_failed": "Bağlantı geçersiz veya süresi dolmuş.",
-      "unknown": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+      "unknown": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
+      "not_configured": "Giriş henüz kullanılamıyor. Site hâlâ kurulum aşamasında."
     },
     "info": {
       "check_email": "Devam etmek için e-postanızı kontrol edin.",

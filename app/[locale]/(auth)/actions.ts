@@ -5,7 +5,7 @@ import { SIGNUP_SOURCE_COOKIE, parseSignupSource } from "@/lib/signup-source";
 import { redirect as externalRedirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { mapSupabaseError, safeNextPath } from "@/lib/auth/messages";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request";
@@ -24,6 +24,11 @@ async function fail(path: string, code: string): Promise<never> {
   return go(`${path}?error=${code}`);
 }
 
+// Supabase yapılandırılmamışsa (ilk kurulum) sunucu hatası yerine anlaşılır bir mesajla geri dön
+async function requireConfigured(path: string) {
+  if (!isSupabaseConfigured()) await fail(path, "not_configured");
+}
+
 function sourceMetadata() {
   const src = parseSignupSource(cookies().get(SIGNUP_SOURCE_COOKIE)?.value);
   return { utm_source: src.utmSource, utm_medium: src.utmMedium, utm_campaign: src.utmCampaign, referrer: src.referrer };
@@ -31,6 +36,7 @@ function sourceMetadata() {
 
 // Kaba kuvvet ve toplu kayıt denemelerine karşı IP başına sınır
 async function guard(path: string, kind: string) {
+  await requireConfigured(path);
   const res = await rateLimit(`auth:${kind}:${getClientIp()}`, LIMITS.auth.limit, LIMITS.auth.windowSec);
   if (!res.ok) await fail(path, "rate_limited");
 }
@@ -80,6 +86,7 @@ export async function signUp(formData: FormData) {
 }
 
 export async function signInWithGoogle() {
+  await requireConfigured("/login");
   const supabase = createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
@@ -106,6 +113,7 @@ export async function requestPasswordReset(formData: FormData) {
 export async function updatePassword(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+  await requireConfigured("/reset-password");
   if (password.length < 8) await fail("/reset-password", "weak_password");
   if (password !== confirm) await fail("/reset-password", "password_mismatch");
 
@@ -117,7 +125,6 @@ export async function updatePassword(formData: FormData) {
 }
 
 export async function signOut() {
-  const supabase = createClient();
-  await supabase.auth.signOut();
+  if (isSupabaseConfigured()) await createClient().auth.signOut();
   await go("/login");
 }

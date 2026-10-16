@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { queueUserEmail } from "@/lib/notify/user-email";
 import { safeNextPath } from "@/lib/auth/messages";
@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
   const prefixFor = (l: Locale) => (l === routing.defaultLocale ? "" : `/${l}`);
   const fallbackLocale: Locale = isLocale(cookieLocale) ? cookieLocale : routing.defaultLocale;
 
-  if (!code) return NextResponse.redirect(`${origin}${prefixFor(fallbackLocale)}/login?error=callback_failed`);
+  if (!code || !isSupabaseConfigured()) return NextResponse.redirect(`${origin}${prefixFor(fallbackLocale)}/login?error=callback_failed`);
 
   const supabase = createClient();
   const { error } = await supabase.auth.exchangeCodeForSession(code);

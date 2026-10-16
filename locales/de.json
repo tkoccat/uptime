@@ -225,7 +225,8 @@
       "rate_limited": "Zu viele Versuche. Bitte versuche es später erneut.",
       "missing_fields": "Bitte fülle alle Felder aus.",
       "callback_failed": "Der Link ist ungültig oder abgelaufen.",
-      "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+      "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+      "not_configured": "Die Anmeldung ist noch nicht verfügbar. Die Seite wird noch eingerichtet."
     },
     "info": {
       "check_email": "Prüfe deine E-Mails, um fortzufahren.",

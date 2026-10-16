@@ -225,7 +225,8 @@
       "rate_limited": "Too many attempts. Please try again later.",
       "missing_fields": "Please fill in all fields.",
       "callback_failed": "The link is invalid or has expired.",
-      "unknown": "Something went wrong. Please try again."
+      "unknown": "Something went wrong. Please try again.",
+      "not_configured": "Sign-in is not available yet. This site is still being set up."
     },
     "info": {
       "check_email": "Check your email to continue.",

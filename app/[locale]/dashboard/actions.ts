@@ -18,7 +18,7 @@ import { enforceRateLimit } from "@/lib/rate-limit";
 import { createCheckoutUrl, createPortalUrl } from "@/lib/stripe/checkout";
 import { isCurrency, type Billing, type PaidPlan } from "@/lib/stripe/prices";
 import type { NotificationType } from "@prisma/client";
-import { parseStatusList, parseTags } from "@/lib/monitor-options";
+import { readMonitorForm } from "@/lib/monitor-form";
 import { zonedToUtc } from "@/lib/time";
 import {
   createMaintenance,
@@ -29,7 +29,6 @@ import {
   deleteMonitor,
   setMonitorActive,
   updateMonitor,
-  type MonitorInput,
 } from "@/lib/uptimeKuma";
 
 // --- Ortak yardımcılar ---
@@ -62,42 +61,6 @@ async function run(path: string, work: () => Promise<void>): Promise<never> {
 const str = (fd: FormData, key: string) => String(fd.get(key) ?? "");
 
 // --- Monitörler ---
-
-const optNum = (fd: FormData, key: string) => (str(fd, key).trim() === "" ? undefined : Number(str(fd, key)));
-
-// Form alanlarını servis katmanının beklediği girdiye çevirir (oluşturma ve düzenleme ortak)
-function readMonitorForm(fd: FormData): MonitorInput {
-  // Gelişmiş ayarlar yalnızca form bunları gönderdiyse (heartbeat'te gönderilmez) okunur
-  const hasOptions = fd.get("opt_present") === "1";
-  return {
-    name: str(fd, "name"),
-    url: str(fd, "url"),
-    type: str(fd, "type") as "HTTP",
-    interval: Number(str(fd, "interval")),
-    keyword: str(fd, "keyword") || undefined,
-    grace: str(fd, "grace") ? Number(str(fd, "grace")) : 0,
-    description: str(fd, "description") || undefined,
-    tags: parseTags(str(fd, "tags")),
-    options: hasOptions
-      ? {
-          method: str(fd, "opt_method") as "GET",
-          retries: optNum(fd, "opt_retries"),
-          retryInterval: optNum(fd, "opt_retryInterval"),
-          timeout: optNum(fd, "opt_timeout"),
-          acceptedStatus: parseStatusList(str(fd, "opt_status") || "200-299"),
-          followRedirects: fd.get("opt_followRedirects") === "on",
-          ignoreTls: fd.get("opt_ignoreTls") === "on",
-          upsideDown: fd.get("opt_upsideDown") === "on",
-          certExpiry: fd.get("opt_certExpiry") === "on",
-          headers: str(fd, "opt_headers"),
-          body: str(fd, "opt_body"),
-          resendEvery: optNum(fd, "opt_resendEvery"),
-          dnsType: str(fd, "opt_dnsType") as "A",
-          dnsServer: str(fd, "opt_dnsServer") as "1.1.1.1",
-        }
-      : undefined,
-  };
-}
 
 export async function createMonitorAction(fd: FormData) {
   const user = await requireUser();

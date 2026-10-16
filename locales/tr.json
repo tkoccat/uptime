@@ -59,12 +59,30 @@
     "title": "Özellikler",
     "subtitle": "Bir şey bozulduğunda bilmen gereken her şey.",
     "items": [
-      { "title": "Çok bölgeli kontroller", "body": "Sitenizi birden fazla konumdan doğrulayın; tek bir ağ sorunu sizi uyandırmasın." },
-      { "title": "SMS, e-posta ve Slack uyarıları", "body": "Bir monitör çöktüğünde veya düzeldiğinde, zaten çalıştığınız yerde haberdar olun." },
-      { "title": "Herkese açık durum sayfaları", "body": "Kendi alt alan adınızda veya özel alan adınızda, 90 günlük uptime geçmişiyle temiz bir durum sayfası yayınlayın." },
-      { "title": "REST API", "body": "Monitörleri kendi betiklerinizden ve dağıtım hatlarınızdan oluşturun ve yönetin." },
-      { "title": "Webhook'lar", "body": "Olay bildirimlerini HTTP isteği kabul eden her servise gönderin." },
-      { "title": "Ekip işbirliği", "body": "Business planında monitörleri ve durum sayfalarını takım arkadaşlarınızla paylaşın." }
+      {
+        "title": "Çok bölgeli kontroller",
+        "body": "Sitenizi birden fazla konumdan doğrulayın; tek bir ağ sorunu sizi uyandırmasın."
+      },
+      {
+        "title": "SMS, e-posta ve Slack uyarıları",
+        "body": "Bir monitör çöktüğünde veya düzeldiğinde, zaten çalıştığınız yerde haberdar olun."
+      },
+      {
+        "title": "Herkese açık durum sayfaları",
+        "body": "Kendi alt alan adınızda veya özel alan adınızda, 90 günlük uptime geçmişiyle temiz bir durum sayfası yayınlayın."
+      },
+      {
+        "title": "REST API",
+        "body": "Monitörleri kendi betiklerinizden ve dağıtım hatlarınızdan oluşturun ve yönetin."
+      },
+      {
+        "title": "Webhook'lar",
+        "body": "Olay bildirimlerini HTTP isteği kabul eden her servise gönderin."
+      },
+      {
+        "title": "Ekip işbirliği",
+        "body": "Business planında monitörleri ve durum sayfalarını takım arkadaşlarınızla paylaşın."
+      }
     ]
   },
   "Pricing": {
@@ -85,42 +103,84 @@
       "free": {
         "name": "Free",
         "tagline": "Yan projeler ve hobi siteleri için.",
-        "features": ["5 monitör", "3 dakikalık kontrol", "E-posta uyarıları", "1 herkese açık durum sayfası"],
-        "cta": "Ücretsiz başla"
+        "cta": "Ücretsiz başla",
+        "extras": [
+          "E-posta uyarıları"
+        ]
       },
       "pro": {
         "name": "Pro",
         "tagline": "Bağımsız geliştiriciler ve büyüyen ürünler için.",
-        "features": [
-          "50 monitör",
-          "1 dakikalık kontrol",
-          "E-posta, Slack ve webhook uyarıları",
-          "Özel alan adlı durum sayfaları",
-          "REST API erişimi",
-          "14 gün ücretsiz deneme"
-        ],
-        "cta": "14 günlük denemeyi başlat"
+        "cta": "14 günlük denemeyi başlat",
+        "extras": [
+          "E-posta, Slack ve webhook uyarıları"
+        ]
       },
       "business": {
         "name": "Business",
         "tagline": "Daha hızlı kontrol isteyen küçük ekipler için.",
-        "features": ["200 monitör", "30 saniyelik kontrol", "Pro'daki her şey", "Ekip işbirliği", "Öncelikli destek"],
-        "cta": "Business'ı seç"
+        "cta": "Business'ı seç",
+        "extras": [
+          "Pro'daki her şey",
+          "Ekip işbirliği",
+          "Öncelikli destek"
+        ]
       }
-    }
+    },
+    "feat": {
+      "monitors": "{n} monitör",
+      "checkMinutes": "{n} dakikalık kontrol",
+      "checkSeconds": "{n} saniyelik kontrol",
+      "statusPages": "{n} herkese açık durum sayfası",
+      "customDomain": "Özel alan adlı durum sayfaları",
+      "api": "REST API erişimi",
+      "trial": "{n} gün ücretsiz deneme",
+      "off": "Mevcut değil"
+    },
+    "saveN": "%{n} tasarruf"
   },
   "Faq": {
     "items": [
-      { "q": "Bu hizmet nedir?", "a": "Açık kaynaklı Uptime Kuma motoru üzerine kurulu, barındırılan bir uptime izleme platformu. Kayıt olur, sitelerinizi eklersiniz ve uyarı alırsınız; kurulacak veya bakımı yapılacak bir şey yoktur." },
-      { "q": "Başlamak için kredi kartı gerekir mi?", "a": "Hayır. Free plan için kart gerekmez. Pro denemesi de deneme bitene kadar ücret alınmadan başlar; ondan önce iptal ederseniz hiçbir şey ödemezsiniz." },
-      { "q": "Uptime Kuma'yı kendim barındırmaktan farkı nedir?", "a": "Kendi barındırmanız tam kontrol sağlar ama bakım da size aittir: güncellemeler, yedekler, SSL ve izlediğiniz sunucuyla aynı yerden izleme riski. Bunların hepsini sizin yerinize biz yürütürüz." },
-      { "q": "Sitelerim ne sıklıkla kontrol edilir?", "a": "Free'de 3 dakikada bir, Pro'da dakikada bir, Business'ta 30 saniyede bir." },
-      { "q": "Müşterilerim için durum sayfası yayınlayabilir miyim?", "a": "Evet. Her hesaba bizim alt alan adımızda bir durum sayfası verilir; Pro ve Business kendi özel alan adını kullanabilir." },
-      { "q": "Hangi uyarı kanalları destekleniyor?", "a": "E-posta, SMS, Slack ve webhook'lar." },
-      { "q": "Planımı değiştirebilir veya iptal edebilir miyim?", "a": "Evet, istediğiniz zaman faturalama sayfanızdan. Yükseltmeler hemen uygulanır, iptaller faturalama döneminin sonunda geçerli olur." },
-      { "q": "İade sunuyor musunuz?", "a": "Evet. 14 günlük iade süresi için iade politikamıza bakın." },
-      { "q": "Verilerim nerede saklanıyor ve GDPR uyumlu mu?", "a": "İngiltere'de kayıtlı bir şirketiz ve kişisel verileri UK ve AB GDPR kapsamında işleriz. Veri işleme sözleşmesi ve alt işleyici listemiz talep üzerine sunulur." },
-      { "q": "Hesabımı ve verilerimi silebilir miyim?", "a": "Evet. Ayarlardan hesabınızı silebilirsiniz; bu işlem monitörlerinizi ve izleme verilerinizi kaldırır." }
+      {
+        "q": "Bu hizmet nedir?",
+        "a": "Açık kaynaklı Uptime Kuma motoru üzerine kurulu, barındırılan bir uptime izleme platformu. Kayıt olur, sitelerinizi eklersiniz ve uyarı alırsınız; kurulacak veya bakımı yapılacak bir şey yoktur."
+      },
+      {
+        "q": "Başlamak için kredi kartı gerekir mi?",
+        "a": "Hayır. Free plan için kart gerekmez. Pro denemesi de deneme bitene kadar ücret alınmadan başlar; ondan önce iptal ederseniz hiçbir şey ödemezsiniz."
+      },
+      {
+        "q": "Uptime Kuma'yı kendim barındırmaktan farkı nedir?",
+        "a": "Kendi barındırmanız tam kontrol sağlar ama bakım da size aittir: güncellemeler, yedekler, SSL ve izlediğiniz sunucuyla aynı yerden izleme riski. Bunların hepsini sizin yerinize biz yürütürüz."
+      },
+      {
+        "q": "Sitelerim ne sıklıkla kontrol edilir?",
+        "a": "Free'de 3 dakikada bir, Pro'da dakikada bir, Business'ta 30 saniyede bir."
+      },
+      {
+        "q": "Müşterilerim için durum sayfası yayınlayabilir miyim?",
+        "a": "Evet. Her hesaba bizim alt alan adımızda bir durum sayfası verilir; Pro ve Business kendi özel alan adını kullanabilir."
+      },
+      {
+        "q": "Hangi uyarı kanalları destekleniyor?",
+        "a": "E-posta, SMS, Slack ve webhook'lar."
+      },
+      {
+        "q": "Planımı değiştirebilir veya iptal edebilir miyim?",
+        "a": "Evet, istediğiniz zaman faturalama sayfanızdan. Yükseltmeler hemen uygulanır, iptaller faturalama döneminin sonunda geçerli olur."
+      },
+      {
+        "q": "İade sunuyor musunuz?",
+        "a": "Evet. 14 günlük iade süresi için iade politikamıza bakın."
+      },
+      {
+        "q": "Verilerim nerede saklanıyor ve GDPR uyumlu mu?",
+        "a": "İngiltere'de kayıtlı bir şirketiz ve kişisel verileri UK ve AB GDPR kapsamında işleriz. Veri işleme sözleşmesi ve alt işleyici listemiz talep üzerine sunulur."
+      },
+      {
+        "q": "Hesabımı ve verilerimi silebilir miyim?",
+        "a": "Evet. Ayarlardan hesabınızı silebilirsiniz; bu işlem monitörlerinizi ve izleme verilerinizi kaldırır."
+      }
     ]
   },
   "FinalCta": {
@@ -141,12 +201,31 @@
         "name": "Better Stack",
         "headline": "Uptime izleme için hafif bir Better Stack alternatifi",
         "intro": "Better Stack, izlemeyi loglar, olay yönetimi ve nöbet planlamasıyla birlikte sunar. Yalnızca güvenilir uptime kontrolleri ve bir durum sayfası istiyorsanız, odaklı bir araç daha basit ve daha ucuz olabilir.",
-        "theyGood": ["Geniş platform: uptime, loglar ve olay yönetimi tek yerde", "Nöbet planlaması ve yükseltme politikaları"],
-        "weGood": ["Bireyler ve küçük ekipler için basit, uygun fiyatlı planlar", "Kapalı bir motora bağımlı olmadan açık kaynaklı Uptime Kuma üzerine kurulu", "Yalnızca uptime kontrolleri, uyarılar ve durum sayfalarına odaklı"],
+        "theyGood": [
+          "Geniş platform: uptime, loglar ve olay yönetimi tek yerde",
+          "Nöbet planlaması ve yükseltme politikaları"
+        ],
+        "weGood": [
+          "Bireyler ve küçük ekipler için basit, uygun fiyatlı planlar",
+          "Kapalı bir motora bağımlı olmadan açık kaynaklı Uptime Kuma üzerine kurulu",
+          "Yalnızca uptime kontrolleri, uyarılar ve durum sayfalarına odaklı"
+        ],
         "rows": [
-          { "label": "Ana odak", "us": "Uptime izleme ve durum sayfaları", "them": "Tam gözlemlenebilirlik ve olay platformu" },
-          { "label": "İzleme motoru", "us": "Açık kaynaklı Uptime Kuma", "them": "Tescilli" },
-          { "label": "En uygun", "us": "Bağımsız geliştiriciler, küçük ekipler", "them": "Nöbet ve log ihtiyacı olan ekipler" }
+          {
+            "label": "Ana odak",
+            "us": "Uptime izleme ve durum sayfaları",
+            "them": "Tam gözlemlenebilirlik ve olay platformu"
+          },
+          {
+            "label": "İzleme motoru",
+            "us": "Açık kaynaklı Uptime Kuma",
+            "them": "Tescilli"
+          },
+          {
+            "label": "En uygun",
+            "us": "Bağımsız geliştiriciler, küçük ekipler",
+            "them": "Nöbet ve log ihtiyacı olan ekipler"
+          }
         ],
         "chooseThem": "nöbet rotasyonlarına, log yönetimine veya gelişmiş olay iş akışlarına ihtiyacınız varsa.",
         "chooseUs": "düşük aylık fiyata sade uptime kontrolleri, uyarılar ve bir durum sayfası istiyorsanız."
@@ -155,12 +234,31 @@
         "name": "UptimeRobot",
         "headline": "Açık kaynaklı Uptime Kuma üzerine kurulu bir UptimeRobot alternatifi",
         "intro": "UptimeRobot köklü bir uptime izleyicisidir. Açık kaynaklı bir motor, küçük planlarda daha hızlı kontroller ve modern bir arayüz istiyorsanız bize göz atmaya değer.",
-        "theyGood": ["Uzun geçmiş ve geniş kullanıcı tabanı", "İyi bilinen bir ücretsiz katman"],
-        "weGood": ["İleride kendi sunucunuza taşıyabileceğiniz açık kaynaklı motor", "Uygun fiyatlı ücretli planlarda hızlı kontrol aralıkları", "Modern panel ve durum sayfaları"],
+        "theyGood": [
+          "Uzun geçmiş ve geniş kullanıcı tabanı",
+          "İyi bilinen bir ücretsiz katman"
+        ],
+        "weGood": [
+          "İleride kendi sunucunuza taşıyabileceğiniz açık kaynaklı motor",
+          "Uygun fiyatlı ücretli planlarda hızlı kontrol aralıkları",
+          "Modern panel ve durum sayfaları"
+        ],
         "rows": [
-          { "label": "İzleme motoru", "us": "Açık kaynaklı Uptime Kuma", "them": "Tescilli" },
-          { "label": "Kendi sunucunda barındırma", "us": "Evet, motor açık kaynaklı", "them": "Hayır" },
-          { "label": "En uygun", "us": "Açıklığa değer veren geliştiriciler", "them": "Tanıdık, köklü bir araç isteyenler" }
+          {
+            "label": "İzleme motoru",
+            "us": "Açık kaynaklı Uptime Kuma",
+            "them": "Tescilli"
+          },
+          {
+            "label": "Kendi sunucunda barındırma",
+            "us": "Evet, motor açık kaynaklı",
+            "them": "Hayır"
+          },
+          {
+            "label": "En uygun",
+            "us": "Açıklığa değer veren geliştiriciler",
+            "them": "Tanıdık, köklü bir araç isteyenler"
+          }
         ],
         "chooseThem": "köklü bir hizmeti tercih ediyorsanız ve mevcut ücretsiz katmanı ihtiyacınızı karşılıyorsa.",
         "chooseUs": "açık kaynaklı bir motora ve modern, uygun fiyatlı ücretli planlara değer veriyorsanız."
@@ -169,12 +267,31 @@
         "name": "Cronitor",
         "headline": "Web sitesi ve API uptime'ı için bir Cronitor alternatifi",
         "intro": "Cronitor, cron işlerini ve zamanlanmış görevleri izlemekte güçlüdür. Asıl amacınız web sitelerinin ve API'lerin erişilebilir olduğunu kontrol etmekse, özel bir uptime aracı daha doğrudan uyar.",
-        "theyGood": ["Cron işi ve heartbeat izleme", "Geliştirici odaklı araçlar"],
-        "weGood": ["Web sitesi, API, port ve ping izleme", "Herkese açık durum sayfaları dahil", "Küçük projeler için basit fiyatlandırma"],
+        "theyGood": [
+          "Cron işi ve heartbeat izleme",
+          "Geliştirici odaklı araçlar"
+        ],
+        "weGood": [
+          "Web sitesi, API, port ve ping izleme",
+          "Herkese açık durum sayfaları dahil",
+          "Küçük projeler için basit fiyatlandırma"
+        ],
         "rows": [
-          { "label": "Ana odak", "us": "Web sitesi ve API uptime'ı", "them": "Cron işleri ve zamanlanmış görevler" },
-          { "label": "Herkese açık durum sayfaları", "us": "Dahil", "them": "Güncel planlara bakın" },
-          { "label": "İzleme motoru", "us": "Açık kaynaklı Uptime Kuma", "them": "Tescilli" }
+          {
+            "label": "Ana odak",
+            "us": "Web sitesi ve API uptime'ı",
+            "them": "Cron işleri ve zamanlanmış görevler"
+          },
+          {
+            "label": "Herkese açık durum sayfaları",
+            "us": "Dahil",
+            "them": "Güncel planlara bakın"
+          },
+          {
+            "label": "İzleme motoru",
+            "us": "Açık kaynaklı Uptime Kuma",
+            "them": "Tescilli"
+          }
         ],
         "chooseThem": "asıl ihtiyacınız cron işlerini ve arka plan görevlerini izlemekse.",
         "chooseUs": "asıl ihtiyacınız sitelerinizin ve API'lerinizin ne zaman çöktüğünü bilmekse."
@@ -183,13 +300,36 @@
         "name": "kendi sunucunda Uptime Kuma",
         "headline": "Kendi sunucunda Uptime Kuma mı, barındırılan mı: hangisini seçmelisiniz?",
         "intro": "Uptime Kuma mükemmel bir yazılım ve biz de onu motor olarak kullanıyoruz. Soru, onu kendinizin mi yoksa bizim mi çalıştıracağı.",
-        "theyGood": ["Verileriniz ve yapılandırmanız üzerinde tam kontrol", "Kendi sunucunuz dışında abonelik maliyeti yok"],
-        "weGood": ["Yönetilecek sunucu, güncelleme, yedek veya SSL yenilemesi yok", "Kendi altyapınızdan bağımsız bir yerden izleme", "Yönetilen durum sayfaları, uyarılar ve faturalama tek yerde"],
+        "theyGood": [
+          "Verileriniz ve yapılandırmanız üzerinde tam kontrol",
+          "Kendi sunucunuz dışında abonelik maliyeti yok"
+        ],
+        "weGood": [
+          "Yönetilecek sunucu, güncelleme, yedek veya SSL yenilemesi yok",
+          "Kendi altyapınızdan bağımsız bir yerden izleme",
+          "Yönetilen durum sayfaları, uyarılar ve faturalama tek yerde"
+        ],
         "rows": [
-          { "label": "Kurulum", "us": "Kayıt ol ve başla", "them": "Sunucu hazırla ve kur" },
-          { "label": "Bakım", "us": "Sizin yerinize yapılır", "them": "Güncellemeleri ve yedekleri siz yaparsınız" },
-          { "label": "Sunucularınızdan bağımsızlık", "us": "Kontroller başka yerde çalışır", "them": "Nerede barındırdığınıza bağlı" },
-          { "label": "Maliyet", "us": "Ücretsizden başlar; ücretli planlar aylık £9'dan", "them": "Sunucunuz ve zamanınız" }
+          {
+            "label": "Kurulum",
+            "us": "Kayıt ol ve başla",
+            "them": "Sunucu hazırla ve kur"
+          },
+          {
+            "label": "Bakım",
+            "us": "Sizin yerinize yapılır",
+            "them": "Güncellemeleri ve yedekleri siz yaparsınız"
+          },
+          {
+            "label": "Sunucularınızdan bağımsızlık",
+            "us": "Kontroller başka yerde çalışır",
+            "them": "Nerede barındırdığınıza bağlı"
+          },
+          {
+            "label": "Maliyet",
+            "us": "Ücretsizden başlar; ücretli planlar aylık £9'dan",
+            "them": "Sunucunuz ve zamanınız"
+          }
         ],
         "chooseThem": "kendi altyapınızı işletmekten keyif alıyor ve tam kontrol istiyorsanız.",
         "chooseUs": "zamanınızı bir izleyiciyi ayakta tutmaktan çok ürününüze harcamayı tercih ediyorsanız."
@@ -226,7 +366,9 @@
       "missing_fields": "Lütfen tüm alanları doldurun.",
       "callback_failed": "Bağlantı geçersiz veya süresi dolmuş.",
       "unknown": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
-      "not_configured": "Giriş henüz kullanılamıyor. Site hâlâ kurulum aşamasında."
+      "not_configured": "Giriş henüz kullanılamıyor. Site hâlâ kurulum aşamasında.",
+      "suspended": "Bu hesap askıya alındı. Lütfen destekle iletişime geçin.",
+      "signups_closed": "Yeni kayıtlar geçici olarak kapalı."
     },
     "info": {
       "check_email": "Devam etmek için e-postanızı kontrol edin.",

@@ -3,6 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { prisma } from "@/lib/prisma";
 import { queueUserEmail } from "@/lib/notify/user-email";
+import { signupsEnabled } from "@/lib/site-config";
 import { safeNextPath } from "@/lib/auth/messages";
 import { SIGNUP_SOURCE_COOKIE, parseSignupSource } from "@/lib/signup-source";
 import { isLocale, routing, type Locale } from "@/i18n/routing";
@@ -45,6 +46,11 @@ export async function GET(request: NextRequest) {
   if (user?.email) {
     // İlk girişte SaaS veritabanında kullanıcı kaydı oluşturulur (dil tercihi dahil)
     const existing = await prisma.user.findUnique({ where: { supabaseId: user.id }, select: { id: true } });
+    // Kayıtlar kapalıysa yeni kullanıcı oluşturulmaz (mevcut kullanıcılar etkilenmez)
+    if (!existing && !(await signupsEnabled())) {
+      await supabase.auth.signOut();
+      return NextResponse.redirect(`${origin}${prefixFor(locale)}/login?error=signups_closed`);
+    }
     const record = await prisma.user.upsert({
       where: { supabaseId: user.id },
       update: {},

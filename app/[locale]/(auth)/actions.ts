@@ -9,6 +9,7 @@ import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import { mapSupabaseError, safeNextPath } from "@/lib/auth/messages";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request";
+import { signupsEnabled } from "@/lib/site-config";
 
 function siteUrl() {
   return process.env.NEXT_PUBLIC_APP_URL ?? `http://${headers().get("host")}`;
@@ -60,6 +61,8 @@ export async function signUp(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
   await guard("/register", "signup");
+  // Admin panelinden yeni kayıtlar kapatılabilir
+  if (!(await signupsEnabled())) await fail("/register", "signups_closed");
   if (!email || !password) await fail("/register", "missing_fields");
   if (password.length < 8) await fail("/register", "weak_password");
   if (password !== confirm) await fail("/register", "password_mismatch");

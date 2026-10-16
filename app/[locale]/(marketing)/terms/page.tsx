@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { H2, LegalPage, UL } from "@/components/legal/legal-page";
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "Terms of Service" };
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const company = await getCompany();
   return (
     <LegalPage title="Terms of Service">
       <H2>1. Who we are</H2>

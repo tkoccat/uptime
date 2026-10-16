@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/lib/auth/current-user";
-import { limitsFor } from "@/lib/plans";
+import { getLimits } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { createMonitorAction } from "../actions";
 
@@ -26,7 +26,7 @@ export default async function MonitorsPage({
   const t = await getTranslations("Dash.monitors");
   const tc = await getTranslations("Dash.common");
 
-  const limits = limitsFor(user.plan);
+  const limits = await getLimits(user.plan);
   const [monitors, open] = await Promise.all([
     prisma.monitor.findMany({ where: { userId: user.id }, orderBy: { createdAt: "asc" } }),
     prisma.incident.findMany({ where: { resolvedAt: null, monitor: { userId: user.id } }, select: { monitorId: true } }),

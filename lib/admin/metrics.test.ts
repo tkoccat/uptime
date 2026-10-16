@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { computeChurn, computeMrr, monthlyValue } from "./metrics";
 
 describe("admin metrikleri", () => {
-  it("aylık eşdeğer değer: yıllık fiyat 12'ye bölünür", () => {
+  it("aylık eşdeğer değer: yıllık fiyat 12'ye bölünür (ana birim)", () => {
     expect(monthlyValue("PRO", "monthly")).toBe(9);
     expect(monthlyValue("PRO", "yearly")).toBeCloseTo(86 / 12);
     expect(monthlyValue("BUSINESS", "monthly")).toBe(29);
@@ -22,7 +22,7 @@ describe("admin metrikleri", () => {
     expect(mrr).toBeCloseTo(9 + 86 / 12 + 29);
   });
 
-  it("abonelik yoksa MRR 0", () => expect(computeMrr([])).toBe(0));
+  it("abonelik yoksa MRR 0", () => expect(computeMrr([], () => null)).toBe(0));
 
   it("churn: iptaller / (aktifler + iptaller)", () => {
     expect(computeChurn(90, 10)).toBeCloseTo(10);

@@ -2,7 +2,7 @@ import { createTranslator } from "next-intl";
 import { render } from "@react-email/render";
 import { loadMessages } from "@/i18n/messages";
 import { isLocale, routing, type Locale } from "@/i18n/routing";
-import { company } from "../company";
+import { getCompany } from "../site-config";
 import { BasicEmail } from "./templates";
 
 export const EMAIL_TEMPLATES = [
@@ -42,6 +42,7 @@ export async function renderEmail(params: {
   const messages = await loadMessages(locale);
   const t = createTranslator({ locale, messages, namespace: "Email" });
 
+  const company = await getCompany();
   const vars = { product: company.productName, ...(params.vars ?? {}) };
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000").replace(/\/$/, "");
   const prefix = locale === routing.defaultLocale ? "" : `/${locale}`;

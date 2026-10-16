@@ -1,7 +1,9 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
-import { company } from "@/lib/company";
+import { AnnouncementBar } from "@/components/site/announcement-bar";
+import { isAdminEmail } from "@/lib/admin/emails";
+import { getCompany } from "@/lib/site-config";
 import { requireUser } from "@/lib/auth/current-user";
 import { signOut } from "../(auth)/actions";
 
@@ -28,9 +30,12 @@ export default async function DashboardLayout({
   setRequestLocale(locale);
   const user = await requireUser(); // oturum yoksa girişe yönlendirir (middleware'e ek savunma)
   const t = await getTranslations("Dash.nav");
+  const company = await getCompany();
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 md:flex-row">
+    <>
+      <AnnouncementBar />
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-6 md:flex-row">
       <aside className="md:w-56 md:shrink-0">
         <p className="mb-4 font-semibold">{company.productName}</p>
         <nav className="flex gap-1 overflow-x-auto md:flex-col" aria-label="Dashboard">
@@ -46,6 +51,11 @@ export default async function DashboardLayout({
         </nav>
         <div className="mt-6 hidden space-y-2 text-xs text-muted-foreground md:block">
           <p className="truncate">{user.email}</p>
+          {isAdminEmail(user.email) && (
+            <Link href="/admin" className="block font-medium text-primary underline">
+              Admin panel
+            </Link>
+          )}
           <form action={signOut}>
             <Button type="submit" variant="outline" size="sm">
               {t("signOut")}
@@ -54,6 +64,7 @@ export default async function DashboardLayout({
         </div>
       </aside>
       <div className="min-w-0 flex-1 space-y-6">{children}</div>
-    </div>
+      </div>
+    </>
   );
 }

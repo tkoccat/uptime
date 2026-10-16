@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { H2, LegalPage, UL } from "@/components/legal/legal-page";
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "Refund Policy" };
 
-export default function RefundsPage() {
+export default async function RefundsPage() {
+  const company = await getCompany();
   return (
     <LegalPage title="Refund Policy">
       <H2>14-day refund</H2>

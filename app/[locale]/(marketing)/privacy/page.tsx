@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { H2, LegalPage, UL } from "@/components/legal/legal-page";
 import { Link } from "@/i18n/navigation";
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "Privacy Policy" };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const company = await getCompany();
   return (
     <LegalPage title="Privacy Policy">
       <H2>1. Who is responsible for your data</H2>

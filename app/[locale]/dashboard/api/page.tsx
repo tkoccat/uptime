@@ -3,7 +3,7 @@ import { ApiKeyForm } from "@/components/dashboard/api-key-form";
 import { ConfirmSubmit } from "@/components/dashboard/confirm-submit";
 import { Flash } from "@/components/dashboard/flash";
 import { requireUser } from "@/lib/auth/current-user";
-import { limitsFor } from "@/lib/plans";
+import { getLimits } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { revokeApiKeyAction } from "../actions";
 
@@ -19,7 +19,7 @@ export default async function ApiPage({
   const t = await getTranslations("Dash.api");
   const te = await getTranslations("Dash.errors");
 
-  const allowed = limitsFor(user.plan).api;
+  const allowed = (await getLimits(user.plan)).api;
   const keys = await prisma.apiKey.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: "desc" },

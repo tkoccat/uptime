@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Faq } from "@/components/marketing/faq";
 import { FinalCta } from "@/components/marketing/final-cta";
-import { PricingTable } from "@/components/marketing/pricing-table";
+import { PricingSection } from "@/components/marketing/pricing-section";
 import { Link } from "@/i18n/navigation";
 import type { FeatureItem } from "@/lib/marketing/content";
 
@@ -71,7 +71,7 @@ export default async function HomePage({ params: { locale } }: { params: { local
       {/* 5. Fiyatlandırma */}
       <section className="mx-auto max-w-6xl space-y-8 px-4 py-20">
         <h2 className="text-center text-3xl font-bold">{t("pricingTitle")}</h2>
-        <PricingTable />
+        <PricingSection />
       </section>
 
       {/* 6. SSS */}

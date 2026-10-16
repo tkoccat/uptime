@@ -1,9 +1,10 @@
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 import { comparisonSlugs } from "@/lib/marketing/content";
 
 export async function SiteFooter() {
+  const company = await getCompany();
   const t = await getTranslations("Footer");
   const tc = await getTranslations("Compare");
 

@@ -1,10 +1,10 @@
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 
 // Tüm yasal sayfalarda gösterilen uyarı. Avukat incelemesi bittiğinde
 // LEGAL_REVIEWED=true yapılırsa uyarı gizlenir.
 const reviewed = process.env.LEGAL_REVIEWED === "true";
 
-export function LegalPage({
+export async function LegalPage({
   title,
   updated = "16 October 2026",
   children,
@@ -13,6 +13,7 @@ export function LegalPage({
   updated?: string;
   children: React.ReactNode;
 }) {
+  const company = await getCompany();
   return (
     <main className="mx-auto max-w-3xl space-y-6 px-4 py-16">
       {!reviewed && (

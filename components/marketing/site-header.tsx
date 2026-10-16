@@ -2,10 +2,11 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { Link } from "@/i18n/navigation";
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
+  const company = await getCompany();
   const nav = [
     { href: "/features", label: t("features") },
     { href: "/pricing", label: t("pricing") },

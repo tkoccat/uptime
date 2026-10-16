@@ -8,6 +8,7 @@ import {
   assertIntervalAllowed,
   assertMonitorQuota,
   assertStatusPageQuota,
+  getLimits,
 } from "./plans";
 import { enforceRateLimit, LIMITS } from "./rate-limit";
 import { assertPublicHost, assertPublicUrl, UnsafeTargetError } from "./security/url-guard";
@@ -73,8 +74,9 @@ export async function createMonitor(userId: string, input: MonitorInput) {
 
   const user = await getUser(userId);
   const count = await prisma.monitor.count({ where: { userId } });
-  assertMonitorQuota(user.plan, count);
-  assertIntervalAllowed(user.plan, data.interval);
+  const limits = await getLimits(user.plan);
+  assertMonitorQuota(user.plan, count, limits);
+  assertIntervalAllowed(user.plan, data.interval, limits);
   await validateTarget(data.type, data.url);
 
   const { kumaId } = await getAdapter().createMonitor(userId, {
@@ -207,8 +209,9 @@ export async function createStatusPage(userId: string, config: z.input<typeof st
 
   const user = await getUser(userId);
   const count = await prisma.statusPage.count({ where: { userId } });
-  assertStatusPageQuota(user.plan, count);
-  if (customDomain) assertCustomDomainAllowed(user.plan);
+  const limits = await getLimits(user.plan);
+  assertStatusPageQuota(user.plan, count, limits);
+  if (customDomain) assertCustomDomainAllowed(user.plan, limits);
 
   // Seçilen monitörlerin hepsi bu kullanıcıya ait olmalı
   const owned = await prisma.monitor.findMany({ where: { userId, id: { in: monitorIds } }, select: { id: true } });

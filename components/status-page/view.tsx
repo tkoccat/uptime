@@ -1,6 +1,6 @@
 import type { StatusMonitor, StatusPageData } from "@/lib/status-page/data";
 import { statusStrings } from "@/lib/status-page/strings";
-import { company } from "@/lib/company";
+import { getCompany } from "@/lib/site-config";
 
 // Bir günün rengi: kesinti yok = yeşil, kısmi = sarı, ağırlıklı kesinti = kırmızı, veri yok = gri
 function dayClass(d: { up: number; down: number }): string {
@@ -24,7 +24,8 @@ function Bars({ monitor, label }: { monitor: StatusMonitor; label: string }) {
   );
 }
 
-export function StatusPageView({ data }: { data: StatusPageData }) {
+export async function StatusPageView({ data }: { data: StatusPageData }) {
+  const company = await getCompany();
   const s = statusStrings(data.locale);
   const anyDown = data.monitors.some((m) => m.isActive && m.isDown);
   const fmt = new Intl.DateTimeFormat(data.locale, { dateStyle: "medium", timeStyle: "short", timeZone: data.timezone });

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { requireUser } from "@/lib/auth/current-user";
-import { limitsFor } from "@/lib/plans";
+import { getLimits } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { createStatusPageAction, deleteStatusPageAction } from "../actions";
 
@@ -27,7 +27,7 @@ export default async function StatusPagesPage({
     prisma.monitor.findMany({ where: { userId: user.id }, orderBy: { name: "asc" }, select: { id: true, name: true } }),
   ]);
   const baseDomain = process.env.NEXT_PUBLIC_STATUS_BASE_DOMAIN ?? "example.com";
-  const canCustomDomain = limitsFor(user.plan).customDomain;
+  const canCustomDomain = (await getLimits(user.plan)).customDomain;
 
   return (
     <>

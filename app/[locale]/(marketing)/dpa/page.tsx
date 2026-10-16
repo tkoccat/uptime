@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { H2, LegalPage } from "@/components/legal/legal-page";
 import { Button } from "@/components/ui/button";
-import { company } from "@/lib/company";
+import { getCompany, type Company } from "@/lib/site-config";
 import dpa from "@/lib/legal/dpa.json";
 
 export const metadata: Metadata = { title: "Data Processing Agreement" };
 
 // {{alan}} yer tutucularını şirket bilgileriyle doldurur
-const fill = (text: string) =>
+const fillWith = (company: Company) => (text: string) =>
   text.replace(/\{\{(\w+)\}\}/g, (_, key: string) => (company as Record<string, string>)[key] ?? `{{${key}}}`);
 
-export default function DpaPage() {
+export default async function DpaPage() {
+  const fill = fillWith(await getCompany());
   return (
     <LegalPage title={dpa.title}>
       <Button asChild variant="outline">

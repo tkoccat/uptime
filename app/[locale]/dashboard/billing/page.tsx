@@ -3,8 +3,8 @@ import { Flash } from "@/components/dashboard/flash";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth/current-user";
-import { planPrices } from "@/lib/marketing/content";
-import { limitsFor } from "@/lib/plans";
+import { formatMoney, getPlanConfigs } from "@/lib/plan-config";
+import { getLimits } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
 import { CURRENCIES } from "@/lib/stripe/prices";
 import { checkoutAction, portalAction } from "../actions";
@@ -28,7 +28,7 @@ export default async function BillingPage({
       orderBy: { currentPeriodEnd: "desc" },
     }),
   ]);
-  const limits = limitsFor(user.plan);
+  const [limits, configs] = await Promise.all([getLimits(user.plan), getPlanConfigs()]);
   const date = (d: Date) => new Intl.DateTimeFormat(user.locale, { dateStyle: "long", timeZone: user.timezone }).format(d);
   const configured = Boolean(process.env.STRIPE_SECRET_KEY);
 
@@ -82,10 +82,10 @@ export default async function BillingPage({
           <section className="space-y-3">
             <h2 className="text-lg font-semibold">{t("upgradeTitle")}</h2>
             <div className="grid gap-4 md:grid-cols-2">
-              {planPrices
-                .filter((p) => p.id !== "free")
-                .map((p) => {
-                  const planKey = p.id.toUpperCase();
+              {(["PRO", "BUSINESS"] as const)
+                .filter((k) => configs[k].isActive)
+                .map((planKey) => {
+                  const p = { id: planKey.toLowerCase(), monthly: configs[planKey].priceMonthly, yearly: configs[planKey].priceYearly };
                   const isCurrent = user.plan === planKey;
                   return (
                     <Card key={p.id}>
@@ -102,10 +102,10 @@ export default async function BillingPage({
                             className="h-10 w-full rounded-md border bg-background px-3 text-sm"
                           >
                             <option value="monthly">
-                              {t("monthly")} · £{p.monthly}
+                              {t("monthly")} · {formatMoney(p.monthly, "GBP", user.locale)}
                             </option>
                             <option value="yearly">
-                              {t("yearly")} · £{p.yearly}
+                              {t("yearly")} · {formatMoney(p.yearly, "GBP", user.locale)}
                             </option>
                           </select>
                           <select

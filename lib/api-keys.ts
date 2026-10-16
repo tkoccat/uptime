@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "./prisma";
 import { sha256 } from "./crypto";
 import { AppError, NotFoundError, ValidationError } from "./errors";
-import { assertApiAllowed } from "./plans";
+import { assertApiAllowed, getLimits } from "./plans";
 import { enforceRateLimit, LIMITS } from "./rate-limit";
 
 const MAX_ACTIVE_KEYS = 10;
@@ -11,7 +11,7 @@ const MAX_ACTIVE_KEYS = 10;
 export async function createApiKey(userId: string, name: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) throw new NotFoundError();
-  assertApiAllowed(user.plan);
+  assertApiAllowed(user.plan, await getLimits(user.plan));
 
   const trimmed = name.trim().slice(0, 60);
   if (!trimmed) throw new ValidationError("Key name is required");
@@ -43,7 +43,9 @@ export async function authenticateApiKey(authorization: string | null) {
   const record = await prisma.apiKey.findUnique({ where: { hash: sha256(match[1]) }, include: { user: true } });
   if (!record || record.revokedAt) throw new AppError("Missing or invalid API key", "unauthorized", 401);
 
-  assertApiAllowed(record.user.plan); // plan düşürülmüşse anahtar çalışmaz (402)
+  // Askıya alınmış hesabın anahtarı çalışmaz; planı düşürülmüşse de çalışmaz (402)
+  if (record.user.suspendedAt) throw new AppError("Account suspended", "suspended", 403);
+  assertApiAllowed(record.user.plan, await getLimits(record.user.plan));
   await enforceRateLimit(`apikey:${record.id}`, LIMITS.apiKey.limit, LIMITS.apiKey.windowSec);
 
   // Son kullanım zamanı en fazla dakikada bir güncellenir (her istekte yazmamak için)

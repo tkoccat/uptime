@@ -62,6 +62,10 @@ model User {
   utmMedium          String?
   utmCampaign        String?
   referrer           String?
+  // Yönetici tarafından askıya alındıysa dolu: giriş ve API kapalı, monitörler duraklatılır
+  suspendedAt        DateTime?
+  // Yönetici planı elle verdiyse true: Stripe olayları bu kullanıcının planını değiştirmez
+  planLocked         Boolean   @default(false)
 
   subscriptions        Subscription[]
   monitors             Monitor[]
@@ -209,6 +213,49 @@ model UsageLog {
   @@index([userId, createdAt])
 }
 
+// Plan başına fiyat ve limit ayarları (admin panelinden düzenlenir; kayıt yoksa kod içindeki varsayılanlar geçerlidir).
+// Tutarlar küçük birimde (GBP için peni, EUR/USD için sent).
+model PlanConfig {
+  plan                 Plan     @id
+  priceMonthly         Int
+  priceYearly          Int
+  eurMonthly           Int?
+  eurYearly            Int?
+  usdMonthly           Int?
+  usdYearly            Int?
+  monitors             Int
+  minInterval          Int
+  statusPages          Int
+  customDomain         Boolean
+  api                  Boolean
+  trialDays            Int      @default(0)
+  highlight            Boolean  @default(false)
+  isActive             Boolean  @default(true)
+  stripeProductId      String?
+  stripePriceMonthly   String?
+  stripePriceYearly    String?
+  // Eski fiyat kimlikleri: fiyat değişse de mevcut aboneler doğru plana eşlensin
+  stripePriceHistory   String[] @default([])
+  updatedAt            DateTime @updatedAt
+}
+
+// Site geneli ayarlar (duyuru bandı, kayıt açık/kapalı, şirket bilgileri...)
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// Site metinlerinin dil bazlı düzenlemeleri (locales/*.json üzerine yazılır)
+model SiteContent {
+  key       String
+  locale    String
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@id([key, locale])
+}
+
 model AuditLog {
   id        String   @id @default(cuid())
   // Kullanıcı silinse bile denetim kaydı kalsın diye SetNull
@@ -216,6 +263,8 @@ model AuditLog {
   action    String
   ip        String?
   userAgent String?
+  // Yönetici işlemlerinin ayrıntısı (ne değişti)
+  metadata  Json?
   createdAt DateTime @default(now())
 
   user User? @relation(fields: [userId], references: [id], onDelete: SetNull)

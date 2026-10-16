@@ -1,15 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
-import { planPrices } from "@/lib/marketing/content";
+import { formatMoney } from "@/lib/plan-config";
 
-// Aylık/yıllık geçişi olan fiyat tablosu (yıllıkta yaklaşık %20 indirim)
-export function PricingTable() {
+// Sunucuda hazırlanmış plan görünümü: fiyatlar ve özellikler admin panelindeki ayarlardan gelir
+export type PricingPlanView = {
+  id: "free" | "pro" | "business";
+  name: string;
+  tagline: string;
+  cta: string;
+  highlight: boolean;
+  // Küçük birim (GBP için peni)
+  monthly: number;
+  yearly: number;
+  currency: string;
+  features: string[];
+};
+
+export function PricingTable({ plans, yearlyDiscount }: { plans: PricingPlanView[]; yearlyDiscount: number }) {
   const t = useTranslations("Pricing");
+  const locale = useLocale();
   const [yearly, setYearly] = useState(false);
 
   return (
@@ -19,17 +33,20 @@ export function PricingTable() {
           {t("monthly")}
         </Button>
         <Button variant={yearly ? "default" : "outline"} size="sm" onClick={() => setYearly(true)} aria-pressed={yearly}>
-          {t("yearly")} <span className="ml-1 text-xs opacity-80">{t("save")}</span>
+          {t("yearly")}
+          {yearlyDiscount > 0 && <span className="ml-1 text-xs opacity-80">{t("saveN", { n: yearlyDiscount })}</span>}
         </Button>
       </div>
       <div className="grid gap-6 md:grid-cols-3">
-        {planPrices.map((plan) => (
+        {plans.map((plan) => (
           <Card key={plan.id} className={plan.highlight ? "border-primary shadow-lg" : undefined}>
             <CardHeader>
-              <CardTitle>{t(`plans.${plan.id}.name`)}</CardTitle>
-              <CardDescription>{t(`plans.${plan.id}.tagline`)}</CardDescription>
+              <CardTitle>{plan.name}</CardTitle>
+              <CardDescription>{plan.tagline}</CardDescription>
               <p className="pt-2">
-                <span className="text-4xl font-bold">£{yearly ? plan.yearly : plan.monthly}</span>
+                <span className="text-4xl font-bold">
+                  {formatMoney(yearly ? plan.yearly : plan.monthly, plan.currency, locale)}
+                </span>
                 <span className="text-muted-foreground">
                   {" "}
                   {plan.monthly === 0 ? t("forever") : yearly ? t("perYear") : t("perMonth")}
@@ -38,7 +55,7 @@ export function PricingTable() {
             </CardHeader>
             <CardContent className="space-y-4">
               <ul className="space-y-2 text-sm">
-                {(t.raw(`plans.${plan.id}.features`) as string[]).map((f) => (
+                {plan.features.map((f) => (
                   <li key={f} className="flex gap-2">
                     <span aria-hidden className="text-primary">
                       ✓
@@ -48,9 +65,7 @@ export function PricingTable() {
                 ))}
               </ul>
               <Button asChild className="w-full" variant={plan.highlight ? "default" : "outline"}>
-                <Link href={`/register?plan=${plan.id}&billing=${yearly ? "yearly" : "monthly"}`}>
-                  {t(`plans.${plan.id}.cta`)}
-                </Link>
+                <Link href={`/register?plan=${plan.id}&billing=${yearly ? "yearly" : "monthly"}`}>{plan.cta}</Link>
               </Button>
             </CardContent>
           </Card>

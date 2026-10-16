@@ -1,19 +1,11 @@
-import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { loadAdminMetrics } from "@/lib/admin/metrics";
-import { requireUser } from "@/lib/auth/current-user";
-import { safeEqual } from "@/lib/crypto";
+import { requireAdmin } from "@/lib/admin/guard";
 
-export const dynamic = "force-dynamic";
-export const metadata = { title: "Admin", robots: { index: false, follow: false } };
-
-// Yalnızca ADMIN_EMAIL'e ait (e-postası doğrulanmış) hesap görebilir; diğerleri 404 alır.
-export default async function AdminPage({ params: { locale } }: { params: { locale: string } }) {
+export default async function AdminOverviewPage({ params: { locale } }: { params: { locale: string } }) {
   setRequestLocale(locale);
-  const user = await requireUser();
-  const admin = process.env.ADMIN_EMAIL?.toLowerCase();
-  if (!admin || !safeEqual(user.email.toLowerCase(), admin)) notFound();
+  await requireAdmin();
 
   const m = await loadAdminMetrics();
   const gbp = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
@@ -30,9 +22,8 @@ export default async function AdminPage({ params: { locale } }: { params: { loca
   ];
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 px-4 py-10">
-      <h1 className="text-3xl font-bold">Admin</h1>
-
+    <>
+      <h1 className="text-2xl font-semibold">Overview</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {tiles.map(([label, value]) => (
           <Card key={label}>
@@ -68,6 +59,6 @@ export default async function AdminPage({ params: { locale } }: { params: { loca
           </ul>
         </section>
       </div>
-    </main>
+    </>
   );
 }

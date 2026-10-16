@@ -79,6 +79,26 @@ Pro ve Business planlarında, `Authorization: Bearer upk_...` ile (anahtarlar `/
 
 Anahtar başına dakikada 60 istek; aşımda `429` + `Retry-After`.
 
+## Yönetim paneli (`/admin`)
+
+`ADMIN_EMAIL` ortam değişkenindeki e-posta ile giriş yapınca (birden fazla yönetici için virgülle ayırın) panele
+**Dashboard → Admin panel** bağlantısından veya `/admin` adresinden girilir. Diğer kullanıcılar `/admin` için 404 alır.
+Her eylem sunucuda yeniden yönetici kontrolü yapar ve **Audit log**'a yazılır.
+
+| Bölüm | Ne yapılır |
+| --- | --- |
+| **Overview** | MRR, churn, kayıtlar, aktif kullanıcılar, plan dağılımı, kayıt kaynakları |
+| **Plans & pricing** | GBP/EUR/USD fiyatları (aylık + yıllık), monitör/aralık/durum sayfası limitleri, özel alan adı ve API izni, deneme süresi, planı satıştan kaldırma. Fiyat değişince Stripe'ta **yeni fiyat** açılır, eskisi geçmişe alınır (mevcut aboneler etkilenmez). Fiyat tablosu, Checkout ve limitler buradan okunur. |
+| **Discounts** | Stripe kupon + promosyon kodu: yüzde/tutar, tek seferlik/süreli/sürekli, kullanım sınırı, son tarih, plana veya yeni müşteriye kısıt; kapatma |
+| **Users** | Arama/filtre; plan verme (kilitlenebilir "hediye plan"), deneme uzatma, hesabı askıya alma (giriş + API kapanır, monitörler durur), silme |
+| **Site content** | Ana sayfa, SSS, özellik kartları, fiyat sayfası ve SEO metinleri, dil bazında |
+| **Settings** | Duyuru bandı (satış/bakım), yeni kayıtları aç/kapat, şirket bilgileri (altbilgi, yasal sayfalar, e-postalar) |
+| **Audit log** | Panelden yapılan her değişiklik, kim/ne zaman/ne değişti |
+| **System** | PostgreSQL, Redis, Uptime Kuma ve Stripe bağlantı testleri; hangi ayarların tanımlı olduğu (değerler gösterilmez) |
+
+Ayarlar veritabanında tutulur (`PlanConfig`, `SiteSetting`, `SiteContent`); kayıt yoksa koddaki varsayılanlar geçerlidir.
+Değişiklikler herkese açık sayfalara en geç ~2 dakikada yansır. Admin panelinin dili İngilizcedir.
+
 ## Çoklu dil (i18n)
 
 next-intl ile 4 dil: İngilizce (varsayılan, `/`), Almanca (`/de`), Fransızca (`/fr`), Türkçe (`/tr`).

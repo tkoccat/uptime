@@ -59,12 +59,30 @@
     "title": "Funktionen",
     "subtitle": "Alles, was du wissen musst, wenn etwas ausfällt.",
     "items": [
-      { "title": "Prüfungen aus mehreren Regionen", "body": "Prüfe deine Seite von mehr als einem Standort, damit ein einzelner Netzwerkaussetzer dich nicht weckt." },
-      { "title": "SMS-, E-Mail- und Slack-Benachrichtigungen", "body": "Erfahre dort, wo du ohnehin arbeitest, sofort, wenn ein Monitor ausfällt oder wieder läuft." },
-      { "title": "Öffentliche Statusseiten", "body": "Veröffentliche eine übersichtliche Statusseite auf deiner Subdomain oder eigenen Domain, mit 90 Tagen Uptime-Verlauf." },
-      { "title": "REST-API", "body": "Erstelle und verwalte Monitore aus eigenen Skripten und Deployment-Pipelines." },
-      { "title": "Webhooks", "body": "Sende Vorfallsereignisse an jeden Dienst, der HTTP-Anfragen annimmt." },
-      { "title": "Teamzusammenarbeit", "body": "Teile Monitore und Statusseiten im Business-Tarif mit deinem Team." }
+      {
+        "title": "Prüfungen aus mehreren Regionen",
+        "body": "Prüfe deine Seite von mehr als einem Standort, damit ein einzelner Netzwerkaussetzer dich nicht weckt."
+      },
+      {
+        "title": "SMS-, E-Mail- und Slack-Benachrichtigungen",
+        "body": "Erfahre dort, wo du ohnehin arbeitest, sofort, wenn ein Monitor ausfällt oder wieder läuft."
+      },
+      {
+        "title": "Öffentliche Statusseiten",
+        "body": "Veröffentliche eine übersichtliche Statusseite auf deiner Subdomain oder eigenen Domain, mit 90 Tagen Uptime-Verlauf."
+      },
+      {
+        "title": "REST-API",
+        "body": "Erstelle und verwalte Monitore aus eigenen Skripten und Deployment-Pipelines."
+      },
+      {
+        "title": "Webhooks",
+        "body": "Sende Vorfallsereignisse an jeden Dienst, der HTTP-Anfragen annimmt."
+      },
+      {
+        "title": "Teamzusammenarbeit",
+        "body": "Teile Monitore und Statusseiten im Business-Tarif mit deinem Team."
+      }
     ]
   },
   "Pricing": {
@@ -85,42 +103,84 @@
       "free": {
         "name": "Free",
         "tagline": "Für Nebenprojekte und Hobby-Seiten.",
-        "features": ["5 Monitore", "Prüfung alle 3 Minuten", "E-Mail-Benachrichtigungen", "1 öffentliche Statusseite"],
-        "cta": "Kostenlos starten"
+        "cta": "Kostenlos starten",
+        "extras": [
+          "E-Mail-Benachrichtigungen"
+        ]
       },
       "pro": {
         "name": "Pro",
         "tagline": "Für Indie-Hacker und wachsende Produkte.",
-        "features": [
-          "50 Monitore",
-          "Prüfung jede Minute",
-          "E-Mail-, Slack- und Webhook-Benachrichtigungen",
-          "Statusseiten mit eigener Domain",
-          "REST-API-Zugriff",
-          "14 Tage kostenlos testen"
-        ],
-        "cta": "14-Tage-Test starten"
+        "cta": "14-Tage-Test starten",
+        "extras": [
+          "E-Mail-, Slack- und Webhook-Benachrichtigungen"
+        ]
       },
       "business": {
         "name": "Business",
         "tagline": "Für kleine Teams, die schnellere Prüfungen brauchen.",
-        "features": ["200 Monitore", "Prüfung alle 30 Sekunden", "Alles aus Pro", "Teamzusammenarbeit", "Priorisierter Support"],
-        "cta": "Business wählen"
+        "cta": "Business wählen",
+        "extras": [
+          "Alles aus Pro",
+          "Teamzusammenarbeit",
+          "Priorisierter Support"
+        ]
       }
-    }
+    },
+    "feat": {
+      "monitors": "{n} Monitore",
+      "checkMinutes": "Prüfung alle {n} Minuten",
+      "checkSeconds": "Prüfung alle {n} Sekunden",
+      "statusPages": "{n, plural, one {# öffentliche Statusseite} other {# öffentliche Statusseiten}}",
+      "customDomain": "Statusseiten mit eigener Domain",
+      "api": "REST-API-Zugriff",
+      "trial": "{n} Tage kostenlos testen",
+      "off": "Nicht verfügbar"
+    },
+    "saveN": "{n} % sparen"
   },
   "Faq": {
     "items": [
-      { "q": "Was ist dieser Dienst?", "a": "Eine gehostete Uptime-Monitoring-Plattform auf Basis der Open-Source-Engine Uptime Kuma. Du registrierst dich, fügst deine Seiten hinzu und erhältst Benachrichtigungen, ohne etwas zu installieren oder zu warten." },
-      { "q": "Brauche ich zum Start eine Kreditkarte?", "a": "Nein. Für den Free-Tarif ist keine Karte nötig. Auch der Pro-Test startet, ohne dass bis zu dessen Ende etwas abgebucht wird; wer vorher kündigt, zahlt nichts." },
-      { "q": "Worin unterscheidet sich das vom Selbsthosten von Uptime Kuma?", "a": "Selbsthosten bietet volle Kontrolle, aber auch den Aufwand: Updates, Backups, SSL und das Risiko, vom selben Server aus zu überwachen, den man beobachtet. All das übernehmen wir für dich." },
-      { "q": "Wie oft werden meine Seiten geprüft?", "a": "Alle 3 Minuten im Free-Tarif, jede Minute im Pro-Tarif und alle 30 Sekunden im Business-Tarif." },
-      { "q": "Kann ich eine Statusseite für meine Kunden veröffentlichen?", "a": "Ja. Jedes Konto erhält eine Statusseite auf unserer Subdomain; Pro und Business können eine eigene Domain nutzen." },
-      { "q": "Welche Benachrichtigungskanäle werden unterstützt?", "a": "E-Mail, SMS, Slack und Webhooks." },
-      { "q": "Kann ich meinen Tarif ändern oder kündigen?", "a": "Ja, jederzeit auf deiner Abrechnungsseite. Upgrades gelten sofort, Kündigungen zum Ende des Abrechnungszeitraums." },
-      { "q": "Bietet ihr Erstattungen an?", "a": "Ja. Die 14-tägige Erstattungsfrist findest du in unserer Erstattungsrichtlinie." },
-      { "q": "Wo werden meine Daten gespeichert, und ist das DSGVO-konform?", "a": "Wir sind ein britisches Unternehmen und verarbeiten personenbezogene Daten nach UK- und EU-DSGVO. Einen Auftragsverarbeitungsvertrag und unsere Liste der Unterauftragsverarbeiter stellen wir auf Anfrage bereit." },
-      { "q": "Kann ich mein Konto und meine Daten löschen?", "a": "Ja. In den Einstellungen kannst du dein Konto löschen, wodurch deine Monitore und Überwachungsdaten entfernt werden." }
+      {
+        "q": "Was ist dieser Dienst?",
+        "a": "Eine gehostete Uptime-Monitoring-Plattform auf Basis der Open-Source-Engine Uptime Kuma. Du registrierst dich, fügst deine Seiten hinzu und erhältst Benachrichtigungen, ohne etwas zu installieren oder zu warten."
+      },
+      {
+        "q": "Brauche ich zum Start eine Kreditkarte?",
+        "a": "Nein. Für den Free-Tarif ist keine Karte nötig. Auch der Pro-Test startet, ohne dass bis zu dessen Ende etwas abgebucht wird; wer vorher kündigt, zahlt nichts."
+      },
+      {
+        "q": "Worin unterscheidet sich das vom Selbsthosten von Uptime Kuma?",
+        "a": "Selbsthosten bietet volle Kontrolle, aber auch den Aufwand: Updates, Backups, SSL und das Risiko, vom selben Server aus zu überwachen, den man beobachtet. All das übernehmen wir für dich."
+      },
+      {
+        "q": "Wie oft werden meine Seiten geprüft?",
+        "a": "Alle 3 Minuten im Free-Tarif, jede Minute im Pro-Tarif und alle 30 Sekunden im Business-Tarif."
+      },
+      {
+        "q": "Kann ich eine Statusseite für meine Kunden veröffentlichen?",
+        "a": "Ja. Jedes Konto erhält eine Statusseite auf unserer Subdomain; Pro und Business können eine eigene Domain nutzen."
+      },
+      {
+        "q": "Welche Benachrichtigungskanäle werden unterstützt?",
+        "a": "E-Mail, SMS, Slack und Webhooks."
+      },
+      {
+        "q": "Kann ich meinen Tarif ändern oder kündigen?",
+        "a": "Ja, jederzeit auf deiner Abrechnungsseite. Upgrades gelten sofort, Kündigungen zum Ende des Abrechnungszeitraums."
+      },
+      {
+        "q": "Bietet ihr Erstattungen an?",
+        "a": "Ja. Die 14-tägige Erstattungsfrist findest du in unserer Erstattungsrichtlinie."
+      },
+      {
+        "q": "Wo werden meine Daten gespeichert, und ist das DSGVO-konform?",
+        "a": "Wir sind ein britisches Unternehmen und verarbeiten personenbezogene Daten nach UK- und EU-DSGVO. Einen Auftragsverarbeitungsvertrag und unsere Liste der Unterauftragsverarbeiter stellen wir auf Anfrage bereit."
+      },
+      {
+        "q": "Kann ich mein Konto und meine Daten löschen?",
+        "a": "Ja. In den Einstellungen kannst du dein Konto löschen, wodurch deine Monitore und Überwachungsdaten entfernt werden."
+      }
     ]
   },
   "FinalCta": {
@@ -141,12 +201,31 @@
         "name": "Better Stack",
         "headline": "Eine schlanke Better-Stack-Alternative für Uptime-Monitoring",
         "intro": "Better Stack bündelt Monitoring mit Logs, Incident-Management und Bereitschaftsplanung. Wenn du nur verlässliche Uptime-Prüfungen und eine Statusseite brauchst, kann ein fokussiertes Tool einfacher und günstiger sein.",
-        "theyGood": ["Breite Plattform: Uptime, Logs und Incident-Management an einem Ort", "Bereitschaftsplanung und Eskalationsregeln"],
-        "weGood": ["Einfache, günstige Tarife für Einzelpersonen und kleine Teams", "Auf Open-Source-Uptime-Kuma aufgebaut, ohne Bindung an eine geschlossene Engine", "Fokus nur auf Uptime-Prüfungen, Benachrichtigungen und Statusseiten"],
+        "theyGood": [
+          "Breite Plattform: Uptime, Logs und Incident-Management an einem Ort",
+          "Bereitschaftsplanung und Eskalationsregeln"
+        ],
+        "weGood": [
+          "Einfache, günstige Tarife für Einzelpersonen und kleine Teams",
+          "Auf Open-Source-Uptime-Kuma aufgebaut, ohne Bindung an eine geschlossene Engine",
+          "Fokus nur auf Uptime-Prüfungen, Benachrichtigungen und Statusseiten"
+        ],
         "rows": [
-          { "label": "Hauptfokus", "us": "Uptime-Monitoring und Statusseiten", "them": "Vollständige Observability- und Incident-Plattform" },
-          { "label": "Monitoring-Engine", "us": "Open-Source Uptime Kuma", "them": "Proprietär" },
-          { "label": "Am besten für", "us": "Indie-Hacker, kleine Teams", "them": "Teams mit Bedarf an Bereitschaft und Logs" }
+          {
+            "label": "Hauptfokus",
+            "us": "Uptime-Monitoring und Statusseiten",
+            "them": "Vollständige Observability- und Incident-Plattform"
+          },
+          {
+            "label": "Monitoring-Engine",
+            "us": "Open-Source Uptime Kuma",
+            "them": "Proprietär"
+          },
+          {
+            "label": "Am besten für",
+            "us": "Indie-Hacker, kleine Teams",
+            "them": "Teams mit Bedarf an Bereitschaft und Logs"
+          }
         ],
         "chooseThem": "du Bereitschaftsrotationen, Log-Management oder erweiterte Incident-Workflows brauchst.",
         "chooseUs": "du unkomplizierte Uptime-Prüfungen, Benachrichtigungen und eine Statusseite zu einem niedrigen Monatspreis möchtest."
@@ -155,12 +234,31 @@
         "name": "UptimeRobot",
         "headline": "Eine UptimeRobot-Alternative auf Basis von Open-Source-Uptime-Kuma",
         "intro": "UptimeRobot ist ein etablierter Uptime-Monitor. Wenn du eine Open-Source-Engine, schnellere Prüfungen in kleinen Tarifen und eine moderne Oberfläche möchtest, lohnt sich ein Blick auf uns.",
-        "theyGood": ["Lange Erfahrung und große Nutzerbasis", "Ein bekannter Gratis-Tarif"],
-        "weGood": ["Open-Source-Engine, die du später selbst hosten könntest", "Kurze Prüfintervalle in günstigen Bezahltarifen", "Modernes Dashboard und Statusseiten"],
+        "theyGood": [
+          "Lange Erfahrung und große Nutzerbasis",
+          "Ein bekannter Gratis-Tarif"
+        ],
+        "weGood": [
+          "Open-Source-Engine, die du später selbst hosten könntest",
+          "Kurze Prüfintervalle in günstigen Bezahltarifen",
+          "Modernes Dashboard und Statusseiten"
+        ],
         "rows": [
-          { "label": "Monitoring-Engine", "us": "Open-Source Uptime Kuma", "them": "Proprietär" },
-          { "label": "Selbsthosting möglich", "us": "Ja, die Engine ist Open Source", "them": "Nein" },
-          { "label": "Am besten für", "us": "Entwickler, die Offenheit schätzen", "them": "Alle, die ein vertrautes, etabliertes Tool wollen" }
+          {
+            "label": "Monitoring-Engine",
+            "us": "Open-Source Uptime Kuma",
+            "them": "Proprietär"
+          },
+          {
+            "label": "Selbsthosting möglich",
+            "us": "Ja, die Engine ist Open Source",
+            "them": "Nein"
+          },
+          {
+            "label": "Am besten für",
+            "us": "Entwickler, die Offenheit schätzen",
+            "them": "Alle, die ein vertrautes, etabliertes Tool wollen"
+          }
         ],
         "chooseThem": "du einen lange etablierten Dienst bevorzugst und der vorhandene Gratis-Tarif für dich reicht.",
         "chooseUs": "dir eine Open-Source-Engine und moderne, günstige Bezahltarife wichtig sind."
@@ -169,12 +267,31 @@
         "name": "Cronitor",
         "headline": "Eine Cronitor-Alternative für Website- und API-Uptime",
         "intro": "Cronitor ist stark im Überwachen von Cron-Jobs und geplanten Aufgaben. Wenn dein Hauptziel ist, die Erreichbarkeit von Websites und APIs zu prüfen, passt ein dedizierter Uptime-Dienst direkter.",
-        "theyGood": ["Cron-Job- und Heartbeat-Monitoring", "Entwicklerorientierte Werkzeuge"],
-        "weGood": ["Website-, API-, Port- und Ping-Monitoring", "Öffentliche Statusseiten inklusive", "Einfache Preise für kleine Projekte"],
+        "theyGood": [
+          "Cron-Job- und Heartbeat-Monitoring",
+          "Entwicklerorientierte Werkzeuge"
+        ],
+        "weGood": [
+          "Website-, API-, Port- und Ping-Monitoring",
+          "Öffentliche Statusseiten inklusive",
+          "Einfache Preise für kleine Projekte"
+        ],
         "rows": [
-          { "label": "Hauptfokus", "us": "Website- und API-Uptime", "them": "Cron-Jobs und geplante Aufgaben" },
-          { "label": "Öffentliche Statusseiten", "us": "Inklusive", "them": "Aktuelle Tarife prüfen" },
-          { "label": "Monitoring-Engine", "us": "Open-Source Uptime Kuma", "them": "Proprietär" }
+          {
+            "label": "Hauptfokus",
+            "us": "Website- und API-Uptime",
+            "them": "Cron-Jobs und geplante Aufgaben"
+          },
+          {
+            "label": "Öffentliche Statusseiten",
+            "us": "Inklusive",
+            "them": "Aktuelle Tarife prüfen"
+          },
+          {
+            "label": "Monitoring-Engine",
+            "us": "Open-Source Uptime Kuma",
+            "them": "Proprietär"
+          }
         ],
         "chooseThem": "dein Hauptbedarf die Überwachung von Cron-Jobs und Hintergrundaufgaben ist.",
         "chooseUs": "dein Hauptbedarf ist, zu wissen, wann deine Seiten und APIs ausfallen."
@@ -183,13 +300,36 @@
         "name": "selbst gehostetes Uptime Kuma",
         "headline": "Selbst gehostetes Uptime Kuma vs. gehostet: Was solltest du wählen?",
         "intro": "Uptime Kuma ist ausgezeichnete Software, und wir nutzen es als Engine. Die Frage ist, ob du es selbst betreiben willst oder uns das überlässt.",
-        "theyGood": ["Volle Kontrolle über Daten und Konfiguration", "Keine Abokosten außer deinem eigenen Server"],
-        "weGood": ["Keine Server, Updates, Backups oder SSL-Erneuerungen zu verwalten", "Überwachung von Infrastruktur getrennt von deiner eigenen", "Verwaltete Statusseiten, Benachrichtigungen und Abrechnung an einem Ort"],
+        "theyGood": [
+          "Volle Kontrolle über Daten und Konfiguration",
+          "Keine Abokosten außer deinem eigenen Server"
+        ],
+        "weGood": [
+          "Keine Server, Updates, Backups oder SSL-Erneuerungen zu verwalten",
+          "Überwachung von Infrastruktur getrennt von deiner eigenen",
+          "Verwaltete Statusseiten, Benachrichtigungen und Abrechnung an einem Ort"
+        ],
         "rows": [
-          { "label": "Einrichtung", "us": "Registrieren und loslegen", "them": "Server bereitstellen und installieren" },
-          { "label": "Wartung", "us": "Wird für dich erledigt", "them": "Du kümmerst dich um Updates und Backups" },
-          { "label": "Unabhängigkeit von deinen Servern", "us": "Prüfungen laufen woanders", "them": "Hängt davon ab, wo du hostest" },
-          { "label": "Kosten", "us": "Ab kostenlos; Bezahltarife ab £9/Monat", "them": "Dein Server und deine Zeit" }
+          {
+            "label": "Einrichtung",
+            "us": "Registrieren und loslegen",
+            "them": "Server bereitstellen und installieren"
+          },
+          {
+            "label": "Wartung",
+            "us": "Wird für dich erledigt",
+            "them": "Du kümmerst dich um Updates und Backups"
+          },
+          {
+            "label": "Unabhängigkeit von deinen Servern",
+            "us": "Prüfungen laufen woanders",
+            "them": "Hängt davon ab, wo du hostest"
+          },
+          {
+            "label": "Kosten",
+            "us": "Ab kostenlos; Bezahltarife ab £9/Monat",
+            "them": "Dein Server und deine Zeit"
+          }
         ],
         "chooseThem": "du gern eigene Infrastruktur betreibst und volle Kontrolle willst.",
         "chooseUs": "du deine Zeit lieber in dein Produkt steckst, als einen Monitor am Laufen zu halten."
@@ -226,7 +366,9 @@
       "missing_fields": "Bitte fülle alle Felder aus.",
       "callback_failed": "Der Link ist ungültig oder abgelaufen.",
       "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
-      "not_configured": "Die Anmeldung ist noch nicht verfügbar. Die Seite wird noch eingerichtet."
+      "not_configured": "Die Anmeldung ist noch nicht verfügbar. Die Seite wird noch eingerichtet.",
+      "suspended": "Dieses Konto wurde gesperrt. Bitte kontaktiere den Support.",
+      "signups_closed": "Neue Registrierungen sind vorübergehend geschlossen."
     },
     "info": {
       "check_email": "Prüfe deine E-Mails, um fortzufahren.",

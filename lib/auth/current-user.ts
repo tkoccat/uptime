@@ -1,6 +1,7 @@
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { isLocale, routing } from "@/i18n/routing";
+import { isAdminEmail } from "../admin/emails";
 import { prisma } from "../prisma";
 import { createClient } from "../supabase/server";
 
@@ -20,7 +21,7 @@ export async function requireUser() {
   }
 
   const metaLocale = user.user_metadata?.locale as string | undefined;
-  return prisma.user.upsert({
+  const record = await prisma.user.upsert({
     where: { supabaseId: user.id },
     update: {},
     create: {
@@ -30,4 +31,11 @@ export async function requireUser() {
       locale: isLocale(metaLocale) ? metaLocale : routing.defaultLocale,
     },
   });
+
+  // Yönetici tarafından askıya alınan hesap panele giremez (yöneticinin kendisi hariç: kilitlenmesin)
+  if (record.suspendedAt && !isAdminEmail(record.email)) {
+    redirect({ href: "/login?error=suspended", locale: await getLocale() });
+    throw new Error("unreachable");
+  }
+  return record;
 }

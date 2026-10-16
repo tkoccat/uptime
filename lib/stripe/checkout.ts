@@ -1,5 +1,6 @@
 import type { User } from "@prisma/client";
 import { prisma } from "../prisma";
+import { getPlanConfigs } from "../plan-config";
 import { getStripe } from "./client";
 import { priceIdFor, type Billing, type Currency, type PaidPlan } from "./prices";
 
@@ -27,9 +28,11 @@ export async function createCheckoutUrl(params: {
   const { user, plan, billing, currency, appUrl } = params;
   const customer = await ensureCustomer(user);
 
-  // 14 günlük deneme yalnızca Pro için ve her kullanıcıya bir kez
+  // Deneme süresi admin panelindeki plan ayarından gelir (0 = deneme yok); her kullanıcıya yalnızca bir kez
   const hadSubscription = (await prisma.subscription.count({ where: { userId: user.id } })) > 0;
-  const trial = plan === "PRO" && !hadSubscription ? 14 : undefined;
+  const planCfg = (await getPlanConfigs())[plan];
+  if (!planCfg.isActive) throw new Error("Bu plan şu an satışta değil");
+  const trial = planCfg.trialDays > 0 && !hadSubscription ? planCfg.trialDays : undefined;
 
   const locale = (STRIPE_LOCALES as readonly string[]).includes(user.locale) ? user.locale : "auto";
   const prefix = user.locale === "en" ? "" : `/${user.locale}`;
@@ -38,7 +41,7 @@ export async function createCheckoutUrl(params: {
     mode: "subscription",
     customer,
     client_reference_id: user.id,
-    line_items: [{ price: priceIdFor(plan, billing), quantity: 1 }],
+    line_items: [{ price: await priceIdFor(plan, billing), quantity: 1 }],
     // Stripe Tax: UK KDV ve AB KDV'si otomatik hesaplanır (Stripe panelinde Tax etkin olmalı)
     automatic_tax: { enabled: true },
     tax_id_collection: { enabled: true },

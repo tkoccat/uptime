@@ -41,7 +41,7 @@ export async function syncSubscription(sub: Stripe.Subscription) {
 
   const item = sub.items.data[0];
   const priceId = item?.price.id;
-  const plan = priceId ? planFromPriceId(priceId) : null;
+  const plan = priceId ? await planFromPriceId(priceId) : null;
   // Bilinmeyen fiyat: sessizce tahmin etmek yerine hata verip Stripe'ın yeniden denemesine bırak
   if (!plan) throw new Error(`Bilinmeyen Stripe fiyatı: ${priceId}`);
 

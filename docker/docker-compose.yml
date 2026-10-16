@@ -1,0 +1,161 @@
+# SaaS yığını: nextjs-app, worker, postgres, redis, uptime-kuma, caddy.
+# Derleme bağlamı proje köküdür:  docker compose -f docker/docker-compose.yml --env-file .env up -d --build
+# Dokploy rehberi: docs/DEPLOY-DOKPLOY.md
+#
+# Not: uptime-kuma servisi, Dokploy'da zaten çalışan örneğin birebir aynısıdır (image louislam/uptime-kuma:2,
+# veri /app/data volume'unda, Embedded MariaDB). Mevcut örneği kullanacaksanız bu servisi silin ve
+# UPTIME_KUMA_URL'i o örneğe yöneltin.
+
+x-app-env: &app-env
+  NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+  NEXT_PUBLIC_STATUS_BASE_DOMAIN: ${NEXT_PUBLIC_STATUS_BASE_DOMAIN}
+  NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+  SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+  DATABASE_URL: postgresql://saas:${POSTGRES_PASSWORD}@postgres:5432/saas
+  DIRECT_URL: postgresql://saas:${POSTGRES_PASSWORD}@postgres:5432/saas
+  REDIS_URL: redis://redis:6379
+  APP_ENCRYPTION_KEY: ${APP_ENCRYPTION_KEY}
+  UPTIME_KUMA_URL: ${UPTIME_KUMA_URL:-http://uptime-kuma:3001}
+  UPTIME_KUMA_ADMIN_USERNAME: ${UPTIME_KUMA_ADMIN_USERNAME}
+  UPTIME_KUMA_ADMIN_PASSWORD: ${UPTIME_KUMA_ADMIN_PASSWORD}
+  UPTIME_KUMA_MAJOR: ${UPTIME_KUMA_MAJOR:-2}
+  KUMA_WEBHOOK_SECRET: ${KUMA_WEBHOOK_SECRET}
+  KUMA_WEBHOOK_BASE_URL: ${KUMA_WEBHOOK_BASE_URL:-http://nextjs-app:3000}
+  CADDY_ASK_SECRET: ${CADDY_ASK_SECRET}
+  STATUS_SERVER_IP: ${STATUS_SERVER_IP:-}
+  APP_HOSTS: ${APP_HOSTS:-nextjs-app}
+  STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+  STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+  STRIPE_PRICE_ID_PRO_MONTHLY: ${STRIPE_PRICE_ID_PRO_MONTHLY:-}
+  STRIPE_PRICE_ID_PRO_YEARLY: ${STRIPE_PRICE_ID_PRO_YEARLY:-}
+  STRIPE_PRICE_ID_BUSINESS_MONTHLY: ${STRIPE_PRICE_ID_BUSINESS_MONTHLY:-}
+  STRIPE_PRICE_ID_BUSINESS_YEARLY: ${STRIPE_PRICE_ID_BUSINESS_YEARLY:-}
+  RESEND_API_KEY: ${RESEND_API_KEY:-}
+  EMAIL_FROM: ${EMAIL_FROM:-}
+  TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+  TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+  TWILIO_FROM: ${TWILIO_FROM:-}
+  ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+  LEGAL_REVIEWED: ${LEGAL_REVIEWED:-false}
+
+x-build: &build
+  context: ..
+  dockerfile: Dockerfile
+  args:
+    NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+    NEXT_PUBLIC_STATUS_BASE_DOMAIN: ${NEXT_PUBLIC_STATUS_BASE_DOMAIN}
+    NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:-}
+    NEXT_PUBLIC_GTAG_ID: ${NEXT_PUBLIC_GTAG_ID:-}
+    NEXT_PUBLIC_GTAG_CONVERSION_LABEL: ${NEXT_PUBLIC_GTAG_CONVERSION_LABEL:-}
+    NEXT_PUBLIC_META_PIXEL_ID: ${NEXT_PUBLIC_META_PIXEL_ID:-}
+
+services:
+  # Veritabanı migration'ları: uygulama başlamadan önce bir kez çalışır
+  migrate:
+    build:
+      <<: *build
+      target: tools
+    command: ["npx", "prisma", "migrate", "deploy"]
+    environment: *app-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  nextjs-app:
+    build:
+      <<: *build
+      target: runner
+    restart: unless-stopped
+    environment: *app-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    expose:
+      - "3000"
+
+  # E-posta, uyarı dağıtımı ve zamanlanmış işler (BullMQ)
+  worker:
+    build:
+      <<: *build
+      target: tools
+    command: ["npm", "run", "worker"]
+    restart: unless-stopped
+    environment: *app-env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: saas
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: saas
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saas -d saas"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    # Kuyruk verisi kaybolmasın diye AOF açık
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # Dokploy'daki mevcut kurulumla aynı: değiştirilmedi
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - uptime-kuma-data:/app/data
+    expose:
+      - "3001"
+
+  # Kenar vekil sunucu: durum sayfası alt alan adları ve özel alan adları için otomatik SSL (on-demand TLS).
+  # Varsayılan olarak KAPALI (profil "edge"). Dokploy'un Traefik'i 80/443 portlarını kullandığı için
+  # Caddy'yi ayrı bir IP/sunucuda çalıştırın; ayrıntı: docs/DEPLOY-DOKPLOY.md
+  caddy:
+    image: caddy:2-alpine
+    profiles: ["edge"]
+    restart: unless-stopped
+    ports:
+      - "${CADDY_HTTP_PORT:-80}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-}
+      ACME_EMAIL: ${ACME_EMAIL:-}
+      CADDY_ASK_SECRET: ${CADDY_ASK_SECRET}
+      UPSTREAM: ${CADDY_UPSTREAM:-nextjs-app:3000}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - nextjs-app
+
+volumes:
+  postgres-data:
+  redis-data:
+  uptime-kuma-data:
+  caddy-data:
+  caddy-config:

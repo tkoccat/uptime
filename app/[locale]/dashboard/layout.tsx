@@ -5,6 +5,9 @@ import { company } from "@/lib/company";
 import { requireUser } from "@/lib/auth/current-user";
 import { signOut } from "../(auth)/actions";
 
+// Oturuma bağlı içerik: hiçbir dashboard sayfası statik üretilmemeli veya önbelleğe alınmamalı
+export const dynamic = "force-dynamic";
+
 const NAV = [
   { href: "/dashboard", key: "overview" },
   { href: "/dashboard/monitors", key: "monitors" },

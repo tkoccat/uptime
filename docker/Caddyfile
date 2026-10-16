@@ -1,0 +1,24 @@
+{
+	email {$ACME_EMAIL}
+
+	# Sertifika yalnızca uygulamanın onayladığı alan adları için üretilir:
+	# kayıtlı bir durum sayfası alt alan adı, veya DNS'i bize işaret eden doğrulanmış özel alan adı.
+	on_demand_tls {
+		ask http://nextjs-app:3000/api/caddy/ask?secret={$CADDY_ASK_SECRET}
+	}
+}
+
+# Ana uygulama (sabit alan adı, normal sertifika)
+{$APP_DOMAIN} {
+	encode zstd gzip
+	reverse_proxy {$UPSTREAM}
+}
+
+# Durum sayfaları: <slug>.siten.com ve müşterilerin özel alan adları
+https:// {
+	tls {
+		on_demand
+	}
+	encode zstd gzip
+	reverse_proxy {$UPSTREAM}
+}

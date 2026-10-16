@@ -8,7 +8,7 @@ export type SignupSource = {
   referrer?: string;
 };
 
-const clean = (v: unknown) => (typeof v === "string" ? v.replace(/[^\w.\-: /]/g, "").slice(0, 100) || undefined : undefined);
+const clean = (v: unknown) => (typeof v === "string" ? v.replace(/[^\w.\-: ]/g, "").slice(0, 100) || undefined : undefined);
 
 /** Çerez değerini güvenli biçimde ayrıştırır (kullanıcı girdisi olduğundan her alan temizlenir). */
 export function parseSignupSource(raw: string | undefined | null): SignupSource {

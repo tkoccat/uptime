@@ -1,4 +1,6 @@
-import { isIP } from "node:net";
+// Middleware Edge çalışma zamanında çalışır: node:net kullanılamaz, bu yüzden IP denetimi düzenli ifadeyle yapılır.
+const IPV4 = /^\d{1,3}(\.\d{1,3}){3}$/;
+const isIP = (h: string) => IPV4.test(h) || h.includes(":") || h.startsWith("[");
 
 // Host başlığına göre isteğin hangi durum sayfasına ait olduğunu belirler (middleware'de kullanılır).
 // Saf fonksiyon: env değerleri dışarıdan verilir, böylece test edilebilir.

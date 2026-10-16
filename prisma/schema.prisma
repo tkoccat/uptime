@@ -43,15 +43,25 @@ enum NotificationType {
 }
 
 model User {
-  id               String   @id @default(cuid())
-  email            String   @unique
-  name             String?
+  id                 String    @id @default(cuid())
+  email              String    @unique
+  name               String?
   // Supabase Auth kullanıcı kimliği (auth.users.id)
-  supabaseId       String   @unique
-  plan             Plan     @default(FREE)
-  stripeCustomerId String?  @unique
-  locale           String   @default("en")
-  createdAt        DateTime @default(now())
+  supabaseId         String    @unique
+  plan               Plan      @default(FREE)
+  stripeCustomerId   String?   @unique
+  locale             String    @default("en")
+  timezone           String    @default("UTC")
+  createdAt          DateTime  @default(now())
+  // Ardışık başarısız ödeme sayısı (3'te Free'ye düşürülür)
+  paymentFailedCount Int       @default(0)
+  // E-posta bildirim tercihleri (olay anahtarı -> boolean)
+  emailPrefs         Json      @default("{}")
+  // Kayıt kaynağı (yalnızca çerez onayı verildiyse doldurulur)
+  utmSource          String?
+  utmMedium          String?
+  utmCampaign        String?
+  referrer           String?
 
   subscriptions        Subscription[]
   monitors             Monitor[]
@@ -59,6 +69,10 @@ model User {
   statusPages          StatusPage[]
   usageLogs            UsageLog[]
   auditLogs            AuditLog[]
+  apiKeys              ApiKey[]
+
+  @@index([createdAt])
+  @@index([utmSource])
 }
 
 model Subscription {
@@ -70,6 +84,10 @@ model Subscription {
   stripeSubscriptionId String             @unique
   stripePriceId        String
   cancelAtPeriodEnd    Boolean            @default(false)
+  trialEnd             DateTime?
+  // Deneme bitiyor e-postasının tekrar gönderilmemesi için
+  trialReminderSentAt  DateTime?
+  canceledAt           DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -89,18 +107,48 @@ model Monitor {
   interval            Int         @default(180)
   isActive            Boolean     @default(true)
   createdAt           DateTime    @default(now())
+  // Günlük uptime özetinin en son işlendiği zaman
+  lastRollupAt        DateTime?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  statusPages StatusPage[]
+  daily       MonitorDaily[]
+  incidents   Incident[]
 
   // Aynı Kuma monitörü iki kez eşlenemez
   @@unique([uptimeKumaMonitorId])
   @@index([userId])
 }
 
+// Günlük uptime özeti (public status page'in 90 günlük çubuğu için)
+model MonitorDaily {
+  monitorId String
+  day       DateTime @db.Date
+  up        Int      @default(0)
+  down      Int      @default(0)
+
+  monitor Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@id([monitorId, day])
+}
+
+model Incident {
+  id         String    @id @default(cuid())
+  monitorId  String
+  startedAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  message    String?
+
+  monitor Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+
+  @@index([monitorId, startedAt])
+}
+
 model NotificationChannel {
   id         String           @id @default(cuid())
   userId     String
   type       NotificationType
+  name       String           @default("")
   // Kanal ayarları (webhook URL, e-posta vb.); hassas alanlar şifreli saklanmalı
   config     Json
   isVerified Boolean          @default(false)
@@ -111,16 +159,42 @@ model NotificationChannel {
 }
 
 model StatusPage {
-  id           String  @id @default(cuid())
-  userId       String
-  slug         String  @unique
-  isPublic     Boolean @default(true)
-  customDomain String? @unique
-  config       Json    @default("{}")
+  id                   String  @id @default(cuid())
+  userId               String
+  slug                 String  @unique
+  isPublic             Boolean @default(true)
+  customDomain         String? @unique
+  customDomainVerified Boolean @default(false)
+  config               Json    @default("{}")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monitors Monitor[]
+
+  @@index([userId])
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  // Anahtarın ilk karakterleri (listede gösterilir); tamamı yalnızca oluşturulurken görünür
+  prefix     String
+  // SHA-256 özeti; düz anahtar saklanmaz
+  hash       String    @unique
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+  revokedAt  DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// İşlenmiş Stripe webhook olayları (aynı olay iki kez işlenmesin)
+model StripeEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
 }
 
 model UsageLog {

@@ -133,8 +133,12 @@ model Monitor {
   // Panelde gruplama/filtreleme için serbest etiketler
   tags                String[]    @default([])
   description         String?
+  // SSL sertifikası ve alan adı bitiş tarihleri (HTTPS monitörleri için; ayrıntı sayfasında tembel yenilenir)
+  certExpiresAt       DateTime?
+  domainExpiresAt     DateTime?
+  expiryCheckedAt     DateTime?
 
-  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   statusPages  StatusPage[]
   daily        MonitorDaily[]
   incidents    Incident[]

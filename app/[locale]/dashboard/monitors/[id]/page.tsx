@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/lib/auth/current-user";
 import { NotFoundError } from "@/lib/errors";
+import { daysUntil, getExpiryInfo } from "@/lib/expiry";
 import { readOptions } from "@/lib/monitor-options";
 import { prisma } from "@/lib/prisma";
 import { getMonitorChart, uptimeFromDaily, type ChartRange, type MonitorChart } from "@/lib/uptimeKuma";
@@ -51,10 +52,12 @@ export default async function MonitorDetailPage({
     console.error("[monitor detail] geçmiş alınamadı", err);
   }
 
-  const [daily30, incidents, maintenance] = await Promise.all([
+  const [daily30, daily365, incidents, maintenance, expiry] = await Promise.all([
     uptimeFromDaily([monitor.id], 30),
+    uptimeFromDaily([monitor.id], 365),
     prisma.incident.findMany({ where: { monitorId: monitor.id }, orderBy: { startedAt: "desc" }, take: 10 }),
     prisma.maintenance.findFirst({ where: { monitors: { some: { id: monitor.id } }, startsAt: { lte: now }, endsAt: { gt: now } } }),
+    getExpiryInfo(monitor),
   ]);
 
   const recent = chart?.recent ?? [];
@@ -63,8 +66,12 @@ export default async function MonitorDetailPage({
   const status: DisplayStatus = !monitor.isActive ? "paused" : maintenance ? "maintenance" : openIncident ? "down" : (last?.status ?? "unknown");
 
   const checks = chart ? chart.up + chart.down : 0;
-  const rangeUptime = chart && checks > 0 ? (chart.up / checks) * 100 : null;
+  const d24 = chart?.last24h;
+  const uptime24 = d24 && d24.up + d24.down > 0 ? (d24.up / (d24.up + d24.down)) * 100 : null;
   const uptime30 = daily30.get(monitor.id) ?? null;
+  const uptime365 = daily365.get(monitor.id) ?? null;
+  const pct = (v: number | null) => (v === null ? "–" : `${v.toFixed(2)}%`);
+  const showExpiry = monitor.type === "HTTP" || monitor.type === "KEYWORD";
   const opts = readOptions(monitor.options);
 
   const fmt = new Intl.DateTimeFormat(user.locale, { dateStyle: "short", timeStyle: "medium", timeZone: user.timezone });
@@ -73,14 +80,24 @@ export default async function MonitorDetailPage({
   const formatX = (ts: number) => (range === "24h" ? fmtTime.format(ts) : fmtDay.format(ts));
   const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
 
-  const stat = (label: string, value: string) => (
-    <Card key={label}>
-      <CardHeader className="pb-1">
-        <CardTitle className="text-xs font-medium text-muted-foreground">{label}</CardTitle>
-      </CardHeader>
-      <CardContent className="text-2xl font-bold">{value}</CardContent>
-    </Card>
-  );
+  const dateFmt = new Intl.DateTimeFormat(user.locale, { dateStyle: "medium", timeZone: user.timezone });
+  // Bitiş kutusu: tarih + kalan gün; 14 günden az kırmızı, 30 günden az sarı
+  const expiryStat = (label: string, date: Date | null) => {
+    const days = date ? daysUntil(date) : null;
+    const tone = days === null ? "" : days <= 14 ? "text-red-600 dark:text-red-400" : days <= 30 ? "text-amber-600 dark:text-amber-400" : "";
+    return stat(label, days === null ? "–" : days < 0 ? t("expired") : t("daysLeft", { n: days }), date ? dateFmt.format(date) : undefined, tone);
+  };
+  function stat(label: string, value: string, sub?: string, tone = "") {
+    return (
+      <Card key={label}>
+        <CardHeader className="pb-1">
+          <CardTitle className="text-xs font-medium text-muted-foreground">{label}</CardTitle>
+          {sub && <p className="text-[11px] text-muted-foreground">{sub}</p>}
+        </CardHeader>
+        <CardContent className={`text-xl font-bold ${tone}`}>{value}</CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -130,11 +147,14 @@ export default async function MonitorDetailPage({
         <HeartbeatBar beats={recent} size={60} label={t("recentChecks")} className="h-8" />
       </section>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {stat(t("current"), last?.ping != null ? `${last.ping} ms` : "–")}
-        {stat(t("avgPing"), chart?.avg != null ? `${chart.avg} ms` : "–")}
-        {stat(`${t("uptime")} (${t(`range.${range}`)})`, rangeUptime === null ? "–" : `${rangeUptime.toFixed(2)}%`)}
-        {stat(`${t("uptime")} (${t("range.30d")})`, uptime30 === null ? "–" : `${uptime30.toFixed(2)}%`)}
+        {stat(t("avgPing"), d24?.avg != null ? `${d24.avg} ms` : "–", t("range.24h"))}
+        {stat(t("uptime"), pct(uptime24), t("range.24h"))}
+        {stat(t("uptime"), pct(uptime30), t("range.30d"))}
+        {stat(t("uptime"), pct(uptime365), t("range.1y"))}
+        {showExpiry && expiryStat(t("sslCert"), expiry.cert)}
+        {showExpiry && expiryStat(t("domainExpiry"), expiry.domain)}
       </div>
 
       <section className="space-y-3">

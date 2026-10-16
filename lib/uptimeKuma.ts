@@ -273,7 +273,20 @@ export type MonitorChart = {
   down: number;
   // En son kalp atışları (eskiden yeniye): çubuk ve "son kontroller" listesi için
   recent: Heartbeat[];
+  // Seçili aralıktan bağımsız son 24 saat: istatistik şeridi için
+  last24h: { avg: number | null; up: number; down: number };
 };
+
+/** Son 24 saatin ortalama yanıt süresi ve başarılı/başarısız kontrol sayısı. */
+export function summarize24h(beats: Heartbeat[], now: number = Date.now()): MonitorChart["last24h"] {
+  const day = beats.filter((b) => new Date(b.time).getTime() >= now - 24 * 3600_000);
+  const pings = day.filter((b) => b.status === "up" && b.ping !== null).map((b) => b.ping as number);
+  return {
+    avg: pings.length ? Math.round(pings.reduce((a, b) => a + b, 0) / pings.length) : null,
+    up: day.filter((b) => b.status === "up").length,
+    down: day.filter((b) => b.status === "down").length,
+  };
+}
 
 const MAX_POINTS = 120;
 
@@ -310,6 +323,7 @@ export async function getMonitorChart(userId: string, monitorId: string, range: 
     up: beats.filter((b) => b.status === "up").length,
     down: beats.filter((b) => b.status === "down").length,
     recent: beats.slice(-60),
+    last24h: summarize24h(beats, to),
   };
 }
 

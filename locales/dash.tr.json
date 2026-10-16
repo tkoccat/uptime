@@ -126,7 +126,8 @@
       "range": {
         "24h": "24 saat",
         "7d": "7 gün",
-        "30d": "30 gün"
+        "30d": "30 gün",
+        "1y": "1 y?l"
       },
       "responseTime": "Yanıt süresi",
       "chartEmpty": "Henüz yeterli veri yok.",
@@ -139,7 +140,11 @@
       "ongoing": "Devam ediyor",
       "recentChecksList": "Son kontroller",
       "inMaintenance": "Planlı bakım \"{title}\" {end} tarihine kadar sürüyor. Uyarılar durduruldu.",
-      "settingsSummary": "Yöntem {method} · kabul edilen {status} · çökmeden önce {retries} deneme"
+      "settingsSummary": "Yöntem {method} · kabul edilen {status} · çökmeden önce {retries} deneme",
+      "sslCert": "SSL sertifikas?",
+      "domainExpiry": "Alan ad? biti?i",
+      "daysLeft": "{n} g?n",
+      "expired": "S?resi doldu"
     },
     "statusPages": {
       "title": "Durum sayfaları",

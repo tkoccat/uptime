@@ -126,7 +126,8 @@
       "range": {
         "24h": "24 hours",
         "7d": "7 days",
-        "30d": "30 days"
+        "30d": "30 days",
+        "1y": "1 year"
       },
       "responseTime": "Response time",
       "chartEmpty": "Not enough data yet.",
@@ -139,7 +140,11 @@
       "ongoing": "Ongoing",
       "recentChecksList": "Latest checks",
       "inMaintenance": "Scheduled maintenance \"{title}\" is in progress until {end}. Alerts are paused.",
-      "settingsSummary": "Method {method} · accepted {status} · {retries} retries before down"
+      "settingsSummary": "Method {method} · accepted {status} · {retries} retries before down",
+      "sslCert": "SSL certificate",
+      "domainExpiry": "Domain expiry",
+      "daysLeft": "{n} days",
+      "expired": "Expired"
     },
     "statusPages": {
       "title": "Status pages",

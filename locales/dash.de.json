@@ -126,7 +126,8 @@
       "range": {
         "24h": "24 Stunden",
         "7d": "7 Tage",
-        "30d": "30 Tage"
+        "30d": "30 Tage",
+        "1y": "1 Jahr"
       },
       "responseTime": "Antwortzeit",
       "chartEmpty": "Noch nicht genug Daten.",
@@ -139,7 +140,11 @@
       "ongoing": "Laufend",
       "recentChecksList": "Letzte Prüfungen",
       "inMaintenance": "Geplante Wartung „{title}“ läuft bis {end}. Alarme sind pausiert.",
-      "settingsSummary": "Methode {method} · akzeptiert {status} · {retries} Wiederholungen bis Ausfall"
+      "settingsSummary": "Methode {method} · akzeptiert {status} · {retries} Wiederholungen bis Ausfall",
+      "sslCert": "SSL-Zertifikat",
+      "domainExpiry": "Domain-Ablauf",
+      "daysLeft": "{n} Tage",
+      "expired": "Abgelaufen"
     },
     "statusPages": {
       "title": "Statusseiten",

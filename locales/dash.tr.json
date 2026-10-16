@@ -174,7 +174,8 @@
       "cancelsOn": "{date} tarihinde sona erer",
       "checkoutSuccess": "Teşekkürler! Aboneliğiniz etkinleştiriliyor.",
       "checkoutCanceled": "Ödeme iptal edildi. Ücret alınmadı.",
-      "notConfigured": "Faturalama henüz yapılandırılmadı."
+      "notConfigured": "Faturalama henüz yapılandırılmadı.",
+      "selected": "{plan} planını seçtiniz. Etkinleştirmek için aşağıdan ödemeyi tamamlayın."
     },
     "api": {
       "title": "API anahtarları",

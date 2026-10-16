@@ -21,7 +21,10 @@ export async function AuthShell({ title, description, error, info, children }: P
     <main className="flex min-h-screen items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          {/* Sayfanın tek h1'i: erişilebilirlik ve arama motorları için gerçek başlık öğesi */}
+          <CardTitle>
+            <h1>{title}</h1>
+          </CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
         </CardHeader>
         <CardContent className="space-y-4">

@@ -174,7 +174,8 @@
       "cancelsOn": "Se termine le {date}",
       "checkoutSuccess": "Merci ! Votre abonnement est en cours d'activation.",
       "checkoutCanceled": "Le paiement a été annulé. Vous n'avez pas été débité.",
-      "notConfigured": "La facturation n'est pas encore configurée."
+      "notConfigured": "La facturation n'est pas encore configurée.",
+      "selected": "Vous avez choisi le forfait {plan}. Finalisez le paiement ci-dessous pour l'activer."
     },
     "api": {
       "title": "Clés d'API",

@@ -3,6 +3,7 @@ import { Flash } from "@/components/dashboard/flash";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth/current-user";
+import { parsePlanIntent } from "@/lib/auth/intent";
 import { formatMoney, getPlanConfigs } from "@/lib/plan-config";
 import { getLimits } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
@@ -14,7 +15,7 @@ export default async function BillingPage({
   searchParams,
 }: {
   params: { locale: string };
-  searchParams: { error?: string; checkout?: string };
+  searchParams: { error?: string; checkout?: string; select?: string; billing?: string };
 }) {
   setRequestLocale(locale);
   const user = await requireUser();
@@ -31,6 +32,8 @@ export default async function BillingPage({
   const [limits, configs] = await Promise.all([getLimits(user.plan), getPlanConfigs()]);
   const date = (d: Date) => new Intl.DateTimeFormat(user.locale, { dateStyle: "long", timeZone: user.timezone }).format(d);
   const configured = Boolean(process.env.STRIPE_SECRET_KEY);
+  // Fiyat sayfasından gelen seçim (kayıt sonrası): ilgili plan vurgulanır, dönem önceden seçilir
+  const intent = parsePlanIntent(searchParams.select, searchParams.billing);
 
   return (
     <>
@@ -38,6 +41,9 @@ export default async function BillingPage({
       <Flash error={searchParams.error} />
       {searchParams.checkout === "success" && <p className="rounded-md bg-muted p-3 text-sm">{t("checkoutSuccess")}</p>}
       {searchParams.checkout === "canceled" && <p className="rounded-md bg-muted p-3 text-sm">{t("checkoutCanceled")}</p>}
+      {intent && user.plan === "FREE" && (
+        <p className="rounded-md border border-primary bg-primary/5 p-3 text-sm">{t("selected", { plan: tp(`${intent.plan.toLowerCase()}.name`) })}</p>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>
@@ -88,7 +94,7 @@ export default async function BillingPage({
                   const p = { id: planKey.toLowerCase(), monthly: configs[planKey].priceMonthly, yearly: configs[planKey].priceYearly };
                   const isCurrent = user.plan === planKey;
                   return (
-                    <Card key={p.id}>
+                    <Card key={p.id} className={intent?.plan === planKey ? "border-primary shadow-lg" : undefined}>
                       <CardHeader className="pb-2">
                         <CardTitle>{tp(`${p.id}.name`)}</CardTitle>
                       </CardHeader>
@@ -97,7 +103,7 @@ export default async function BillingPage({
                           <input type="hidden" name="plan" value={planKey} />
                           <select
                             name="billing"
-                            defaultValue="monthly"
+                            defaultValue={intent?.plan === planKey ? intent.billing : "monthly"}
                             aria-label={t("upgradeTitle")}
                             className="h-10 w-full rounded-md border bg-background px-3 text-sm"
                           >

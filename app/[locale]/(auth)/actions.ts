@@ -6,6 +6,7 @@ import { redirect as externalRedirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { intentPath, parsePlanIntent, type PlanIntent } from "@/lib/auth/intent";
 import { mapSupabaseError, safeNextPath } from "@/lib/auth/messages";
 import { LIMITS, rateLimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request";
@@ -28,6 +29,12 @@ async function fail(path: string, code: string): Promise<never> {
 // Supabase yapılandırılmamışsa (ilk kurulum) sunucu hatası yerine anlaşılır bir mesajla geri dön
 async function requireConfigured(path: string) {
   if (!isSupabaseConfigured()) await fail(path, "not_configured");
+}
+
+// Doğrulama/OAuth dönüş adresi; plan niyeti varsa `next` ile taşınır (geçersiz değerler yok sayılır)
+function callbackUrl(intent: PlanIntent | null) {
+  const base = `${siteUrl()}/auth/callback`;
+  return intent ? `${base}?next=${encodeURIComponent(intentPath(intent))}` : base;
 }
 
 function sourceMetadata() {
@@ -73,7 +80,8 @@ export async function signUp(formData: FormData) {
     email,
     password,
     options: {
-      emailRedirectTo: `${siteUrl()}/auth/callback`,
+      // Fiyat sayfasından geldiyse doğrulama sonrası doğrudan seçilen planın ödeme adımına gidilir
+      emailRedirectTo: callbackUrl(parsePlanIntent(formData.get("plan"), formData.get("billing"))),
       // Dil tercihi kullanıcı verisine yazılır; callback'te veritabanına aktarılır (e-postalar bu dilde gider)
       data: {
         locale,
@@ -88,12 +96,12 @@ export async function signUp(formData: FormData) {
   await go("/login?info=check_email");
 }
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(formData?: FormData) {
   await requireConfigured("/login");
   const supabase = createClient();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${siteUrl()}/auth/callback` },
+    options: { redirectTo: callbackUrl(parsePlanIntent(formData?.get("plan"), formData?.get("billing"))) },
   });
   if (error || !data.url) return fail("/login", "unknown");
   // Dış adrese (Google) yönlendirme: dil ön eki eklenmemeli, bu yüzden Next'in redirect'i kullanılır

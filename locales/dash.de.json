@@ -174,7 +174,8 @@
       "cancelsOn": "Endet am {date}",
       "checkoutSuccess": "Danke! Dein Abonnement wird aktiviert.",
       "checkoutCanceled": "Der Bezahlvorgang wurde abgebrochen. Es wurde nichts abgebucht.",
-      "notConfigured": "Die Abrechnung ist noch nicht eingerichtet."
+      "notConfigured": "Die Abrechnung ist noch nicht eingerichtet.",
+      "selected": "Du hast den Tarif {plan} gewählt. Schließe unten die Zahlung ab, um ihn zu aktivieren."
     },
     "api": {
       "title": "API-Schlüssel",

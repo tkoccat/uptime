@@ -39,6 +39,8 @@ async function sendTemplatedEmail(job: EmailJob) {
 
 // Her 5 dakikada: Kuma kalp atışlarını günlük up/down sayaçlarına işler (status page 90 günlük çubuk)
 export async function rollupUptime() {
+  // Uptime Kuma henüz yapılandırılmadıysa (ilk kurulum) her 5 dakikada hata basmak yerine atlanır
+  if (!process.env.UPTIME_KUMA_ADMIN_USERNAME || !process.env.UPTIME_KUMA_ADMIN_PASSWORD) return;
   const monitors = await prisma.monitor.findMany({ where: { isActive: true } });
   const adapter = getAdapter();
 

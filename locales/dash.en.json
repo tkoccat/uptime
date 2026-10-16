@@ -174,7 +174,8 @@
       "cancelsOn": "Ends on {date}",
       "checkoutSuccess": "Thank you! Your subscription is being activated.",
       "checkoutCanceled": "Checkout was canceled. You have not been charged.",
-      "notConfigured": "Billing is not configured yet."
+      "notConfigured": "Billing is not configured yet.",
+      "selected": "You chose the {plan} plan. Complete checkout below to activate it."
     },
     "api": {
       "title": "API keys",

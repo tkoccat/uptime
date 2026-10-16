@@ -11,7 +11,8 @@
     "worker": "tsx worker/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:int": "vitest run --config vitest.integration.config.mts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",
@@ -41,6 +42,7 @@
     "@types/node": "^24.19.2",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "embedded-postgres": "^18.4.0-beta.17",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "pdf-lib": "^1.17.1",

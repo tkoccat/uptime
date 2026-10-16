@@ -183,3 +183,68 @@ describe("durum sayfası", () => {
     await expect(createStatusPage(me, { slug: "my-page", title: "T", customDomain: "status.example.com" })).rejects.toMatchObject({ limit: "customDomain" });
   });
 });
+
+describe("heartbeat (cron) monitörü", () => {
+  it("adres gerekmez; ping anahtarı üretilir ve Kuma'ya push anahtarı olarak gider", async () => {
+    const me = uid();
+    db.user.findUnique.mockResolvedValue({ id: me, plan: "PRO" });
+    const monitor = await createMonitor(me, { name: "Nightly backup", type: "HEARTBEAT", interval: 3600, grace: 300 });
+    const call = adapter.createMonitor.mock.calls[0][1];
+    expect(call.pushToken).toMatch(/^[A-Za-z0-9]{32}$/);
+    // Kuma aralığı = beklenen aralık + tolerans
+    expect(call).toMatchObject({ type: "HEARTBEAT", interval: 3900, target: "heartbeat" });
+    expect(db.monitor.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ url: "heartbeat", interval: 3600, graceSeconds: 300, pingToken: call.pushToken }),
+    });
+    expect(monitor).toMatchObject({ id: "m1" });
+    expect(lookup).not.toHaveBeenCalled(); // heartbeat için DNS/SSRF denetimi gerekmez
+  });
+
+  it("her monitörün ping anahtarı farklıdır", async () => {
+    const me = uid();
+    db.user.findUnique.mockResolvedValue({ id: me, plan: "PRO" });
+    await createMonitor(me, { name: "a", type: "HEARTBEAT", interval: 3600 });
+    await createMonitor(me, { name: "b", type: "HEARTBEAT", interval: 3600 });
+    const [a, b] = adapter.createMonitor.mock.calls.map((c) => c[1].pushToken);
+    expect(a).not.toBe(b);
+  });
+
+  it("çok kısa süre reddedilir; diğer türlerde adres zorunludur ve 1 günden uzun aralık olmaz", async () => {
+    const me = uid();
+    db.user.findUnique.mockResolvedValue({ id: me, plan: "BUSINESS" });
+    await expect(createMonitor(me, { name: "x", type: "HEARTBEAT", interval: 45 })).rejects.toBeInstanceOf(ValidationError);
+    await expect(createMonitor(me, { name: "x", type: "HTTP", interval: 60 })).rejects.toBeInstanceOf(ValidationError);
+    await expect(createMonitor(me, { name: "x", type: "HTTP", url: "https://example.com", interval: 200_000 })).rejects.toBeInstanceOf(ValidationError);
+  });
+
+  it("Free planda heartbeat süresi plan alt sınırının altına inemez", async () => {
+    const me = uid();
+    db.user.findUnique.mockResolvedValue({ id: me, plan: "FREE" });
+    await expect(createMonitor(me, { name: "x", type: "HEARTBEAT", interval: 60 })).rejects.toMatchObject({ limit: "interval" });
+  });
+});
+
+describe("yeni bildirim kanalları doğrulaması", () => {
+  const make = (type: "DISCORD" | "TEAMS" | "TELEGRAM", config: object) => createNotificationChannel(uid(), { type, name: "ch", config });
+  beforeEach(() => {
+    db.user.findUnique.mockResolvedValue({ id: "u" });
+    db.notificationChannel.create.mockImplementation(async ({ data }) => ({ id: "c1", ...data }));
+  });
+
+  it("geçerli Discord, Teams ve Telegram ayarları kabul edilir ve şifreli saklanır", async () => {
+    await make("DISCORD", { webhookUrl: "https://discord.com/api/webhooks/123456789/abc_DEF-ghi" });
+    await make("TEAMS", { webhookUrl: "https://acme.webhook.office.com/webhookb2/abc/IncomingWebhook/def" });
+    await make("TELEGRAM", { botToken: "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef-_", chatId: "@mychannel" });
+    for (const c of db.notificationChannel.create.mock.calls) {
+      expect(JSON.stringify(c[0].data.config)).not.toMatch(/discord|office|telegram|ABCDEF/i);
+    }
+  });
+
+  it("tanınmayan sağlayıcı adresleri ve geçersiz Telegram bilgileri reddedilir", async () => {
+    await expect(make("DISCORD", { webhookUrl: "https://evil.com/api/webhooks/1/x" })).rejects.toBeInstanceOf(ValidationError);
+    await expect(make("DISCORD", { webhookUrl: "http://discord.com/api/webhooks/1/x" })).rejects.toBeInstanceOf(ValidationError);
+    await expect(make("TEAMS", { webhookUrl: "https://webhook.office.com.evil.com/x" })).rejects.toBeInstanceOf(ValidationError);
+    await expect(make("TELEGRAM", { botToken: "nope", chatId: "1" })).rejects.toBeInstanceOf(ValidationError);
+    await expect(make("TELEGRAM", { botToken: "123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZabcdef-_", chatId: "bad chat" })).rejects.toBeInstanceOf(ValidationError);
+  });
+});

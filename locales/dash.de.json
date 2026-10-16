@@ -24,7 +24,9 @@
       "saved": "Gespeichert.",
       "seconds": "{n} Sek.",
       "minutes": "{n} Min.",
-      "optional": "optional"
+      "optional": "optional",
+      "hours": "{n} Std.",
+      "days": "{n} T."
     },
     "status": {
       "up": "Online",
@@ -68,7 +70,25 @@
       "recentChecks": "Letzte Prüfungen",
       "noChecks": "Noch keine Prüfungen.",
       "usage": "{used} von {limit} Monitoren genutzt",
-      "types": { "HTTP": "HTTP(s)", "KEYWORD": "HTTP-Stichwort", "PING": "Ping", "PORT": "TCP-Port", "DNS": "DNS" }
+      "types": {
+        "HTTP": "HTTP(s)",
+        "KEYWORD": "HTTP-Stichwort",
+        "PING": "Ping",
+        "PORT": "TCP-Port",
+        "DNS": "DNS",
+        "HEARTBEAT": "Heartbeat (Cron-Job)"
+      },
+      "heartbeatHelp": "Für Cron-Jobs, Backups und geplante Aufgaben. Wir benachrichtigen dich, wenn ein Ping nicht rechtzeitig eintrifft.",
+      "period": "Erwartet alle",
+      "grace": "Toleranzzeit",
+      "graceHelp": "Wie spät ein Ping eintreffen darf, bevor du benachrichtigt wirst.",
+      "pingUrl": "Ping-URL",
+      "pingUrlHelp": "Rufe diese URL bei jedem Lauf deines Jobs auf. Mit /fail meldest du sofort einen Fehler.",
+      "example": "Beispiel (Shell / Cron)",
+      "lastPing": "Letzter Ping",
+      "neverPinged": "Noch kein Ping empfangen",
+      "keepSecret": "Halte diese URL geheim: Wer sie kennt, kann Pings senden.",
+      "noGrace": "Keine"
     },
     "statusPages": {
       "title": "Statusseiten",
@@ -105,7 +125,17 @@
       "testFailed": "Der Test konnte nicht zugestellt werden.",
       "verifyOk": "E-Mail bestätigt. Benachrichtigungen werden jetzt dorthin gesendet.",
       "verifyInvalid": "Dieser Bestätigungslink ist ungültig oder abgelaufen.",
-      "types": { "EMAIL": "E-Mail", "SMS": "SMS", "SLACK": "Slack", "WEBHOOK": "Webhook" }
+      "types": {
+        "EMAIL": "E-Mail",
+        "SMS": "SMS",
+        "SLACK": "Slack",
+        "WEBHOOK": "Webhook",
+        "DISCORD": "Discord",
+        "TELEGRAM": "Telegram",
+        "TEAMS": "Microsoft Teams"
+      },
+      "botToken": "Telegram-Bot-Token",
+      "chatId": "Telegram-Chat-ID oder @Kanal"
     },
     "settings": {
       "title": "Einstellungen",

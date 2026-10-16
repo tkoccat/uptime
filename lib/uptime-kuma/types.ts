@@ -1,7 +1,7 @@
 // Uptime Kuma soyutlama katmanının ortak tipleri.
 // SEÇENEK B'ye (kullanıcı başına instance) geçmek için yalnızca yeni bir UptimeKumaAdapter yazmak yeterlidir.
 
-export type MonitorKind = "HTTP" | "KEYWORD" | "PING" | "PORT" | "DNS";
+export type MonitorKind = "HTTP" | "KEYWORD" | "PING" | "PORT" | "DNS" | "HEARTBEAT";
 
 export type KumaMonitorInput = {
   name: string;
@@ -11,6 +11,8 @@ export type KumaMonitorInput = {
   // Kontrol aralığı (saniye)
   interval: number;
   keyword?: string;
+  // HEARTBEAT: Kuma push anahtarı (uygulamamızın ping adresindeki gizli parça)
+  pushToken?: string;
 };
 
 export type HeartbeatStatus = "up" | "down" | "pending" | "maintenance";

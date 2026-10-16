@@ -1,4 +1,5 @@
 import type { MonitorType, NotificationType, Plan } from "@prisma/client";
+import { randomInt } from "node:crypto";
 import { z } from "zod";
 import { encrypt } from "./crypto";
 import { NotFoundError, ValidationError } from "./errors";
@@ -19,13 +20,32 @@ import type { Heartbeat, MonitorKind } from "./uptime-kuma/types";
 // Her fonksiyon önce kaydın çağıran kullanıcıya ait olduğunu veritabanından doğrular.
 // Başkasının kaydı "bulunamadı" olarak döner (varlığı sızdırılmaz).
 
-const monitorSchema = z.object({
-  name: z.string().trim().min(1).max(100),
-  url: z.string().trim().min(1).max(2048),
-  type: z.enum(["HTTP", "KEYWORD", "PING", "PORT", "DNS"]),
-  interval: z.number().int().min(30).max(86400),
-  keyword: z.string().trim().max(200).optional(),
-});
+const monitorSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100),
+    // HEARTBEAT için adres gerekmez (ping adresini biz üretiriz)
+    url: z.string().trim().max(2048).default(""),
+    type: z.enum(["HTTP", "KEYWORD", "PING", "PORT", "DNS", "HEARTBEAT"]),
+    // HTTP/PING/PORT/DNS: kontrol aralığı; HEARTBEAT: işin beklenen çalışma sıklığı (en çok 7 gün)
+    interval: z.number().int().min(30).max(7 * 86400),
+    keyword: z.string().trim().max(200).optional(),
+    // HEARTBEAT: gecikme toleransı (saniye)
+    grace: z.number().int().min(0).max(86400).default(0),
+  })
+  .superRefine((v, ctx) => {
+    if (v.type === "HEARTBEAT") {
+      if (v.interval < 60) ctx.addIssue({ code: "custom", path: ["interval"], message: "Heartbeat period must be at least 60 seconds" });
+    } else {
+      if (!v.url) ctx.addIssue({ code: "custom", path: ["url"], message: "Address is required" });
+      if (v.interval > 86400) ctx.addIssue({ code: "custom", path: ["interval"], message: "Check interval is too long" });
+    }
+  });
+
+// 32 karakterlik rastgele alfanümerik anahtar (Kuma push anahtarı biçimi)
+const ALPHANUM = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+export function newPingToken(): string {
+  return Array.from({ length: 32 }, () => ALPHANUM[randomInt(ALPHANUM.length)]).join("");
+}
 
 export type MonitorInput = z.input<typeof monitorSchema>;
 
@@ -76,15 +96,20 @@ export async function createMonitor(userId: string, input: MonitorInput) {
   const count = await prisma.monitor.count({ where: { userId } });
   const limits = await getLimits(user.plan);
   assertMonitorQuota(user.plan, count, limits);
+  const heartbeat = data.type === "HEARTBEAT";
+  // Plan alt sınırı kontrol aralığına uygulanır; heartbeat için "beklenen çalışma sıklığı" sayılır (daha seyrek olması serbesttir)
   assertIntervalAllowed(user.plan, data.interval, limits);
-  await validateTarget(data.type, data.url);
+  if (!heartbeat) await validateTarget(data.type, data.url);
 
+  const pingToken = heartbeat ? newPingToken() : undefined;
   const { kumaId } = await getAdapter().createMonitor(userId, {
     name: data.name,
-    target: data.url,
+    target: heartbeat ? "heartbeat" : data.url,
     type: data.type,
-    interval: data.interval,
+    // Heartbeat: Kuma, beklenen aralık + tolerans içinde ping gelmezse çöktü sayar
+    interval: heartbeat ? data.interval + data.grace : data.interval,
     keyword: data.keyword,
+    pushToken: pingToken,
   });
 
   try {
@@ -93,9 +118,11 @@ export async function createMonitor(userId: string, input: MonitorInput) {
         userId,
         uptimeKumaMonitorId: kumaId,
         name: data.name,
-        url: data.url,
+        url: heartbeat ? "heartbeat" : data.url,
         type: data.type as MonitorType,
         interval: data.interval,
+        pingToken,
+        graceSeconds: heartbeat ? data.grace : 0,
       },
     });
     await logUsage(userId, "monitor.create", { monitorId: monitor.id });
@@ -141,6 +168,15 @@ const channelSchemas = {
   SLACK: z.object({ webhookUrl: z.string().startsWith("https://hooks.slack.com/") }),
   WEBHOOK: z.object({ url: z.string().url() }),
   SMS: z.object({ phone: z.string().regex(/^\+[1-9]\d{6,14}$/, "E.164 format required") }),
+  // Yalnızca bilinen sağlayıcı adresleri kabul edilir: gizli bilgi içeren adreslere rastgele sunucu yazılamaz
+  DISCORD: z.object({ webhookUrl: z.string().regex(/^https:\/\/(?:discord|discordapp)\.com\/api\/webhooks\/\d+\/[\w-]+$/, "Discord webhook URL required") }),
+  TEAMS: z.object({
+    webhookUrl: z.string().regex(/^https:\/\/[a-z0-9.-]+\.(?:webhook\.office\.com|logic\.azure\.com|environment\.api\.powerplatform\.com)\/.+$/i, "Microsoft Teams webhook URL required"),
+  }),
+  TELEGRAM: z.object({
+    botToken: z.string().regex(/^\d{5,}:[A-Za-z0-9_-]{30,}$/, "Telegram bot token required"),
+    chatId: z.string().regex(/^(?:-?\d{1,20}|@[A-Za-z0-9_]{5,32})$/, "Telegram chat id required"),
+  }),
 } as const;
 
 export async function createNotificationChannel(

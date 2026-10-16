@@ -65,6 +65,7 @@ export async function createMonitorAction(fd: FormData) {
       type: str(fd, "type") as "HTTP",
       interval: Number(str(fd, "interval")),
       keyword: str(fd, "keyword") || undefined,
+      grace: str(fd, "grace") ? Number(str(fd, "grace")) : 0,
     });
   });
 }
@@ -117,15 +118,18 @@ async function sendVerificationEmail(userId: string, locale: string, channelId: 
 
 export async function createChannelAction(fd: FormData) {
   const user = await requireUser();
-  const type = str(fd, "type") as "EMAIL" | "SMS" | "SLACK" | "WEBHOOK";
+  const type = str(fd, "type") as "EMAIL" | "SMS" | "SLACK" | "WEBHOOK" | "DISCORD" | "TELEGRAM" | "TEAMS";
+  // Her tür yalnızca kendi alanlarını kullanır; formdaki diğer alanlar yok sayılır
   const config =
     type === "EMAIL"
       ? { email: str(fd, "email") }
-      : type === "SLACK"
-        ? { webhookUrl: str(fd, "webhookUrl") }
-        : type === "WEBHOOK"
-          ? { url: str(fd, "webhookUrl") }
-          : { phone: str(fd, "phone") };
+      : type === "WEBHOOK"
+        ? { url: str(fd, "webhookUrl") }
+        : type === "SLACK" || type === "DISCORD" || type === "TEAMS"
+          ? { webhookUrl: str(fd, "webhookUrl") }
+          : type === "TELEGRAM"
+            ? { botToken: str(fd, "botToken").trim(), chatId: str(fd, "chatId").trim() }
+            : { phone: str(fd, "phone") };
 
   await run("/dashboard/notifications", async () => {
     const channel = await createNotificationChannel(user.id, { type, name: str(fd, "name"), config });

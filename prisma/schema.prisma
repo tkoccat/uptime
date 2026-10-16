@@ -33,6 +33,8 @@ enum MonitorType {
   PING
   PORT
   DNS
+  // Cron/heartbeat: izlenen iş belirli aralıkta ping atar, atmazsa uyarı gelir
+  HEARTBEAT
 }
 
 enum NotificationType {
@@ -40,6 +42,9 @@ enum NotificationType {
   SMS
   SLACK
   WEBHOOK
+  DISCORD
+  TELEGRAM
+  TEAMS
 }
 
 model User {
@@ -113,6 +118,12 @@ model Monitor {
   createdAt           DateTime    @default(now())
   // Günlük uptime özetinin en son işlendiği zaman
   lastRollupAt        DateTime?
+  // HEARTBEAT monitörlerinde ping adresinin gizli parçası (Kuma push anahtarı olarak da kullanılır)
+  pingToken           String?     @unique
+  // HEARTBEAT için tolerans süresi (saniye): beklenen aralığa eklenir, bu süre aşılırsa "çöktü" sayılır
+  graceSeconds        Int         @default(0)
+  // HEARTBEAT: son ping zamanı (panelde "son ping" göstermek için)
+  lastPingAt          DateTime?
 
   user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   statusPages StatusPage[]

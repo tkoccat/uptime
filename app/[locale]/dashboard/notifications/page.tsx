@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { createChannelAction, deleteChannelAction, testChannelAction } from "../actions";
 
-const TYPES = ["EMAIL", "SLACK", "WEBHOOK", "SMS"] as const;
+const TYPES = ["EMAIL", "SLACK", "DISCORD", "TELEGRAM", "TEAMS", "WEBHOOK", "SMS"] as const;
 
 export default async function NotificationsPage({
   params: { locale },
@@ -103,6 +103,14 @@ export default async function NotificationsPage({
           <div className="space-y-1">
             <Label htmlFor="cslack">{t("webhookUrl")}</Label>
             <Input id="cslack" name="webhookUrl" type="url" />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="cbot">{t("botToken")}</Label>
+            <Input id="cbot" name="botToken" autoComplete="off" />
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor="cchat">{t("chatId")}</Label>
+            <Input id="cchat" name="chatId" autoComplete="off" />
           </div>
           <div className="space-y-1">
             <Label htmlFor="cphone">{t("phone")}</Label>

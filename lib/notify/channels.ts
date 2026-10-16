@@ -10,7 +10,7 @@ export type AlertPayload = {
   time: string;
 };
 
-type ChannelSecrets = { email?: string; webhookUrl?: string; url?: string; phone?: string };
+type ChannelSecrets = { email?: string; webhookUrl?: string; url?: string; phone?: string; botToken?: string; chatId?: string };
 
 export function readChannelConfig(channel: Pick<NotificationChannel, "config">): ChannelSecrets {
   const enc = (channel.config as { enc?: string } | null)?.enc;
@@ -36,6 +36,35 @@ export async function sendToExternalChannel(channel: NotificationChannel, payloa
   switch (channel.type) {
     case "SLACK":
       await post(cfg.webhookUrl!, { text: `*${payload.title}*\n${payload.text}` });
+      return;
+    case "DISCORD":
+      await post(cfg.webhookUrl!, { content: `**${payload.title}**\n${payload.text}`.slice(0, 1900) });
+      return;
+    case "TEAMS":
+      // Uyarlanabilir kart: hem Teams Workflows hem eski gelen webhook biçiminde çalışır
+      await post(cfg.webhookUrl!, {
+        type: "message",
+        attachments: [
+          {
+            contentType: "application/vnd.microsoft.card.adaptive",
+            content: {
+              type: "AdaptiveCard",
+              version: "1.4",
+              body: [
+                { type: "TextBlock", text: payload.title, weight: "Bolder", wrap: true },
+                { type: "TextBlock", text: payload.text, wrap: true },
+              ],
+            },
+          },
+        ],
+      });
+      return;
+    case "TELEGRAM":
+      await post(`https://api.telegram.org/bot${cfg.botToken}/sendMessage`, {
+        chat_id: cfg.chatId,
+        text: `${payload.title}\n${payload.text}`.slice(0, 4000),
+        disable_web_page_preview: true,
+      });
       return;
     case "WEBHOOK": {
       // Gönderim anında tekrar doğrula: kayıttan sonra DNS iç adrese çevrilmiş olabilir

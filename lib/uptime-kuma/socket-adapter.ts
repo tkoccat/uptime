@@ -13,6 +13,7 @@ const KUMA_TYPE: Record<MonitorKind, string> = {
   PING: "ping",
   PORT: "port",
   DNS: "dns",
+  HEARTBEAT: "push",
 };
 
 const WEBHOOK_NOTIFICATION_NAME = "saas-alert-webhook";
@@ -98,6 +99,8 @@ export class SocketUptimeKumaAdapter implements UptimeKumaAdapter {
       hostname,
       port,
       keyword: input.keyword ?? "",
+      // Push (heartbeat) monitörü: Kuma bu anahtara gelen istekleri bekler, gelmezse çöktü sayar
+      pushToken: input.pushToken,
       interval: input.interval,
       retryInterval: input.interval,
       resendInterval: 0,

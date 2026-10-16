@@ -24,7 +24,9 @@
       "saved": "Saved.",
       "seconds": "{n} sec",
       "minutes": "{n} min",
-      "optional": "optional"
+      "optional": "optional",
+      "hours": "{n} h",
+      "days": "{n} d"
     },
     "status": {
       "up": "Up",
@@ -68,7 +70,25 @@
       "recentChecks": "Recent checks",
       "noChecks": "No checks yet.",
       "usage": "{used} of {limit} monitors used",
-      "types": { "HTTP": "HTTP(s)", "KEYWORD": "HTTP keyword", "PING": "Ping", "PORT": "TCP port", "DNS": "DNS" }
+      "types": {
+        "HTTP": "HTTP(s)",
+        "KEYWORD": "HTTP keyword",
+        "PING": "Ping",
+        "PORT": "TCP port",
+        "DNS": "DNS",
+        "HEARTBEAT": "Heartbeat (cron job)"
+      },
+      "heartbeatHelp": "For cron jobs, backups and scheduled tasks. We alert you when a ping does not arrive on time.",
+      "period": "Expected every",
+      "grace": "Grace time",
+      "graceHelp": "How late a ping may arrive before you are alerted.",
+      "pingUrl": "Ping URL",
+      "pingUrlHelp": "Call this URL every time your job runs. Add /fail to report a failure right away.",
+      "example": "Example (shell / cron)",
+      "lastPing": "Last ping",
+      "neverPinged": "No ping received yet",
+      "keepSecret": "Keep this URL secret: anyone who has it can send pings.",
+      "noGrace": "None"
     },
     "statusPages": {
       "title": "Status pages",
@@ -105,7 +125,17 @@
       "testFailed": "The test could not be delivered.",
       "verifyOk": "Email confirmed. Alerts will now be sent there.",
       "verifyInvalid": "This confirmation link is invalid or has expired.",
-      "types": { "EMAIL": "Email", "SMS": "SMS", "SLACK": "Slack", "WEBHOOK": "Webhook" }
+      "types": {
+        "EMAIL": "Email",
+        "SMS": "SMS",
+        "SLACK": "Slack",
+        "WEBHOOK": "Webhook",
+        "DISCORD": "Discord",
+        "TELEGRAM": "Telegram",
+        "TEAMS": "Microsoft Teams"
+      },
+      "botToken": "Telegram bot token",
+      "chatId": "Telegram chat ID or @channel"
     },
     "settings": {
       "title": "Settings",

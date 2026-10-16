@@ -47,6 +47,7 @@ export default async function MonitorDetailPage({
   const last = history[history.length - 1];
   const status: DisplayStatus = !monitor.isActive ? "paused" : (last?.status ?? "unknown");
   const fmt = new Intl.DateTimeFormat(user.locale, { dateStyle: "short", timeStyle: "medium", timeZone: user.timezone });
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
 
   return (
     <>
@@ -58,10 +59,26 @@ export default async function MonitorDetailPage({
           <h1 className="text-2xl font-semibold">{monitor.name}</h1>
           <StatusBadge status={status} />
         </div>
-        <p className="break-all text-sm text-muted-foreground">{monitor.url}</p>
+        <p className="break-all text-sm text-muted-foreground">
+          {monitor.type === "HEARTBEAT" ? t("types.HEARTBEAT") : monitor.url}
+        </p>
       </div>
 
       <Flash error={searchParams.error} ok={searchParams.ok} />
+
+      {monitor.type === "HEARTBEAT" && monitor.pingToken && (
+        <section className="space-y-3 rounded-lg border p-4">
+          <h2 className="text-lg font-semibold">{t("pingUrl")}</h2>
+          <code className="block break-all rounded bg-muted p-2 text-sm">{`${appUrl}/api/ping/${monitor.pingToken}`}</code>
+          <p className="text-sm text-muted-foreground">{t("pingUrlHelp")}</p>
+          <p className="text-xs font-medium">{t("example")}</p>
+          <pre className="overflow-x-auto rounded bg-muted p-2 text-xs">{`# success\ncurl -fsS -m 10 --retry 3 ${appUrl}/api/ping/${monitor.pingToken}\n\n# failure\ncurl -fsS -m 10 --retry 3 ${appUrl}/api/ping/${monitor.pingToken}/fail`}</pre>
+          <p className="text-xs text-muted-foreground">
+            {t("lastPing")}: {monitor.lastPingAt ? fmt.format(monitor.lastPingAt) : t("neverPinged")} · {t("period")}: {monitor.interval}s · {t("grace")}: {monitor.graceSeconds}s
+          </p>
+          <p className="text-xs text-muted-foreground">{t("keepSecret")}</p>
+        </section>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>

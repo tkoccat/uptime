@@ -24,7 +24,9 @@
       "saved": "Kaydedildi.",
       "seconds": "{n} sn",
       "minutes": "{n} dk",
-      "optional": "isteğe bağlı"
+      "optional": "isteğe bağlı",
+      "hours": "{n} sa",
+      "days": "{n} gün"
     },
     "status": {
       "up": "Çalışıyor",
@@ -68,7 +70,25 @@
       "recentChecks": "Son kontroller",
       "noChecks": "Henüz kontrol yok.",
       "usage": "{limit} monitörün {used} tanesi kullanıldı",
-      "types": { "HTTP": "HTTP(s)", "KEYWORD": "HTTP anahtar kelime", "PING": "Ping", "PORT": "TCP port", "DNS": "DNS" }
+      "types": {
+        "HTTP": "HTTP(s)",
+        "KEYWORD": "HTTP anahtar kelime",
+        "PING": "Ping",
+        "PORT": "TCP port",
+        "DNS": "DNS",
+        "HEARTBEAT": "Heartbeat (cron işi)"
+      },
+      "heartbeatHelp": "Cron işleri, yedeklemeler ve zamanlanmış görevler için. Ping zamanında gelmezse sizi uyarırız.",
+      "period": "Beklenen sıklık",
+      "grace": "Tolerans süresi",
+      "graceHelp": "Uyarı gelmeden önce ping en fazla ne kadar geç gelebilir.",
+      "pingUrl": "Ping adresi",
+      "pingUrlHelp": "İşiniz her çalıştığında bu adresi çağırın. Hemen hata bildirmek için sonuna /fail ekleyin.",
+      "example": "Örnek (shell / cron)",
+      "lastPing": "Son ping",
+      "neverPinged": "Henüz ping alınmadı",
+      "keepSecret": "Bu adresi gizli tutun: adresi bilen herkes ping gönderebilir.",
+      "noGrace": "Yok"
     },
     "statusPages": {
       "title": "Durum sayfaları",
@@ -105,7 +125,17 @@
       "testFailed": "Test iletilemedi.",
       "verifyOk": "E-posta doğrulandı. Uyarılar artık oraya gönderilecek.",
       "verifyInvalid": "Bu doğrulama bağlantısı geçersiz veya süresi dolmuş.",
-      "types": { "EMAIL": "E-posta", "SMS": "SMS", "SLACK": "Slack", "WEBHOOK": "Webhook" }
+      "types": {
+        "EMAIL": "E-posta",
+        "SMS": "SMS",
+        "SLACK": "Slack",
+        "WEBHOOK": "Webhook",
+        "DISCORD": "Discord",
+        "TELEGRAM": "Telegram",
+        "TEAMS": "Microsoft Teams"
+      },
+      "botToken": "Telegram bot anahtarı",
+      "chatId": "Telegram sohbet kimliği veya @kanal"
     },
     "settings": {
       "title": "Ayarlar",

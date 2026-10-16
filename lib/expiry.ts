@@ -121,8 +121,8 @@ export async function getExpiryInfo(monitor: {
 }): Promise<ExpiryInfo> {
   if (monitor.type !== "HTTP" && monitor.type !== "KEYWORD") return { cert: null, domain: null };
   const cached: ExpiryInfo = { cert: monitor.certExpiresAt, domain: monitor.domainExpiresAt };
-  // Her iki bilgi de varsa 12 saat; eksik varsa (geçici hata olabilir) 30 dakika sonra tekrar denenir
-  const ttl = cached.cert && cached.domain ? STALE_MS : 30 * 60_000;
+  // Her iki bilgi de varsa 12 saat; eksik varsa (geçici hata olabilir) 5 dakika sonra tekrar denenir
+  const ttl = cached.cert && cached.domain ? STALE_MS : 5 * 60_000;
   if (monitor.expiryCheckedAt && Date.now() - monitor.expiryCheckedAt.getTime() < ttl) return cached;
 
   let host: string;

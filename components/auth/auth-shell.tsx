@@ -1,5 +1,5 @@
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { authMessage, detectLocale } from "@/lib/auth/messages";
 
 type Props = {
   title: string;
@@ -10,10 +10,12 @@ type Props = {
 };
 
 // Tüm giriş/kayıt sayfalarının ortak çerçevesi
-export function AuthShell({ title, description, error, info, children }: Props) {
-  const locale = detectLocale();
-  const errorText = authMessage(error, locale);
-  const infoText = authMessage(info, locale);
+export async function AuthShell({ title, description, error, info, children }: Props) {
+  const te = await getTranslations("Auth.errors");
+  const ti = await getTranslations("Auth.info");
+  // Bilinmeyen kodlar "unknown" mesajına düşer (URL'den gelen değere güvenilmez)
+  const errorText = error ? (te.has(error) ? te(error) : te("unknown")) : null;
+  const infoText = info && ti.has(info) ? ti(info) : null;
 
   return (
     <main className="flex min-h-screen items-center justify-center p-4">

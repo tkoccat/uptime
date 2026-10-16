@@ -1,10 +1,14 @@
-import { faqs } from "@/lib/marketing/content";
+import { getTranslations } from "next-intl/server";
+import type { Faq as FaqItem } from "@/lib/marketing/content";
 
 // Ek JS gerektirmeyen, erişilebilir SSS (details/summary)
-export function Faq() {
+export async function Faq() {
+  const t = await getTranslations("Faq");
+  const items = t.raw("items") as FaqItem[];
+
   return (
     <div className="mx-auto max-w-3xl divide-y rounded-lg border">
-      {faqs.map((item) => (
+      {items.map((item) => (
         <details key={item.q} className="group p-4">
           <summary className="cursor-pointer list-none font-medium marker:hidden">
             <span className="mr-2 text-primary group-open:hidden">+</span>

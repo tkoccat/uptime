@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { H2, LegalPage, UL } from "@/components/legal/legal-page";
+import { Link } from "@/i18n/navigation";
 import { company } from "@/lib/company";
 
 export const metadata: Metadata = { title: "Privacy Policy" };

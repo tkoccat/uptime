@@ -1,14 +1,17 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/marketing/language-switcher";
+import { Link } from "@/i18n/navigation";
 import { company } from "@/lib/company";
 
-const nav = [
-  { href: "/features", label: "Features" },
-  { href: "/pricing", label: "Pricing" },
-  { href: "/alternatives/uptime-kuma", label: "Self-hosted vs hosted" },
-];
+export async function SiteHeader() {
+  const t = await getTranslations("Nav");
+  const nav = [
+    { href: "/features", label: t("features") },
+    { href: "/pricing", label: t("pricing") },
+    { href: "/alternatives/uptime-kuma", label: t("selfHosted") },
+  ] as const;
 
-export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
@@ -23,11 +26,12 @@ export function SiteHeader() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <Button asChild variant="ghost" size="sm">
-            <Link href="/login">Sign in</Link>
+            <Link href="/login">{t("signIn")}</Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/register">Start free</Link>
+            <Link href="/register">{t("startFree")}</Link>
           </Button>
         </div>
       </div>

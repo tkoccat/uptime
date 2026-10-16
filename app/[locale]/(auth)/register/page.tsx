@@ -1,39 +1,49 @@
-import Link from "next/link";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthShell } from "@/components/auth/auth-shell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "@/i18n/navigation";
 import { signInWithGoogle, signUp } from "../actions";
 
-export default function RegisterPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function RegisterPage({
+  params: { locale },
+  searchParams,
+}: {
+  params: { locale: string };
+  searchParams: { error?: string };
+}) {
+  setRequestLocale(locale);
+  const t = await getTranslations("Auth");
+
   return (
-    <AuthShell title="Create your account" description="Start free, no credit card required." error={searchParams.error}>
+    <AuthShell title={t("registerTitle")} description={t("registerDescription")} error={searchParams.error}>
       <form action={signUp} className="space-y-3">
         <div className="space-y-1">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">{t("email")}</Label>
           <Input id="email" name="email" type="email" autoComplete="email" required />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">{t("password")}</Label>
           <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} required />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="confirm">Confirm password</Label>
+          <Label htmlFor="confirm">{t("confirmPassword")}</Label>
           <Input id="confirm" name="confirm" type="password" autoComplete="new-password" minLength={8} required />
         </div>
         <Button type="submit" className="w-full">
-          Create account
+          {t("registerButton")}
         </Button>
       </form>
       <form action={signInWithGoogle}>
         <Button type="submit" variant="outline" className="w-full">
-          Continue with Google
+          {t("google")}
         </Button>
       </form>
       <p className="text-sm">
-        Already have an account?{" "}
+        {t("haveAccount")}{" "}
         <Link href="/login" className="underline">
-          Sign in
+          {t("signInButton")}
         </Link>
       </p>
     </AuthShell>

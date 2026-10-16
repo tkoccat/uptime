@@ -1,0 +1,248 @@
+{
+  "Meta": {
+    "title": "Surveillance de sites web pour indie hackers et petites équipes",
+    "template": "%s | Uptime SaaS",
+    "description": "Surveillance de disponibilité hébergée, propulsée par Uptime Kuma. Pages de statut, alertes et API, sans gérer de serveurs."
+  },
+  "Nav": {
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "selfHosted": "Auto-hébergé vs hébergé",
+    "signIn": "Se connecter",
+    "startFree": "Commencer gratuitement",
+    "language": "Langue"
+  },
+  "Footer": {
+    "company": "{legalName}, N° de société : {companyNumber}, immatriculée en {jurisdiction}, Adresse : {address}",
+    "compare": "Comparer",
+    "vs": "vs {name}",
+    "legal": "Mentions légales",
+    "terms": "CGU",
+    "privacy": "Confidentialité",
+    "cookies": "Cookies",
+    "refunds": "Remboursements",
+    "dpa": "DPA",
+    "subProcessors": "Sous-traitants"
+  },
+  "Home": {
+    "heroTitle": "Surveillance de sites web pour indie hackers et petites équipes",
+    "heroSub": "La puissance d'Uptime Kuma, avec la simplicité d'un SaaS.",
+    "heroCta": "Commencer gratuitement — sans carte bancaire",
+    "trust": [
+      "Basé sur le moteur open source Uptime Kuma",
+      "Exploité par une société immatriculée au Royaume-Uni",
+      "Conforme RGPD, DPA signé disponible",
+      "Résiliable à tout moment"
+    ],
+    "problemTitle": "Vous avez installé Uptime Kuma. Nous l'exploitons maintenant pour vous.",
+    "problemSolution": [
+      {
+        "problem": "Vous avez installé Uptime Kuma, mais les mises à jour n'en finissent pas",
+        "solution": "Nous maintenons le moteur à jour et corrigé pour vous."
+      },
+      {
+        "problem": "Sauvegardes, renouvellements SSL et entretien du serveur dévorent vos week-ends",
+        "solution": "Sauvegardes, certificats et infrastructure sont pris en charge pour vous."
+      },
+      {
+        "problem": "Une sonde hébergée sur le serveur qu'elle surveille tombe en même temps que lui",
+        "solution": "Les vérifications s'exécutent depuis une infrastructure distincte : une panne de votre côté est quand même détectée."
+      }
+    ],
+    "featuresTitle": "Tout ce qu'il faut pour rester en ligne",
+    "pricingTitle": "Des forfaits simples et abordables",
+    "faqTitle": "Questions fréquentes"
+  },
+  "Features": {
+    "metaTitle": "Fonctionnalités",
+    "metaDescription": "Alertes, pages de statut, API et webhooks, propulsés par le moteur open source Uptime Kuma.",
+    "title": "Fonctionnalités",
+    "subtitle": "Tout ce qu'il faut savoir quand quelque chose tombe en panne.",
+    "items": [
+      { "title": "Vérifications multi-régions", "body": "Vérifiez votre site depuis plusieurs emplacements pour qu'une simple coupure réseau ne vous réveille pas." },
+      { "title": "Alertes SMS, e-mail et Slack", "body": "Soyez prévenu là où vous travaillez déjà, dès qu'une sonde tombe ou revient." },
+      { "title": "Pages de statut publiques", "body": "Publiez une page de statut claire sur votre sous-domaine ou domaine personnalisé, avec 90 jours d'historique de disponibilité." },
+      { "title": "API REST", "body": "Créez et gérez vos sondes depuis vos propres scripts et pipelines de déploiement." },
+      { "title": "Webhooks", "body": "Envoyez les événements d'incident à tout service acceptant une requête HTTP." },
+      { "title": "Collaboration d'équipe", "body": "Partagez sondes et pages de statut avec vos collègues avec le forfait Business." }
+    ]
+  },
+  "Pricing": {
+    "metaTitle": "Tarifs",
+    "metaDescription": "Forfaits de surveillance simples et abordables. Commencez gratuitement, évoluez en grandissant.",
+    "title": "Tarifs",
+    "subtitle": "Commencez gratuitement. Passez au niveau supérieur quand il vous faut des vérifications plus rapides et plus de sondes.",
+    "faqTitle": "Questions sur les tarifs",
+    "billingPeriod": "Période de facturation",
+    "monthly": "Mensuel",
+    "yearly": "Annuel",
+    "save": "économisez 20 %",
+    "perMonth": "/mois",
+    "perYear": "/an",
+    "forever": "pour toujours",
+    "vat": "Prix en GBP. La TVA est ajoutée le cas échéant.",
+    "plans": {
+      "free": {
+        "name": "Free",
+        "tagline": "Pour les projets annexes et les sites de loisir.",
+        "features": ["5 sondes", "Vérifications toutes les 3 minutes", "Alertes par e-mail", "1 page de statut publique"],
+        "cta": "Commencer gratuitement"
+      },
+      "pro": {
+        "name": "Pro",
+        "tagline": "Pour les indie hackers et les produits en croissance.",
+        "features": [
+          "50 sondes",
+          "Vérifications chaque minute",
+          "Alertes e-mail, Slack et webhook",
+          "Pages de statut avec domaine personnalisé",
+          "Accès à l'API REST",
+          "14 jours d'essai gratuit"
+        ],
+        "cta": "Démarrer l'essai de 14 jours"
+      },
+      "business": {
+        "name": "Business",
+        "tagline": "Pour les petites équipes qui veulent des vérifications plus rapides.",
+        "features": ["200 sondes", "Vérifications toutes les 30 secondes", "Tout ce qui est dans Pro", "Collaboration d'équipe", "Support prioritaire"],
+        "cta": "Choisir Business"
+      }
+    }
+  },
+  "Faq": {
+    "items": [
+      { "q": "Qu'est-ce que ce service ?", "a": "Une plateforme de surveillance de disponibilité hébergée, construite autour du moteur open source Uptime Kuma. Vous vous inscrivez, ajoutez vos sites et recevez des alertes, sans rien installer ni maintenir." },
+      { "q": "Faut-il une carte bancaire pour commencer ?", "a": "Non. Le forfait Free n'en demande pas. L'essai Pro démarre aussi sans prélèvement avant la fin de l'essai ; si vous résiliez avant, vous ne payez rien." },
+      { "q": "En quoi est-ce différent d'auto-héberger Uptime Kuma ?", "a": "L'auto-hébergement donne un contrôle total, mais aussi l'entretien : mises à jour, sauvegardes, SSL et le risque de surveiller depuis le serveur même que l'on observe. Nous nous occupons de tout cela." },
+      { "q": "À quelle fréquence mes sites sont-ils vérifiés ?", "a": "Toutes les 3 minutes en Free, chaque minute en Pro et toutes les 30 secondes en Business." },
+      { "q": "Puis-je publier une page de statut pour mes clients ?", "a": "Oui. Chaque compte reçoit une page de statut sur notre sous-domaine, et Pro et Business peuvent utiliser leur propre domaine." },
+      { "q": "Quels canaux d'alerte sont pris en charge ?", "a": "E-mail, SMS, Slack et webhooks." },
+      { "q": "Puis-je changer ou annuler mon forfait ?", "a": "Oui, à tout moment depuis votre page de facturation. Les montées en gamme s'appliquent immédiatement et les résiliations prennent effet à la fin de la période de facturation." },
+      { "q": "Proposez-vous des remboursements ?", "a": "Oui. Consultez notre politique de remboursement pour le délai de 14 jours." },
+      { "q": "Où mes données sont-elles stockées et est-ce conforme au RGPD ?", "a": "Nous sommes une société britannique et traitons les données personnelles selon le RGPD britannique et européen. Un accord de traitement des données et la liste de nos sous-traitants sont disponibles sur demande." },
+      { "q": "Puis-je supprimer mon compte et mes données ?", "a": "Oui. Vous pouvez supprimer votre compte depuis les paramètres, ce qui supprime vos sondes et vos données de surveillance." }
+    ]
+  },
+  "FinalCta": {
+    "title": "Sachez que votre site est en panne avant vos utilisateurs",
+    "body": "Configurez votre première sonde en moins d'une minute.",
+    "cta": "Commencer gratuitement — sans carte bancaire"
+  },
+  "Compare": {
+    "us": "Nous",
+    "strongThey": "Les points forts de {name}",
+    "strongUs": "Nos points forts",
+    "whichTitle": "Lequel choisir ?",
+    "chooseThemLabel": "Choisissez {name} si",
+    "chooseUsLabel": "Choisissez-nous si",
+    "disclaimer": "La comparaison repose sur des informations publiques et peut évoluer. Consultez le site de chaque fournisseur pour les détails à jour.",
+    "items": {
+      "better-stack": {
+        "name": "Better Stack",
+        "headline": "Une alternative légère à Better Stack pour la surveillance de disponibilité",
+        "intro": "Better Stack regroupe surveillance, journaux, gestion des incidents et astreintes. Si vous n'avez besoin que de vérifications fiables et d'une page de statut, un outil ciblé peut être plus simple et moins cher.",
+        "theyGood": ["Plateforme large : disponibilité, journaux et gestion des incidents au même endroit", "Planification des astreintes et politiques d'escalade"],
+        "weGood": ["Forfaits simples et abordables pour particuliers et petites équipes", "Construit sur Uptime Kuma open source, sans dépendance à un moteur fermé", "Concentré sur les vérifications, alertes et pages de statut"],
+        "rows": [
+          { "label": "Priorité", "us": "Surveillance de disponibilité et pages de statut", "them": "Plateforme complète d'observabilité et d'incidents" },
+          { "label": "Moteur de surveillance", "us": "Uptime Kuma open source", "them": "Propriétaire" },
+          { "label": "Idéal pour", "us": "Indie hackers, petites équipes", "them": "Équipes ayant besoin d'astreintes et de journaux" }
+        ],
+        "chooseThem": "vous avez besoin de rotations d'astreinte, de gestion des journaux ou de workflows d'incident avancés.",
+        "chooseUs": "vous voulez des vérifications simples, des alertes et une page de statut à un prix mensuel réduit."
+      },
+      "uptimerobot": {
+        "name": "UptimeRobot",
+        "headline": "Une alternative à UptimeRobot basée sur Uptime Kuma open source",
+        "intro": "UptimeRobot est un outil de surveillance établi de longue date. Si vous voulez un moteur open source, des vérifications plus rapides sur les petits forfaits et une interface moderne, nous valons le coup d'œil.",
+        "theyGood": ["Longue expérience et large base d'utilisateurs", "Une offre gratuite bien connue"],
+        "weGood": ["Moteur open source que vous pourriez auto-héberger plus tard", "Intervalles de vérification courts sur des forfaits payants abordables", "Tableau de bord et pages de statut modernes"],
+        "rows": [
+          { "label": "Moteur de surveillance", "us": "Uptime Kuma open source", "them": "Propriétaire" },
+          { "label": "Option d'auto-hébergement", "us": "Oui, le moteur est open source", "them": "Non" },
+          { "label": "Idéal pour", "us": "Développeurs attachés à l'ouverture", "them": "Ceux qui veulent un outil familier et établi" }
+        ],
+        "chooseThem": "vous préférez un service établi de longue date et que son offre gratuite actuelle vous suffit.",
+        "chooseUs": "vous tenez à un moteur open source et à des forfaits payants modernes et abordables."
+      },
+      "cronitor": {
+        "name": "Cronitor",
+        "headline": "Une alternative à Cronitor pour la disponibilité des sites et des API",
+        "intro": "Cronitor excelle dans la surveillance des tâches cron et planifiées. Si votre but principal est de vérifier que sites et API sont joignables, un outil de disponibilité dédié convient plus directement.",
+        "theyGood": ["Surveillance de tâches cron et de heartbeats", "Outils orientés développeurs"],
+        "weGood": ["Surveillance de sites, API, ports et ping", "Pages de statut publiques incluses", "Tarifs simples pour les petits projets"],
+        "rows": [
+          { "label": "Priorité", "us": "Disponibilité des sites et API", "them": "Tâches cron et planifiées" },
+          { "label": "Pages de statut publiques", "us": "Incluses", "them": "Voir les forfaits actuels" },
+          { "label": "Moteur de surveillance", "us": "Uptime Kuma open source", "them": "Propriétaire" }
+        ],
+        "chooseThem": "votre besoin principal est de surveiller des tâches cron et des tâches de fond.",
+        "chooseUs": "votre besoin principal est de savoir quand vos sites et API sont en panne."
+      },
+      "uptime-kuma": {
+        "name": "Uptime Kuma auto-hébergé",
+        "headline": "Uptime Kuma auto-hébergé ou hébergé : lequel choisir ?",
+        "intro": "Uptime Kuma est un excellent logiciel, et nous l'utilisons comme moteur. La question est de savoir si vous voulez l'exploiter vous-même ou nous le confier.",
+        "theyGood": ["Contrôle total sur vos données et votre configuration", "Aucun abonnement en dehors de votre propre serveur"],
+        "weGood": ["Aucun serveur, mise à jour, sauvegarde ni renouvellement SSL à gérer", "Surveillance depuis une infrastructure distincte de la vôtre", "Pages de statut, alertes et facturation gérées au même endroit"],
+        "rows": [
+          { "label": "Mise en place", "us": "S'inscrire et démarrer", "them": "Provisionner un serveur et installer" },
+          { "label": "Maintenance", "us": "Prise en charge pour vous", "them": "Vous gérez mises à jour et sauvegardes" },
+          { "label": "Indépendance vis-à-vis de vos serveurs", "us": "Les vérifications tournent ailleurs", "them": "Dépend de votre hébergement" },
+          { "label": "Coût", "us": "Gratuit pour commencer ; forfaits payants dès 9 £/mois", "them": "Votre serveur et votre temps" }
+        ],
+        "chooseThem": "vous aimez exploiter votre propre infrastructure et voulez un contrôle complet.",
+        "chooseUs": "vous préférez consacrer votre temps à votre produit plutôt qu'à maintenir une sonde en vie."
+      }
+    }
+  },
+  "Auth": {
+    "signInTitle": "Se connecter",
+    "registerTitle": "Créer votre compte",
+    "registerDescription": "Commencez gratuitement, sans carte bancaire.",
+    "forgotTitle": "Réinitialiser votre mot de passe",
+    "forgotDescription": "Nous vous enverrons un lien de réinitialisation par e-mail.",
+    "resetTitle": "Choisir un nouveau mot de passe",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "newPassword": "Nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "signInButton": "Se connecter",
+    "registerButton": "Créer un compte",
+    "google": "Continuer avec Google",
+    "forgotLink": "Mot de passe oublié ?",
+    "createLink": "Créer un compte",
+    "haveAccount": "Vous avez déjà un compte ?",
+    "sendReset": "Envoyer le lien",
+    "backToSignIn": "Retour à la connexion",
+    "updatePassword": "Mettre à jour le mot de passe",
+    "errors": {
+      "invalid_credentials": "E-mail ou mot de passe incorrect.",
+      "email_not_confirmed": "Veuillez vérifier votre e-mail avant de vous connecter.",
+      "user_already_exists": "Un compte existe déjà avec cet e-mail.",
+      "weak_password": "Le mot de passe doit contenir au moins 8 caractères.",
+      "password_mismatch": "Les mots de passe ne correspondent pas.",
+      "rate_limited": "Trop de tentatives. Veuillez réessayer plus tard.",
+      "missing_fields": "Veuillez remplir tous les champs.",
+      "callback_failed": "Le lien est invalide ou a expiré.",
+      "unknown": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "info": {
+      "check_email": "Consultez votre e-mail pour continuer.",
+      "password_updated": "Votre mot de passe a été mis à jour."
+    }
+  },
+  "Cookie": {
+    "dialogLabel": "Préférences de cookies",
+    "text": "Nous utilisons des cookies essentiels pour faire fonctionner le site. Avec votre accord, nous utilisons aussi des cookies d'analyse et de publicité.",
+    "policy": "Politique de cookies",
+    "reject": "Refuser les non essentiels",
+    "accept": "Tout accepter",
+    "change": "Modifier les préférences de cookies"
+  },
+  "Dashboard": {
+    "title": "Tableau de bord",
+    "signedInAs": "Connecté en tant que {email}",
+    "signOut": "Se déconnecter"
+  }
+}

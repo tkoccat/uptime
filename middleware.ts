@@ -1,11 +1,17 @@
+import createIntlMiddleware from "next-intl/middleware";
 import type { NextRequest } from "next/server";
+import { routing } from "@/i18n/routing";
 import { updateSession } from "@/lib/supabase/middleware";
 
+const intlMiddleware = createIntlMiddleware(routing);
+
 export async function middleware(request: NextRequest) {
-  return updateSession(request);
+  // Önce dil yönlendirmesi, sonra Supabase oturum yenileme ve rota koruması
+  const response = intlMiddleware(request);
+  return updateSession(request, response);
 }
 
 export const config = {
-  // Statik dosyalar ve görseller hariç tüm yollar
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
+  // API, auth callback, Next iç dosyaları ve uzantılı statik dosyalar hariç
+  matcher: ["/((?!api|auth|_next|_vercel|.*\\..*).*)"],
 };

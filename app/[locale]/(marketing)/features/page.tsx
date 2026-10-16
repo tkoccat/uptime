@@ -1,20 +1,25 @@
 import type { Metadata } from "next";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FinalCta } from "@/components/marketing/final-cta";
-import { features } from "@/lib/marketing/content";
+import type { FeatureItem } from "@/lib/marketing/content";
 
-export const metadata: Metadata = {
-  title: "Features",
-  description: "Alerts, status pages, an API and webhooks, powered by the open-source Uptime Kuma engine.",
-};
+export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
+  const t = await getTranslations({ locale: params.locale, namespace: "Features" });
+  return { title: t("metaTitle"), description: t("metaDescription") };
+}
 
-export default function FeaturesPage() {
+export default async function FeaturesPage({ params: { locale } }: { params: { locale: string } }) {
+  setRequestLocale(locale);
+  const t = await getTranslations("Features");
+  const features = t.raw("items") as FeatureItem[];
+
   return (
     <main>
       <section className="mx-auto max-w-6xl space-y-8 px-4 py-20">
         <div className="space-y-2 text-center">
-          <h1 className="text-4xl font-bold">Features</h1>
-          <p className="text-muted-foreground">Everything you need to know when something breaks.</p>
+          <h1 className="text-4xl font-bold">{t("title")}</h1>
+          <p className="text-muted-foreground">{t("subtitle")}</p>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (

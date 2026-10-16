@@ -45,6 +45,16 @@ hukuki danışmanlık değildir. Yayına almadan önce:
 4. `npm run legal:dpa` ile PDF'i yeniden üretin.
 5. İnceleme bitince `.env.local` içine `LEGAL_REVIEWED=true` ekleyin; sayfalardaki taslak uyarısı kalkar.
 
+## Çoklu dil (i18n)
+
+next-intl ile 4 dil: İngilizce (varsayılan, `/`), Almanca (`/de`), Fransızca (`/fr`), Türkçe (`/tr`).
+Metinler `locales/{en,de,fr,tr}.json` içindedir; yeni metin eklerken dört dosyayı birlikte güncelleyin.
+Rotalar `app/[locale]/` altındadır, yönlendirme ve link için `@/i18n/navigation` kullanılır.
+Kayıt olan kullanıcının dili Supabase kullanıcı verisine ve `User.locale` alanına yazılır.
+
+- Yasal sayfalar (`/terms`, `/privacy` vb.) avukat incelemesinden sonra çevrilecek; şimdilik tüm dillerde İngilizce gösterilir.
+- Almanca, Fransızca ve Türkçe metinler yapay zekâ ile hazırlanmıştır; yayından önce ana dili konuşan biri okumalıdır.
+
 ## Çerez onayı
 
 `lib/consent.ts` onay durumunu `cookie_consent` çerezinde tutar. Google Ads ve Meta Pixel betikleri

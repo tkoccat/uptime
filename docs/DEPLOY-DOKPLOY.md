@@ -35,7 +35,8 @@ Dosyalar: [`Dockerfile`](../Dockerfile), [`docker/docker-compose.yml`](../docker
 
 ## 3. Uptime Kuma
 
-Compose içindeki `uptime-kuma` servisi, Dokploy'da zaten çalışan örneğin aynısıdır. İki seçenek:
+Compose içindeki `uptime-kuma` servisi, Dokploy'da zaten çalışan örneğin aynısıdır ve **varsayılan olarak kapalıdır**
+(profil `kuma`; açmak için ortam değişkeni `COMPOSE_PROFILES=kuma`). İki seçenek:
 
 - **Mevcut örneği kullan (önerilir):** compose'tan `uptime-kuma` servisini silin, `UPTIME_KUMA_URL`'i mevcut adrese
   (örn. `http://185.97.146.46:3001`) ayarlayın. Kuma'nın uygulamaya webhook gönderebilmesi için

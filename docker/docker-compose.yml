@@ -122,9 +122,11 @@ services:
       retries: 10
 
   # Dokploy'daki mevcut kurulumla aynı: değiştirilmedi
+  # Varsayılan olarak KAPALI (profil "kuma"): yığınla birlikte çalıştırmak için COMPOSE_PROFILES=kuma verin
+  # ve UPTIME_KUMA_URL'i boş bırakın. Aksi halde UPTIME_KUMA_URL ile harici bir Kuma kullanılır.
   uptime-kuma:
     image: louislam/uptime-kuma:2
-    container_name: uptime-kuma
+    profiles: ["kuma"]
     restart: unless-stopped
     volumes:
       - uptime-kuma-data:/app/data

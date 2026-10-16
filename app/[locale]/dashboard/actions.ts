@@ -79,6 +79,13 @@ export async function updateMonitorAction(fd: FormData) {
   });
 }
 
+// Panel dil seçici: seçilen dil hesap diline de yazılır (e-posta bildirimleri bu dilde gelir)
+export async function setLocalePreferenceAction(locale: string): Promise<void> {
+  const user = await requireUser();
+  if (!isLocale(locale) || locale === user.locale) return;
+  await prisma.user.update({ where: { id: user.id }, data: { locale } });
+}
+
 // --- Planlı bakım ---
 
 export async function createMaintenanceAction(fd: FormData) {

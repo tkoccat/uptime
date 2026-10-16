@@ -1,40 +1,40 @@
-import type { Metadata } from "next";
-import { baseUrl, Callout, Code, DocTitle, H2, Table } from "@/components/docs/doc";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { baseUrl, Callout, Code, docMetadata, DocTitle, H2, rich, Table } from "@/components/docs/doc";
 
-export const metadata: Metadata = { title: "REST API", description: "Manage monitors from your own scripts with the REST API." };
+export const generateMetadata = ({ params: { locale } }: { params: { locale: string } }) => docMetadata(locale, "api");
 
-export default function ApiDoc() {
+export default async function ApiDoc({ params: { locale } }: { params: { locale: string } }) {
+  setRequestLocale(locale);
+  const t = await getTranslations("Docs.api");
   const base = baseUrl();
 
   return (
     <>
-      <DocTitle lead="Create, list and delete monitors from deployment scripts and CI. Available on Pro and Business plans.">REST API</DocTitle>
+      <DocTitle lead={t("lead")}>{t("title")}</DocTitle>
 
-      <H2>Authentication</H2>
-      <p>
-        Create a key under <strong>Dashboard → API</strong>. The key is shown once; we store only a hash. Send it as a bearer token:
-      </p>
+      <H2>{t("hAuth")}</H2>
+      <p>{t.rich("auth", rich)}</p>
       <Code>{`Authorization: Bearer upk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`}</Code>
-      <Callout tone="warning">Treat keys like passwords. Revoke a key from the same page if it leaks. Keys stop working if the account is downgraded to a plan without API access.</Callout>
+      <Callout tone="warning">{t("authWarn")}</Callout>
 
-      <H2>Base URL and format</H2>
+      <H2>{t("hBase")}</H2>
       <p>
-        <code>{base}/api/v1</code>. Requests and responses are JSON. Successful responses wrap the result in <code>data</code>; errors use <code>error</code>.
+        <code>{base}/api/v1</code>. {t.rich("base", rich)}
       </p>
 
-      <H2>Endpoints</H2>
+      <H2>{t("hEndpoints")}</H2>
       <Table
-        head={["Method", "Path", "Description"]}
+        head={[t("epHead.method"), t("epHead.path"), t("epHead.desc")]}
         rows={[
-          ["GET", "/monitors", "List your monitors."],
-          ["POST", "/monitors", "Create a monitor."],
-          ["GET", "/monitors/{id}", "Latest status of a monitor."],
-          ["DELETE", "/monitors/{id}", "Delete a monitor and its history."],
+          ["GET", "/monitors", t("epList")],
+          ["POST", "/monitors", t("epCreate")],
+          ["GET", "/monitors/{id}", t("epGet")],
+          ["DELETE", "/monitors/{id}", t("epDelete")],
         ]}
       />
 
-      <H2>Create a monitor</H2>
-      <Code title="Request">{`curl -X POST ${base}/api/v1/monitors \\
+      <H2>{t("hCreate")}</H2>
+      <Code title={t("request")}>{`curl -X POST ${base}/api/v1/monitors \\
   -H "Authorization: Bearer $API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -44,17 +44,17 @@ export default function ApiDoc() {
     "interval": 60
   }'`}</Code>
       <Table
-        head={["Field", "Type", "Notes"]}
+        head={[t("fieldHead.field"), t("fieldHead.type"), t("fieldHead.notes")]}
         rows={[
-          ["name", "string", "1 to 100 characters. Required."],
-          ["type", "string", "HTTP, KEYWORD, PING, PORT, DNS or HEARTBEAT. Required."],
-          ["url", "string", "Address to check. Not used for HEARTBEAT. PORT uses host:port."],
-          ["interval", "integer", "Seconds between checks (HEARTBEAT: how often the job should run). Limited by your plan."],
-          ["keyword", "string", "KEYWORD only: text that must appear in the response."],
-          ["grace", "integer", "HEARTBEAT only: seconds a ping may be late. Default 0."],
+          ["name", "string", t("fName")],
+          ["type", "string", t("fType")],
+          ["url", "string", t("fUrl")],
+          ["interval", "integer", t("fInterval")],
+          ["keyword", "string", t("fKeyword")],
+          ["grace", "integer", t("fGrace")],
         ]}
       />
-      <Code title="Response (201)">{`{
+      <Code title={t("response201")}>{`{
   "data": {
     "id": "clx9k2m0a0001",
     "name": "Production site",
@@ -65,12 +65,10 @@ export default function ApiDoc() {
     "createdAt": "2026-10-16T10:00:00.000Z"
   }
 }`}</Code>
-      <p>
-        For <code>HEARTBEAT</code> monitors the response also contains <code>pingUrl</code>, the URL your job should request.
-      </p>
+      <p>{t.rich("pingUrlNote", rich)}</p>
 
-      <H2>Latest status</H2>
-      <Code title="Response">{`{
+      <H2>{t("hStatus")}</H2>
+      <Code title={t("response")}>{`{
   "data": {
     "id": "clx9k2m0a0001",
     "status": "up",          // up | down | pending | maintenance
@@ -80,24 +78,22 @@ export default function ApiDoc() {
   }
 }`}</Code>
 
-      <H2>Errors</H2>
+      <H2>{t("hErrors")}</H2>
       <Code>{`{ "error": { "code": "plan_limit", "message": "Your FREE plan allows up to 5 monitors. Upgrade to add more." } }`}</Code>
       <Table
-        head={["Status", "Code", "Meaning"]}
+        head={[t("errHead.status"), t("errHead.code"), t("errHead.meaning")]}
         rows={[
-          ["400", "validation", "Invalid or unsafe input, for example a private address."],
-          ["401", "unauthorized", "Missing, invalid or revoked API key."],
-          ["402", "plan_limit", "Your plan does not allow this (monitor count, check interval, API access)."],
-          ["403", "suspended", "The account is suspended."],
-          ["404", "not_found", "No such monitor (monitors of other accounts are never visible)."],
-          ["429", "rate_limited", "Too many requests. Wait for the number of seconds in the Retry-After header."],
+          ["400", "validation", t("e400")],
+          ["401", "unauthorized", t("e401")],
+          ["402", "plan_limit", t("e402")],
+          ["403", "suspended", t("e403")],
+          ["404", "not_found", t("e404")],
+          ["429", "rate_limited", t("e429")],
         ]}
       />
 
-      <H2>Rate limits</H2>
-      <p>
-        Each API key may make 60 requests per minute. Creating and deleting monitors is also limited to 30 operations per minute per account.
-      </p>
+      <H2>{t("hRate")}</H2>
+      <p>{t("rate")}</p>
     </>
   );
 }

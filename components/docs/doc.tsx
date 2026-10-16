@@ -1,26 +1,63 @@
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 import { Link } from "@/i18n/navigation";
 
-// Dokümantasyon sayfalarının ortak bileşenleri (dokümanlar İngilizcedir)
+// Dok?mantasyon sayfalar?n?n ortak bile?enleri. Metinler locales/docs.<dil>.json i?indedir (Docs ad alan?).
 
 export const DOC_NAV = [
-  { href: "/docs", title: "Getting started" },
-  { href: "/docs/monitors", title: "Monitors" },
-  { href: "/docs/heartbeat", title: "Cron job monitoring" },
-  { href: "/docs/alerts", title: "Alerts & integrations" },
-  { href: "/docs/status-pages", title: "Status pages & badges" },
-  { href: "/docs/api", title: "REST API" },
+  { href: "/docs", key: "getting" },
+  { href: "/docs/monitors", key: "monitors" },
+  { href: "/docs/heartbeat", key: "heartbeat" },
+  { href: "/docs/alerts", key: "alerts" },
+  { href: "/docs/status-pages", key: "statusPages" },
+  { href: "/docs/api", key: "api" },
 ] as const;
 
-export function DocLayout({ children }: { children: React.ReactNode }) {
+const link = (href: string) => {
+  const LinkTag = (chunks: ReactNode) => (
+    <Link href={href} className="underline">
+      {chunks}
+    </Link>
+  );
+  return LinkTag;
+};
+
+/** ?eviri metinlerindeki etiketler: <b> <em> <code> ve sayfa ba?lant?lar? (t.rich ile kullan?l?r). */
+export const rich = {
+  b: (c: ReactNode) => <strong>{c}</strong>,
+  em: (c: ReactNode) => <em>{c}</em>,
+  code: (c: ReactNode) => <code>{c}</code>,
+  monitorsLink: link("/docs/monitors"),
+  heartbeatLink: link("/docs/heartbeat"),
+  statusLink: link("/docs/status-pages"),
+  apiLink: link("/docs/api"),
+  faqLink: link("/faq"),
+  contactLink: link("/contact"),
+  registerLink: link("/register"),
+  pricingLink: link("/pricing"),
+};
+
+/** Durum sayfas? adreslerindeki alan ad? (?rnek metinlerde g?sterilir). */
+export const statusDomain = () => process.env.NEXT_PUBLIC_STATUS_BASE_DOMAIN ?? "status.example.com";
+
+/** Sayfa ba?l???/a??klamas? i?in ortak generateMetadata g?vdesi. */
+export async function docMetadata(locale: string, ns: string): Promise<Metadata> {
+  const t = await getTranslations({ locale, namespace: `Docs.${ns}` });
+  return { title: t("metaTitle"), description: t("metaDesc") };
+}
+
+export async function DocLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("Docs.nav");
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-12 md:flex-row">
-      <nav aria-label="Documentation" className="md:w-56 md:shrink-0">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">Documentation</p>
+      <nav aria-label={t("label")} className="md:w-56 md:shrink-0">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("label")}</p>
         <ul className="flex gap-1 overflow-x-auto md:flex-col">
           {DOC_NAV.map((item) => (
             <li key={item.href}>
               <Link href={item.href} className="block whitespace-nowrap rounded-md px-3 py-2 text-sm hover:bg-secondary">
-                {item.title}
+                {t(item.key)}
               </Link>
             </li>
           ))}

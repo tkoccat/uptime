@@ -6,7 +6,9 @@ import { AnnouncementBar } from "@/components/site/announcement-bar";
 import { isAdminEmail } from "@/lib/admin/emails";
 import { getCompany } from "@/lib/site-config";
 import { requireUser } from "@/lib/auth/current-user";
+import { LanguageSwitcher } from "@/components/marketing/language-switcher";
 import { signOut } from "../(auth)/actions";
+import { setLocalePreferenceAction } from "./actions";
 
 // Oturuma bağlı içerik: hiçbir dashboard sayfası statik üretilmemeli veya önbelleğe alınmamalı
 export const dynamic = "force-dynamic";
@@ -33,7 +35,7 @@ export default async function DashboardLayout({
   const user = await requireUser(); // oturum yoksa girişe yönlendirir (middleware'e ek savunma)
   const t = await getTranslations("Dash.nav");
   const company = await getCompany();
-  const { Dash } = await getMessages();
+  const { Dash, Nav } = await getMessages();
 
   return (
     <>
@@ -52,6 +54,9 @@ export default async function DashboardLayout({
             </Link>
           ))}
         </nav>
+        <div className="mt-3 md:mt-4">
+          <LanguageSwitcher persist={setLocalePreferenceAction} />
+        </div>
         <div className="mt-6 hidden space-y-2 text-xs text-muted-foreground md:block">
           <p className="truncate">{user.email}</p>
           {isAdminEmail(user.email) && (
@@ -67,7 +72,7 @@ export default async function DashboardLayout({
         </div>
       </aside>
       {/* Panel formları istemci bileşeni olduğundan yalnızca Dash çevirileri istemciye verilir */}
-      <NextIntlClientProvider locale={locale} messages={{ Dash }}>
+      <NextIntlClientProvider locale={locale} messages={{ Dash, Nav }}>
         <div className="min-w-0 flex-1 space-y-6">{children}</div>
       </NextIntlClientProvider>
       </div>

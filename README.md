@@ -79,6 +79,17 @@ Pro ve Business planlarında, `Authorization: Bearer upk_...` ile (anahtarlar `/
 
 Anahtar başına dakikada 60 istek; aşımda `429` + `Retry-After`.
 
+## Cron/heartbeat izleme, rozetler, dokümanlar
+
+- **Heartbeat monitörleri:** Cron işi/yedek gibi görevler `https://<alan-adı>/api/ping/<anahtar>` adresini çağırır
+  (`/fail` eki anında hata bildirir). Ping'ler uygulamamızdan Kuma'nın push uç noktasına iletilir; Kuma adresi
+  kullanıcıya gösterilmez. Bkz. `lib/heartbeat.ts`, `app/api/ping`.
+- **Bildirim kanalları:** e-posta, Slack, Discord, Telegram, Microsoft Teams, webhook, SMS.
+- **Durum rozetleri:** `/api/badge/status/<slug>.svg` ve `/api/badge/uptime/<slug>.svg` (yalnızca herkese açık durum sayfaları).
+- **Dokümanlar:** `/docs` (başlangıç, monitörler, cron izleme, uyarılar, durum sayfaları, REST API), ayrıca `/about`,
+  `/contact`, `/security`, `/faq`. Dokümanlar, hakkında ve güvenlik sayfaları yalnızca İngilizcedir.
+- **SEO:** `sitemap.xml`, `robots.txt`, `icon.svg` ve paylaşım görseli (`/opengraph-image`) otomatik üretilir.
+
 ## Yönetim paneli (`/admin`)
 
 `ADMIN_EMAIL` ortam değişkenindeki e-posta ile giriş yapınca (birden fazla yönetici için virgülle ayırın) panele

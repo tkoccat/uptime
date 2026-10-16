@@ -10,7 +10,11 @@
     "selfHosted": "Kendi sunucun mu, barındırılan mı?",
     "signIn": "Giriş yap",
     "startFree": "Ücretsiz başla",
-    "language": "Dil"
+    "language": "Dil",
+    "docs": "Dokümanlar",
+    "about": "Hakkımızda",
+    "menu": "Menü",
+    "theme": "Karanlık modu aç/kapat"
   },
   "Footer": {
     "company": "{legalName}, Şirket No: {companyNumber}, {jurisdiction}'da kayıtlı, Adres: {address}",
@@ -22,7 +26,19 @@
     "cookies": "Çerezler",
     "refunds": "İadeler",
     "dpa": "DPA",
-    "subProcessors": "Alt işleyiciler"
+    "subProcessors": "Alt işleyiciler",
+    "product": "Ürün",
+    "resources": "Kaynaklar",
+    "features": "Özellikler",
+    "pricing": "Fiyatlandırma",
+    "docs": "Dokümantasyon",
+    "api": "REST API",
+    "faq": "SSS",
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "security": "Güvenlik",
+    "status": "Heartbeat izleme",
+    "companyTitle": "Şirket"
   },
   "Home": {
     "heroTitle": "Bağımsız geliştiriciler ve küçük ekipler için web sitesi izleme",
@@ -51,7 +67,44 @@
     ],
     "featuresTitle": "Çevrimiçi kalmak için ihtiyacın olan her şey",
     "pricingTitle": "Basit, uygun fiyatlı planlar",
-    "faqTitle": "Sık sorulan sorular"
+    "faqTitle": "Sık sorulan sorular",
+    "heroDocs": "Dokümantasyonu oku",
+    "howTitle": "Üç adımda hazır",
+    "steps": [
+      {
+        "title": "İzlenecek şeyi ekle",
+        "body": "Bir URL yapıştır, sunucu ve port seç ya da cron işi için heartbeat oluştur."
+      },
+      {
+        "title": "Uyarıların nereye gideceğini seç",
+        "body": "E-posta, Slack, Discord, Telegram, Microsoft Teams, webhook veya SMS."
+      },
+      {
+        "title": "Durum sayfası paylaş",
+        "body": "Müşterilerine 90 günlük uptime ve olay geçmişi içeren herkese açık bir sayfa ver."
+      }
+    ],
+    "useCasesTitle": "Çalışmak zorunda olan her şeyi izle",
+    "useCases": [
+      {
+        "title": "Web siteleri ve API'ler",
+        "body": "Ağınızın dışından kontroller; yüklenip yanlış içerik gösteren sayfaları yakalamak için anahtar kelime eşleştirme."
+      },
+      {
+        "title": "Sunucular ve servisler",
+        "body": "Kullanıcılar fark etmeden önce sorunları bulmak için sunucuları pingleyin, TCP portlarını test edin, DNS adlarını çözün."
+      },
+      {
+        "title": "Cron işleri ve zamanlanmış görevler",
+        "body": "Yedekler, raporlar ve senkronizasyonlar çalıştıklarında bize ping atar. Ping gelmezse uyarılırsınız."
+      },
+      {
+        "title": "Müşteriler için durum sayfaları",
+        "body": "Gerçek uptime'ınızı kendi alan adınızda, gömülebilir durum rozetleriyle yayınlayın."
+      }
+    ],
+    "integrationsTitle": "Uyarılar zaten çalıştığınız yerde",
+    "integrationsSub": "İhtiyacınız kadar kanal bağlayın. Her uyarı neyin ne zaman bozulduğunu söyler."
   },
   "Features": {
     "metaTitle": "Özellikler",
@@ -137,7 +190,25 @@
       "trial": "{n} gün ücretsiz deneme",
       "off": "Mevcut değil"
     },
-    "saveN": "%{n} tasarruf"
+    "saveN": "%{n} tasarruf",
+    "compareTitle": "Planları karşılaştır",
+    "compare": {
+      "feature": "Özellik",
+      "monitors": "Monitör",
+      "interval": "En hızlı kontrol",
+      "statusPages": "Durum sayfası",
+      "customDomain": "Durum sayfası için özel alan adı",
+      "api": "REST API",
+      "trial": "Ücretsiz deneme",
+      "always": "Her planda dahil",
+      "heartbeat": "Cron işi (heartbeat) monitörleri",
+      "channels": "E-posta, Slack, Discord, Telegram, Teams ve webhook uyarıları",
+      "badges": "Durum rozetleri",
+      "yes": "Evet",
+      "no": "Hayır",
+      "none": "Yok"
+    },
+    "faqTitle2": "Faturalama soruları"
   },
   "Faq": {
     "items": [
@@ -387,5 +458,43 @@
     "title": "Panel",
     "signedInAs": "{email} olarak giriş yapıldı",
     "signOut": "Çıkış yap"
+  },
+  "PricingFaq": {
+    "items": [
+      {
+        "q": "Yıllık faturalama var mı?",
+        "a": "Evet. Yıllık ödemek on iki aylık ödemeden daha ucuzdur; tasarruf aylık/yıllık seçicide gösterilir."
+      },
+      {
+        "q": "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
+        "a": "Stripe tarafından güvenle işlenen başlıca kredi ve banka kartları. Kart bilgilerinizi hiçbir zaman görmeyiz veya saklamayız."
+      },
+      {
+        "q": "KDV dahil mi?",
+        "a": "Fiyatlara KDV dahil değildir. Birleşik Krallık ve AB KDV'si ödeme sırasında konumunuza göre otomatik hesaplanır; işletmeler KDV numarası girebilir."
+      },
+      {
+        "q": "İstediğim zaman iptal edebilir miyim? İade var mı?",
+        "a": "Evet, faturalama sayfanızdan istediğiniz zaman iptal edin; ödediğiniz dönemin sonuna kadar erişiminiz sürer. Yeni ücretli abonelikler 14 gün içinde iade edilebilir; iade politikasına bakın."
+      },
+      {
+        "q": "Fatura alacak mıyım?",
+        "a": "Evet. Stripe her ödeme için e-posta ile makbuz gönderir ve faturalama sayfanızdaki müşteri portalından faturaları indirebilirsiniz."
+      },
+      {
+        "q": "Ödeme başarısız olursa ne olur?",
+        "a": "Ödemeyi yeniden deneriz ve size e-posta göndeririz. Üç başarısız denemeden sonra hesap Free plana geçer; Free limitini aşan monitörler silinmez, duraklatılır."
+      },
+      {
+        "q": "İndirim kodunuz var mı?",
+        "a": "Zaman zaman kampanyalar yapıyoruz. Kodunuz varsa ödeme sayfasında girebilirsiniz."
+      }
+    ]
+  },
+  "NotFound": {
+    "title": "Sayfa bulunamadı",
+    "body": "Aradığınız sayfa mevcut değil veya taşınmış.",
+    "home": "Ana sayfaya dön",
+    "docs": "Dokümantasyonu oku"
   }
 }

@@ -10,7 +10,11 @@
     "selfHosted": "Selbst gehostet vs. gehostet",
     "signIn": "Anmelden",
     "startFree": "Kostenlos starten",
-    "language": "Sprache"
+    "language": "Sprache",
+    "docs": "Doku",
+    "about": "Über uns",
+    "menu": "Menü",
+    "theme": "Dunkelmodus umschalten"
   },
   "Footer": {
     "company": "{legalName}, Firmennummer: {companyNumber}, eingetragen in {jurisdiction}, Adresse: {address}",
@@ -22,7 +26,19 @@
     "cookies": "Cookies",
     "refunds": "Erstattungen",
     "dpa": "AVV",
-    "subProcessors": "Unterauftragsverarbeiter"
+    "subProcessors": "Unterauftragsverarbeiter",
+    "product": "Produkt",
+    "resources": "Ressourcen",
+    "features": "Funktionen",
+    "pricing": "Preise",
+    "docs": "Dokumentation",
+    "api": "REST-API",
+    "faq": "FAQ",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "security": "Sicherheit",
+    "status": "Heartbeat-Monitoring",
+    "companyTitle": "Unternehmen"
   },
   "Home": {
     "heroTitle": "Website-Monitoring für Indie-Hacker und kleine Teams",
@@ -51,7 +67,44 @@
     ],
     "featuresTitle": "Alles, was du brauchst, um online zu bleiben",
     "pricingTitle": "Einfache, günstige Tarife",
-    "faqTitle": "Häufig gestellte Fragen"
+    "faqTitle": "Häufig gestellte Fragen",
+    "heroDocs": "Dokumentation lesen",
+    "howTitle": "In drei Schritten startklar",
+    "steps": [
+      {
+        "title": "Füge hinzu, was überwacht werden soll",
+        "body": "URL einfügen, Server und Port wählen oder einen Heartbeat für einen Cron-Job anlegen."
+      },
+      {
+        "title": "Wähle, wohin Benachrichtigungen gehen",
+        "body": "E-Mail, Slack, Discord, Telegram, Microsoft Teams, Webhooks oder SMS."
+      },
+      {
+        "title": "Teile eine Statusseite",
+        "body": "Gib Kunden eine öffentliche Seite mit 90 Tagen Verfügbarkeit und Vorfallsverlauf."
+      }
+    ],
+    "useCasesTitle": "Überwache alles, was laufen muss",
+    "useCases": [
+      {
+        "title": "Websites und APIs",
+        "body": "Prüfungen von außerhalb deines Netzwerks, mit Stichwortabgleich für Seiten, die laden, aber falsche Inhalte zeigen."
+      },
+      {
+        "title": "Server und Dienste",
+        "body": "Hosts anpingen, TCP-Ports testen und DNS-Namen auflösen, um Probleme vor deinen Nutzern zu finden."
+      },
+      {
+        "title": "Cron-Jobs und geplante Aufgaben",
+        "body": "Backups, Berichte und Synchronisierungen melden sich bei uns. Fehlt ein Ping, wirst du benachrichtigt."
+      },
+      {
+        "title": "Statusseiten für Kunden",
+        "body": "Veröffentliche deine echte Verfügbarkeit auf deiner eigenen Domain, mit einbettbaren Status-Badges."
+      }
+    ],
+    "integrationsTitle": "Benachrichtigungen dort, wo du arbeitest",
+    "integrationsSub": "Verbinde so viele Kanäle, wie du brauchst. Jede Meldung sagt, was ausgefallen ist und wann."
   },
   "Features": {
     "metaTitle": "Funktionen",
@@ -137,7 +190,25 @@
       "trial": "{n} Tage kostenlos testen",
       "off": "Nicht verfügbar"
     },
-    "saveN": "{n} % sparen"
+    "saveN": "{n} % sparen",
+    "compareTitle": "Tarife im Vergleich",
+    "compare": {
+      "feature": "Funktion",
+      "monitors": "Monitore",
+      "interval": "Schnellste Prüfung",
+      "statusPages": "Statusseiten",
+      "customDomain": "Eigene Domain für Statusseiten",
+      "api": "REST-API",
+      "trial": "Kostenlose Testphase",
+      "always": "In jedem Tarif enthalten",
+      "heartbeat": "Cron-Job-(Heartbeat-)Monitore",
+      "channels": "E-Mail-, Slack-, Discord-, Telegram-, Teams- und Webhook-Benachrichtigungen",
+      "badges": "Status-Badges",
+      "yes": "Ja",
+      "no": "Nein",
+      "none": "Keine"
+    },
+    "faqTitle2": "Fragen zur Abrechnung"
   },
   "Faq": {
     "items": [
@@ -387,5 +458,43 @@
     "title": "Dashboard",
     "signedInAs": "Angemeldet als {email}",
     "signOut": "Abmelden"
+  },
+  "PricingFaq": {
+    "items": [
+      {
+        "q": "Gibt es jährliche Abrechnung?",
+        "a": "Ja. Jährlich zu zahlen ist günstiger als zwölf Monatszahlungen; die Ersparnis siehst du am Umschalter Monatlich/Jährlich."
+      },
+      {
+        "q": "Welche Zahlungsmethoden akzeptiert ihr?",
+        "a": "Gängige Kredit- und Debitkarten, sicher verarbeitet von Stripe. Wir sehen oder speichern deine Kartendaten nie."
+      },
+      {
+        "q": "Ist die Mehrwertsteuer enthalten?",
+        "a": "Die Preise verstehen sich ohne Mehrwertsteuer. Britische und EU-Mehrwertsteuer wird an der Kasse automatisch nach deinem Standort berechnet; Unternehmen können eine USt-IdNr. angeben."
+      },
+      {
+        "q": "Kann ich jederzeit kündigen? Gibt es Erstattungen?",
+        "a": "Ja, kündige jederzeit auf deiner Abrechnungsseite; du behältst den Zugang bis zum Ende des bezahlten Zeitraums. Neue bezahlte Abonnements können innerhalb von 14 Tagen erstattet werden; siehe Erstattungsrichtlinie."
+      },
+      {
+        "q": "Bekomme ich Rechnungen?",
+        "a": "Ja. Stripe sendet für jede Zahlung einen Beleg per E-Mail, und im Kundenportal auf deiner Abrechnungsseite kannst du Rechnungen herunterladen."
+      },
+      {
+        "q": "Was passiert, wenn eine Zahlung fehlschlägt?",
+        "a": "Wir versuchen die Zahlung erneut und schreiben dir. Nach drei fehlgeschlagenen Versuchen wechselt das Konto in den Free-Tarif; Monitore über dem Free-Limit werden pausiert, nie gelöscht."
+      },
+      {
+        "q": "Gibt es Rabattcodes?",
+        "a": "Gelegentlich gibt es Aktionen. Hast du einen Code, kannst du ihn auf der Bezahlseite eingeben."
+      }
+    ]
+  },
+  "NotFound": {
+    "title": "Seite nicht gefunden",
+    "body": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "home": "Zur Startseite",
+    "docs": "Dokumentation lesen"
   }
 }

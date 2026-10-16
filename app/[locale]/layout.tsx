@@ -29,11 +29,14 @@ export async function generateMetadata({ params }: { params: { locale: string } 
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
     title: { default: t("title"), template: t("template") },
     description: t("description"),
+    // Bağlantı paylaşımlarında görünen önizleme (görsel app/opengraph-image.tsx'ten gelir)
+    openGraph: { title: t("title"), description: t("description"), type: "website", locale: params.locale },
+    twitter: { card: "summary_large_image", title: t("title"), description: t("description") },
   };
 }
 
 // Sistem temasını (açık/koyu) ilk boyamadan önce uygular, yanıp sönmeyi önler
-const themeScript = `try{if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark')}}catch(e){}`;
+const themeScript = `try{var s=localStorage.getItem('theme');if(s==='dark'||(s!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}`;
 
 export default async function LocaleLayout({
   children,

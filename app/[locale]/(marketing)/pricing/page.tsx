@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Faq } from "@/components/marketing/faq";
 import { FinalCta } from "@/components/marketing/final-cta";
+import { PricingComparison, PricingFaq } from "@/components/marketing/pricing-extras";
 import { PricingSection } from "@/components/marketing/pricing-section";
 
 export async function generateMetadata({ params }: { params: { locale: string } }): Promise<Metadata> {
@@ -22,10 +22,8 @@ export default async function PricingPage({ params: { locale } }: { params: { lo
         </div>
         <PricingSection />
       </section>
-      <section className="mx-auto max-w-6xl space-y-8 px-4 pb-20">
-        <h2 className="text-center text-2xl font-bold">{t("faqTitle")}</h2>
-        <Faq />
-      </section>
+      <PricingComparison />
+      <PricingFaq />
       <FinalCta />
     </main>
   );

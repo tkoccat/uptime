@@ -37,5 +37,5 @@ export async function middleware(request: NextRequest) {
 export const config = {
   // API, auth callback, durum sayfası yolları, Next iç dosyaları ve uzantılı statik dosyalar hariç.
   // (Durum sayfası alan adlarının kök yolu "/" yine de buradan geçer ve yukarıda yeniden yazılır.)
-  matcher: ["/((?!api|auth|status|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|auth|status|_next|_vercel|opengraph-image|.*\\..*).*)"],
 };

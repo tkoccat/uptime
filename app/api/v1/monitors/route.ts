@@ -6,14 +6,29 @@ import { createMonitor } from "@/lib/uptimeKuma";
 
 export const runtime = "nodejs";
 
-const publicMonitor = (m: { id: string; name: string; url: string; type: string; interval: number; isActive: boolean; createdAt: Date }) => ({
+type PublicInput = {
+  id: string;
+  name: string;
+  url: string;
+  type: string;
+  interval: number;
+  isActive: boolean;
+  createdAt: Date;
+  pingToken?: string | null;
+};
+
+const appUrl = () => (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+
+// Heartbeat monitörlerinde işin çağıracağı ping adresi de döner
+const publicMonitor = (m: PublicInput) => ({
   id: m.id,
   name: m.name,
-  url: m.url,
+  url: m.type === "HEARTBEAT" ? null : m.url,
   type: m.type,
   interval: m.interval,
   active: m.isActive,
   createdAt: m.createdAt,
+  ...(m.type === "HEARTBEAT" && m.pingToken ? { pingUrl: `${appUrl()}/api/ping/${m.pingToken}` } : {}),
 });
 
 export async function GET(request: NextRequest) {

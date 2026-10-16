@@ -10,7 +10,11 @@
     "selfHosted": "Auto-hébergé vs hébergé",
     "signIn": "Se connecter",
     "startFree": "Commencer gratuitement",
-    "language": "Langue"
+    "language": "Langue",
+    "docs": "Doc",
+    "about": "À propos",
+    "menu": "Menu",
+    "theme": "Basculer le mode sombre"
   },
   "Footer": {
     "company": "{legalName}, N° de société : {companyNumber}, immatriculée en {jurisdiction}, Adresse : {address}",
@@ -22,7 +26,19 @@
     "cookies": "Cookies",
     "refunds": "Remboursements",
     "dpa": "DPA",
-    "subProcessors": "Sous-traitants"
+    "subProcessors": "Sous-traitants",
+    "product": "Produit",
+    "resources": "Ressources",
+    "features": "Fonctionnalités",
+    "pricing": "Tarifs",
+    "docs": "Documentation",
+    "api": "API REST",
+    "faq": "FAQ",
+    "about": "À propos",
+    "contact": "Contact",
+    "security": "Sécurité",
+    "status": "Surveillance heartbeat",
+    "companyTitle": "Entreprise"
   },
   "Home": {
     "heroTitle": "Surveillance de sites web pour indie hackers et petites équipes",
@@ -51,7 +67,44 @@
     ],
     "featuresTitle": "Tout ce qu'il faut pour rester en ligne",
     "pricingTitle": "Des forfaits simples et abordables",
-    "faqTitle": "Questions fréquentes"
+    "faqTitle": "Questions fréquentes",
+    "heroDocs": "Lire la documentation",
+    "howTitle": "Opérationnel en trois étapes",
+    "steps": [
+      {
+        "title": "Ajoutez ce qu'il faut surveiller",
+        "body": "Collez une URL, choisissez un serveur et un port, ou créez un heartbeat pour une tâche cron."
+      },
+      {
+        "title": "Choisissez où vont les alertes",
+        "body": "E-mail, Slack, Discord, Telegram, Microsoft Teams, webhooks ou SMS."
+      },
+      {
+        "title": "Partagez une page de statut",
+        "body": "Offrez à vos clients une page publique avec 90 jours de disponibilité et l'historique des incidents."
+      }
+    ],
+    "useCasesTitle": "Surveillez tout ce qui doit rester en marche",
+    "useCases": [
+      {
+        "title": "Sites web et API",
+        "body": "Vérifications depuis l'extérieur de votre réseau, avec recherche de mot-clé pour repérer les pages qui se chargent mais affichent le mauvais contenu."
+      },
+      {
+        "title": "Serveurs et services",
+        "body": "Pingez des hôtes, testez des ports TCP et résolvez des noms DNS pour trouver les problèmes avant vos utilisateurs."
+      },
+      {
+        "title": "Tâches cron et planifiées",
+        "body": "Sauvegardes, rapports et synchronisations nous envoient un ping. S'il manque, vous êtes alerté."
+      },
+      {
+        "title": "Pages de statut pour vos clients",
+        "body": "Publiez votre vraie disponibilité sur votre propre domaine, avec des badges de statut intégrables."
+      }
+    ],
+    "integrationsTitle": "Des alertes là où vous travaillez déjà",
+    "integrationsSub": "Connectez autant de canaux que nécessaire. Chaque alerte indique ce qui a échoué et quand."
   },
   "Features": {
     "metaTitle": "Fonctionnalités",
@@ -137,7 +190,25 @@
       "trial": "{n} jours d'essai gratuit",
       "off": "Non disponible"
     },
-    "saveN": "économisez {n} %"
+    "saveN": "économisez {n} %",
+    "compareTitle": "Comparer les forfaits",
+    "compare": {
+      "feature": "Fonctionnalité",
+      "monitors": "Sondes",
+      "interval": "Vérification la plus rapide",
+      "statusPages": "Pages de statut",
+      "customDomain": "Domaine personnalisé pour les pages de statut",
+      "api": "API REST",
+      "trial": "Essai gratuit",
+      "always": "Inclus dans tous les forfaits",
+      "heartbeat": "Sondes de tâches cron (heartbeat)",
+      "channels": "Alertes e-mail, Slack, Discord, Telegram, Teams et webhook",
+      "badges": "Badges de statut",
+      "yes": "Oui",
+      "no": "Non",
+      "none": "Aucun"
+    },
+    "faqTitle2": "Questions sur la facturation"
   },
   "Faq": {
     "items": [
@@ -387,5 +458,43 @@
     "title": "Tableau de bord",
     "signedInAs": "Connecté en tant que {email}",
     "signOut": "Se déconnecter"
+  },
+  "PricingFaq": {
+    "items": [
+      {
+        "q": "Proposez-vous une facturation annuelle ?",
+        "a": "Oui. Payer à l'année coûte moins cher que douze paiements mensuels ; l'économie est indiquée sur le sélecteur mensuel/annuel."
+      },
+      {
+        "q": "Quels moyens de paiement acceptez-vous ?",
+        "a": "Les principales cartes bancaires, traitées en toute sécurité par Stripe. Nous ne voyons ni ne stockons jamais vos données de carte."
+      },
+      {
+        "q": "La TVA est-elle incluse ?",
+        "a": "Les prix s'entendent hors TVA. La TVA britannique et européenne est calculée automatiquement au paiement selon votre localisation, et les entreprises peuvent saisir un numéro de TVA."
+      },
+      {
+        "q": "Puis-je résilier à tout moment ? Y a-t-il des remboursements ?",
+        "a": "Oui, résiliez à tout moment depuis votre page de facturation ; vous gardez l'accès jusqu'à la fin de la période payée. Les nouveaux abonnements payants peuvent être remboursés sous 14 jours ; voir la politique de remboursement."
+      },
+      {
+        "q": "Recevrai-je des factures ?",
+        "a": "Oui. Stripe envoie un reçu par e-mail pour chaque paiement et vous pouvez télécharger vos factures depuis le portail client de votre page de facturation."
+      },
+      {
+        "q": "Que se passe-t-il si un paiement échoue ?",
+        "a": "Nous réessayons le paiement et vous prévenons par e-mail. Après trois échecs, le compte passe au forfait Free ; les sondes au-delà de la limite Free sont mises en pause, jamais supprimées."
+      },
+      {
+        "q": "Avez-vous des codes de réduction ?",
+        "a": "Nous proposons parfois des promotions. Si vous avez un code, saisissez-le sur la page de paiement."
+      }
+    ]
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "body": "La page recherchée n'existe pas ou a été déplacée.",
+    "home": "Retour à l'accueil",
+    "docs": "Lire la documentation"
   }
 }

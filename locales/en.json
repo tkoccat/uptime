@@ -10,7 +10,11 @@
     "selfHosted": "Self-hosted vs hosted",
     "signIn": "Sign in",
     "startFree": "Start free",
-    "language": "Language"
+    "language": "Language",
+    "docs": "Docs",
+    "about": "About",
+    "menu": "Menu",
+    "theme": "Toggle dark mode"
   },
   "Footer": {
     "company": "{legalName}, Company No: {companyNumber}, Registered in {jurisdiction}, Address: {address}",
@@ -22,7 +26,19 @@
     "cookies": "Cookies",
     "refunds": "Refunds",
     "dpa": "DPA",
-    "subProcessors": "Sub-processors"
+    "subProcessors": "Sub-processors",
+    "product": "Product",
+    "resources": "Resources",
+    "features": "Features",
+    "pricing": "Pricing",
+    "docs": "Documentation",
+    "api": "REST API",
+    "faq": "FAQ",
+    "about": "About",
+    "contact": "Contact",
+    "security": "Security",
+    "status": "Heartbeat monitoring",
+    "companyTitle": "Company"
   },
   "Home": {
     "heroTitle": "Website monitoring for indie hackers and small teams",
@@ -51,7 +67,44 @@
     ],
     "featuresTitle": "Everything you need to stay online",
     "pricingTitle": "Simple, low-priced plans",
-    "faqTitle": "Frequently asked questions"
+    "faqTitle": "Frequently asked questions",
+    "heroDocs": "Read the docs",
+    "howTitle": "Up and running in three steps",
+    "steps": [
+      {
+        "title": "Add what to watch",
+        "body": "Paste a URL, pick a server and port, or create a heartbeat for a cron job."
+      },
+      {
+        "title": "Choose where alerts go",
+        "body": "Email, Slack, Discord, Telegram, Microsoft Teams, webhooks or SMS."
+      },
+      {
+        "title": "Share a status page",
+        "body": "Give customers a public page with 90-day uptime and incident history."
+      }
+    ],
+    "useCasesTitle": "Monitor everything that has to keep running",
+    "useCases": [
+      {
+        "title": "Websites and APIs",
+        "body": "Checks from outside your network, with keyword matching to catch pages that load but show the wrong content."
+      },
+      {
+        "title": "Servers and services",
+        "body": "Ping hosts, test TCP ports and resolve DNS names to find problems before users do."
+      },
+      {
+        "title": "Cron jobs and scheduled tasks",
+        "body": "Backups, reports and syncs ping us when they run. If a ping is missing, you are alerted."
+      },
+      {
+        "title": "Status pages for customers",
+        "body": "Publish your real uptime on your own domain, with embeddable status badges."
+      }
+    ],
+    "integrationsTitle": "Alerts where you already work",
+    "integrationsSub": "Connect as many channels as you need. Every alert says what failed and when."
   },
   "Features": {
     "metaTitle": "Features",
@@ -129,7 +182,7 @@
     },
     "feat": {
       "monitors": "{n} monitors",
-      "checkMinutes": "{n, plural, one {# minute checks} other {#-minute checks}}",
+      "checkMinutes": "{n}-minute checks",
       "checkSeconds": "{n}-second checks",
       "statusPages": "{n, plural, one {# public status page} other {# public status pages}}",
       "customDomain": "Status pages with custom domain",
@@ -137,7 +190,25 @@
       "trial": "{n}-day free trial",
       "off": "Not available"
     },
-    "saveN": "save {n}%"
+    "saveN": "save {n}%",
+    "compareTitle": "Compare plans",
+    "compare": {
+      "feature": "Feature",
+      "monitors": "Monitors",
+      "interval": "Fastest check",
+      "statusPages": "Status pages",
+      "customDomain": "Custom status page domain",
+      "api": "REST API",
+      "trial": "Free trial",
+      "always": "Included in every plan",
+      "heartbeat": "Cron job (heartbeat) monitors",
+      "channels": "Email, Slack, Discord, Telegram, Teams, webhook alerts",
+      "badges": "Status badges",
+      "yes": "Yes",
+      "no": "No",
+      "none": "None"
+    },
+    "faqTitle2": "Billing questions"
   },
   "Faq": {
     "items": [
@@ -387,5 +458,43 @@
     "title": "Dashboard",
     "signedInAs": "Signed in as {email}",
     "signOut": "Sign out"
+  },
+  "PricingFaq": {
+    "items": [
+      {
+        "q": "Do you offer yearly billing?",
+        "a": "Yes. Paying yearly costs less than twelve monthly payments; the saving is shown on the monthly/yearly toggle."
+      },
+      {
+        "q": "Which payment methods do you accept?",
+        "a": "Major credit and debit cards, processed securely by Stripe. We never see or store your card details."
+      },
+      {
+        "q": "Is VAT included?",
+        "a": "Prices exclude VAT. UK and EU VAT is calculated automatically at checkout based on your location, and businesses can enter a VAT ID."
+      },
+      {
+        "q": "Can I cancel any time? Do you give refunds?",
+        "a": "Yes, cancel from your Billing page at any time; you keep access until the end of the period you paid for. New paid subscriptions can be refunded within 14 days; see the refund policy."
+      },
+      {
+        "q": "Will I get invoices?",
+        "a": "Yes. Stripe emails a receipt for every payment and you can download invoices from the customer portal on your Billing page."
+      },
+      {
+        "q": "What happens if a payment fails?",
+        "a": "We retry the payment and email you. After three failed attempts the account moves to the Free plan; monitors above the Free limit are paused, never deleted."
+      },
+      {
+        "q": "Do you have discount codes?",
+        "a": "We occasionally run promotions. If you have a code, you can enter it on the checkout page."
+      }
+    ]
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "body": "The page you are looking for does not exist or has moved.",
+    "home": "Back to home",
+    "docs": "Read the docs"
   }
 }

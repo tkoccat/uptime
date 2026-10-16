@@ -144,7 +144,10 @@
       "sslCert": "Certificat SSL",
       "domainExpiry": "Expiration du domaine",
       "daysLeft": "{n} jours",
-      "expired": "Expir?"
+      "expired": "Expir?",
+      "notAvailableYet": "Pas encore lu",
+      "httpsOnly": "HTTPS uniquement",
+      "domainUnavailable": "Non publi? pour cette extension de domaine"
     },
     "statusPages": {
       "title": "Pages de statut",

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { daysUntil, parseRdapExpiry, registrableDomain } from "./expiry";
+import { daysUntil, parseBootstrap, parseRdapExpiry, registrableDomain } from "./expiry";
 
 describe("registrableDomain", () => {
   it("alt alan adlarını kök alan adına indirger", () => {
@@ -29,6 +29,21 @@ describe("parseRdapExpiry", () => {
     expect(parseRdapExpiry({ events: [{ eventAction: "expiration", eventDate: "nope" }] })).toBeNull();
     expect(parseRdapExpiry({})).toBeNull();
     expect(parseRdapExpiry(null)).toBeNull();
+  });
+});
+
+describe("parseBootstrap", () => {
+  it("uzantıları https RDAP sunucusuna eşler ve sondaki / ekler", () => {
+    const map = parseBootstrap({
+      services: [
+        [["com", "NET"], ["https://rdap.verisign.com/com/v1/"]],
+        [["io"], ["http://rdap.example.io/v1", "https://rdap.example.io/v1"]],
+      ],
+    });
+    expect(map.get("com")).toBe("https://rdap.verisign.com/com/v1/");
+    expect(map.get("net")).toBe("https://rdap.verisign.com/com/v1/");
+    expect(map.get("io")).toBe("https://rdap.example.io/v1/");
+    expect(map.get("tr")).toBeUndefined();
   });
 });
 

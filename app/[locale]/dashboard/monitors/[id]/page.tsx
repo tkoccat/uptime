@@ -82,10 +82,10 @@ export default async function MonitorDetailPage({
 
   const dateFmt = new Intl.DateTimeFormat(user.locale, { dateStyle: "medium", timeZone: user.timezone });
   // Bitiş kutusu: tarih + kalan gün; 14 günden az kırmızı, 30 günden az sarı
-  const expiryStat = (label: string, date: Date | null) => {
+  const expiryStat = (label: string, date: Date | null, unavailable?: string) => {
     const days = date ? daysUntil(date) : null;
     const tone = days === null ? "" : days <= 14 ? "text-red-600 dark:text-red-400" : days <= 30 ? "text-amber-600 dark:text-amber-400" : "";
-    return stat(label, days === null ? "–" : days < 0 ? t("expired") : t("daysLeft", { n: days }), date ? dateFmt.format(date) : undefined, tone);
+    return stat(label, days === null ? "–" : days < 0 ? t("expired") : t("daysLeft", { n: days }), date ? dateFmt.format(date) : unavailable, tone);
   };
   function stat(label: string, value: string, sub?: string, tone = "") {
     return (
@@ -153,8 +153,8 @@ export default async function MonitorDetailPage({
         {stat(t("uptime"), pct(uptime24), t("range.24h"))}
         {stat(t("uptime"), pct(uptime30), t("range.30d"))}
         {stat(t("uptime"), pct(uptime365), t("range.1y"))}
-        {showExpiry && expiryStat(t("sslCert"), expiry.cert)}
-        {showExpiry && expiryStat(t("domainExpiry"), expiry.domain)}
+        {showExpiry && expiryStat(t("sslCert"), expiry.cert, monitor.url.startsWith("https:") ? t("notAvailableYet") : t("httpsOnly"))}
+        {showExpiry && expiryStat(t("domainExpiry"), expiry.domain, t("domainUnavailable"))}
       </div>
 
       <section className="space-y-3">

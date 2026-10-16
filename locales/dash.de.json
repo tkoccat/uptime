@@ -144,7 +144,10 @@
       "sslCert": "SSL-Zertifikat",
       "domainExpiry": "Domain-Ablauf",
       "daysLeft": "{n} Tage",
-      "expired": "Abgelaufen"
+      "expired": "Abgelaufen",
+      "notAvailableYet": "Noch nicht gelesen",
+      "httpsOnly": "Nur HTTPS",
+      "domainUnavailable": "F?r diese Domain-Endung nicht ver?ffentlicht"
     },
     "statusPages": {
       "title": "Statusseiten",

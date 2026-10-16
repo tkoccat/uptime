@@ -34,12 +34,43 @@ export function parseRdapExpiry(json: unknown): Date | null {
   return d && !Number.isNaN(d.getTime()) ? d : null;
 }
 
+type Bootstrap = { services?: [string[], string[]][] };
+
+// IANA'nın RDAP sunucu listesi (Uptime Kuma da aynısını kullanır): uzantı -> kayıt sunucusu. Günde bir yenilenir.
+let bootstrap: { at: number; map: Map<string, string> } | null = null;
+
+/** Bootstrap JSON'undan uzantı -> https RDAP sunucusu tablosu çıkarır. */
+export function parseBootstrap(json: Bootstrap): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const [tlds, urls] of json.services ?? []) {
+    const url = urls.find((u) => u.startsWith("https://")) ?? urls[0];
+    if (!url) continue;
+    for (const tld of tlds) map.set(tld.toLowerCase(), url.endsWith("/") ? url : `${url}/`);
+  }
+  return map;
+}
+
+async function rdapServerFor(tld: string): Promise<string | null> {
+  if (!bootstrap || Date.now() - bootstrap.at > 24 * 3600_000) {
+    try {
+      const res = await fetch("https://data.iana.org/rdap/dns.json", { signal: AbortSignal.timeout(BUDGET_MS) });
+      if (res.ok) bootstrap = { at: Date.now(), map: parseBootstrap((await res.json()) as Bootstrap) };
+    } catch {
+      // Liste alınamazsa eski kopya (varsa) kullanılır
+    }
+  }
+  return bootstrap?.map.get(tld) ?? null;
+}
+
 export async function getDomainExpiry(host: string): Promise<Date | null> {
   const domain = registrableDomain(host);
   if (!domain) return null;
+  const tld = domain.split(".").pop()!;
   try {
-    // rdap.org ilgili kayıt sunucusuna yönlendirir; adres sabit, yalnızca doğrulanmış alan adı eklenir
-    const res = await fetch(`https://rdap.org/domain/${domain}`, {
+    // Sunucu IANA listesinden gelir (kullanıcı girdisi değil); sorguya yalnızca doğrulanmış alan adı eklenir
+    const server = await rdapServerFor(tld);
+    if (!server) return null;
+    const res = await fetch(`${server}domain/${domain}`, {
       headers: { Accept: "application/rdap+json, application/json" },
       signal: AbortSignal.timeout(BUDGET_MS),
     });
@@ -90,7 +121,9 @@ export async function getExpiryInfo(monitor: {
 }): Promise<ExpiryInfo> {
   if (monitor.type !== "HTTP" && monitor.type !== "KEYWORD") return { cert: null, domain: null };
   const cached: ExpiryInfo = { cert: monitor.certExpiresAt, domain: monitor.domainExpiresAt };
-  if (monitor.expiryCheckedAt && Date.now() - monitor.expiryCheckedAt.getTime() < STALE_MS) return cached;
+  // Her iki bilgi de varsa 12 saat; eksik varsa (geçici hata olabilir) 30 dakika sonra tekrar denenir
+  const ttl = cached.cert && cached.domain ? STALE_MS : 30 * 60_000;
+  if (monitor.expiryCheckedAt && Date.now() - monitor.expiryCheckedAt.getTime() < ttl) return cached;
 
   let host: string;
   try {

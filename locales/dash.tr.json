@@ -144,7 +144,10 @@
       "sslCert": "SSL sertifikas?",
       "domainExpiry": "Alan ad? biti?i",
       "daysLeft": "{n} g?n",
-      "expired": "S?resi doldu"
+      "expired": "S?resi doldu",
+      "notAvailableYet": "Hen?z okunamad?",
+      "httpsOnly": "Yaln?zca HTTPS",
+      "domainUnavailable": "Bu alan ad? uzant?s? i?in yay?nlanm?yor"
     },
     "statusPages": {
       "title": "Durum sayfaları",

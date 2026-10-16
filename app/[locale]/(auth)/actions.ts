@@ -6,6 +6,8 @@ import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { mapSupabaseError, safeNextPath } from "@/lib/auth/messages";
+import { LIMITS, rateLimit } from "@/lib/rate-limit";
+import { getClientIp } from "@/lib/request";
 
 function siteUrl() {
   return process.env.NEXT_PUBLIC_APP_URL ?? `http://${headers().get("host")}`;
@@ -21,10 +23,17 @@ async function fail(path: string, code: string): Promise<never> {
   return go(`${path}?error=${code}`);
 }
 
+// Kaba kuvvet ve toplu kayıt denemelerine karşı IP başına sınır
+async function guard(path: string, kind: string) {
+  const res = await rateLimit(`auth:${kind}:${getClientIp()}`, LIMITS.auth.limit, LIMITS.auth.windowSec);
+  if (!res.ok) await fail(path, "rate_limited");
+}
+
 export async function signIn(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const next = safeNextPath(String(formData.get("next") ?? ""));
+  await guard("/login", "signin");
   if (!email || !password) await fail("/login", "missing_fields");
 
   const supabase = createClient();
@@ -38,6 +47,7 @@ export async function signUp(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+  await guard("/register", "signup");
   if (!email || !password) await fail("/register", "missing_fields");
   if (password.length < 8) await fail("/register", "weak_password");
   if (password !== confirm) await fail("/register", "password_mismatch");
@@ -72,6 +82,7 @@ export async function signInWithGoogle() {
 
 export async function requestPasswordReset(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim();
+  await guard("/forgot-password", "reset");
   if (!email) await fail("/forgot-password", "missing_fields");
 
   const supabase = createClient();

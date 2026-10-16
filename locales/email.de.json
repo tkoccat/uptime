@@ -1,0 +1,54 @@
+{
+  "Email": {
+    "footer": "Du erhältst diese E-Mail, weil du ein Konto bei {product} hast. E-Mail-Benachrichtigungen kannst du in deinen Einstellungen verwalten.",
+    "verify_email": { "subject": "Bestätige deine E-Mail für Benachrichtigungen", "heading": "Bestätige diese E-Mail-Adresse", "body": "{email} wurde als Empfänger für Benachrichtigungen hinzugefügt. Bestätige die Adresse, um hier Uptime-Meldungen zu erhalten. Falls du das nicht erwartet hast, ignoriere diese E-Mail.", "cta": "E-Mail bestätigen" },
+    "welcome": {
+      "subject": "Willkommen bei {product}",
+      "heading": "Willkommen an Bord",
+      "body": "Dein Konto ist bereit. Füge deinen ersten Monitor hinzu, und wir sagen dir sofort Bescheid, wenn etwas ausfällt.",
+      "cta": "Zum Dashboard"
+    },
+    "monitor_down": {
+      "subject": "{monitor} ist ausgefallen",
+      "heading": "{monitor} ist ausgefallen",
+      "body": "{url} war um {time} nicht erreichbar. Grund: {reason}.",
+      "cta": "Monitor ansehen"
+    },
+    "monitor_up": {
+      "subject": "{monitor} ist wieder erreichbar",
+      "heading": "{monitor} ist wieder erreichbar",
+      "body": "{url} antwortet seit {time} wieder.",
+      "cta": "Monitor ansehen"
+    },
+    "payment_succeeded": {
+      "subject": "Zahlung erhalten",
+      "heading": "Danke, Zahlung erhalten",
+      "body": "Deine Zahlung für den Tarif {plan} war erfolgreich.",
+      "cta": "Abrechnung ansehen"
+    },
+    "payment_failed": {
+      "subject": "Zahlung fehlgeschlagen",
+      "heading": "Wir konnten deine Zahlung nicht einziehen",
+      "body": "Deine Zahlung für den Tarif {plan} ist fehlgeschlagen (Versuch {attempt} von 3). Bitte aktualisiere deine Zahlungsmethode, um deinen Tarif zu behalten.",
+      "cta": "Zahlungsmethode aktualisieren"
+    },
+    "subscription_canceled": {
+      "subject": "Dein Abonnement wurde gekündigt",
+      "heading": "Abonnement gekündigt",
+      "body": "Dein Tarif {plan} ist beendet und dein Konto läuft jetzt im Free-Tarif. Monitore über dem Free-Limit wurden pausiert, nicht gelöscht.",
+      "cta": "Tarife ansehen"
+    },
+    "trial_ending": {
+      "subject": "Deine kostenlose Testphase endet in {days} Tagen",
+      "heading": "Deine Testphase endet bald",
+      "body": "Deine kostenlose Testphase endet in {days} Tagen. Wenn du nicht kündigst, beginnt dein bezahlter Tarif und deine Zahlungsmethode wird belastet.",
+      "cta": "Abonnement verwalten"
+    },
+    "limit_warning": {
+      "subject": "Du hast ein Tariflimit erreicht",
+      "heading": "Tariflimit erreicht",
+      "body": "Du wolltest das Limit deines Tarifs ({limit}) überschreiten. Wechsle zu einem höheren Tarif, um fortzufahren.",
+      "cta": "Tarif upgraden"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "Email": {
+    "footer": "You receive this email because you have an account with {product}. You can manage email notifications in your settings.",
+    "verify_email": { "subject": "Confirm your email for alerts", "heading": "Confirm this email address", "body": "{email} was added as an alert recipient. Confirm it to start receiving uptime alerts here. If you did not expect this, ignore this email.", "cta": "Confirm email" },
+    "welcome": {
+      "subject": "Welcome to {product}",
+      "heading": "Welcome aboard",
+      "body": "Your account is ready. Add your first monitor and we will tell you the moment something goes down.",
+      "cta": "Go to dashboard"
+    },
+    "monitor_down": {
+      "subject": "{monitor} is down",
+      "heading": "{monitor} is down",
+      "body": "We could not reach {url} at {time}. Reason: {reason}.",
+      "cta": "View monitor"
+    },
+    "monitor_up": {
+      "subject": "{monitor} is back up",
+      "heading": "{monitor} is back up",
+      "body": "{url} is responding again as of {time}.",
+      "cta": "View monitor"
+    },
+    "payment_succeeded": {
+      "subject": "Payment received",
+      "heading": "Thank you, payment received",
+      "body": "Your payment for the {plan} plan was successful.",
+      "cta": "View billing"
+    },
+    "payment_failed": {
+      "subject": "Payment failed",
+      "heading": "We could not take your payment",
+      "body": "Your payment for the {plan} plan failed (attempt {attempt} of 3). Please update your payment method to keep your plan.",
+      "cta": "Update payment method"
+    },
+    "subscription_canceled": {
+      "subject": "Your subscription was canceled",
+      "heading": "Subscription canceled",
+      "body": "Your {plan} plan has ended and your account is now on the Free plan. Monitors above the Free limit were paused, not deleted.",
+      "cta": "View plans"
+    },
+    "trial_ending": {
+      "subject": "Your free trial ends in {days} days",
+      "heading": "Your trial is ending soon",
+      "body": "Your free trial ends in {days} days. Unless you cancel, your paid plan will start and your payment method will be charged.",
+      "cta": "Manage subscription"
+    },
+    "limit_warning": {
+      "subject": "You have reached a plan limit",
+      "heading": "Plan limit reached",
+      "body": "You tried to go beyond your plan's limit ({limit}). Upgrade your plan to continue.",
+      "cta": "Upgrade plan"
+    }
+  }
+}

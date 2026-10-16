@@ -1,0 +1,54 @@
+{
+  "Email": {
+    "footer": "Vous recevez cet e-mail car vous avez un compte {product}. Vous pouvez gérer les notifications par e-mail dans vos paramètres.",
+    "verify_email": { "subject": "Confirmez votre e-mail pour les alertes", "heading": "Confirmez cette adresse e-mail", "body": "{email} a été ajoutée comme destinataire d'alertes. Confirmez-la pour recevoir ici les alertes de disponibilité. Si vous ne vous y attendiez pas, ignorez cet e-mail.", "cta": "Confirmer l'e-mail" },
+    "welcome": {
+      "subject": "Bienvenue sur {product}",
+      "heading": "Bienvenue à bord",
+      "body": "Votre compte est prêt. Ajoutez votre première sonde et nous vous prévenons dès que quelque chose tombe en panne.",
+      "cta": "Aller au tableau de bord"
+    },
+    "monitor_down": {
+      "subject": "{monitor} est en panne",
+      "heading": "{monitor} est en panne",
+      "body": "Impossible de joindre {url} à {time}. Raison : {reason}.",
+      "cta": "Voir la sonde"
+    },
+    "monitor_up": {
+      "subject": "{monitor} est de nouveau en ligne",
+      "heading": "{monitor} est de nouveau en ligne",
+      "body": "{url} répond de nouveau depuis {time}.",
+      "cta": "Voir la sonde"
+    },
+    "payment_succeeded": {
+      "subject": "Paiement reçu",
+      "heading": "Merci, paiement reçu",
+      "body": "Votre paiement pour le forfait {plan} a bien été effectué.",
+      "cta": "Voir la facturation"
+    },
+    "payment_failed": {
+      "subject": "Échec du paiement",
+      "heading": "Nous n'avons pas pu encaisser votre paiement",
+      "body": "Votre paiement pour le forfait {plan} a échoué (tentative {attempt} sur 3). Veuillez mettre à jour votre moyen de paiement pour conserver votre forfait.",
+      "cta": "Mettre à jour le moyen de paiement"
+    },
+    "subscription_canceled": {
+      "subject": "Votre abonnement a été résilié",
+      "heading": "Abonnement résilié",
+      "body": "Votre forfait {plan} est terminé et votre compte est passé au forfait Free. Les sondes au-delà de la limite Free ont été mises en pause, pas supprimées.",
+      "cta": "Voir les forfaits"
+    },
+    "trial_ending": {
+      "subject": "Votre essai gratuit se termine dans {days} jours",
+      "heading": "Votre essai se termine bientôt",
+      "body": "Votre essai gratuit se termine dans {days} jours. Sans résiliation de votre part, votre forfait payant démarrera et votre moyen de paiement sera débité.",
+      "cta": "Gérer l'abonnement"
+    },
+    "limit_warning": {
+      "subject": "Vous avez atteint une limite de forfait",
+      "heading": "Limite de forfait atteinte",
+      "body": "Vous avez essayé de dépasser la limite de votre forfait ({limit}). Passez à un forfait supérieur pour continuer.",
+      "cta": "Changer de forfait"
+    }
+  }
+}

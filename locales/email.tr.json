@@ -1,0 +1,54 @@
+{
+  "Email": {
+    "footer": "Bu e-postayı {product} hesabınız olduğu için alıyorsunuz. E-posta bildirimlerini ayarlarınızdan yönetebilirsiniz.",
+    "verify_email": { "subject": "Uyarılar için e-postanızı doğrulayın", "heading": "Bu e-posta adresini doğrulayın", "body": "{email} uyarı alıcısı olarak eklendi. Uptime uyarılarını burada almaya başlamak için doğrulayın. Bunu siz yapmadıysanız bu e-postayı yok sayın.", "cta": "E-postayı doğrula" },
+    "welcome": {
+      "subject": "{product} hesabınıza hoş geldiniz",
+      "heading": "Aramıza hoş geldiniz",
+      "body": "Hesabınız hazır. İlk monitörünüzü ekleyin; bir şey çöktüğü anda size haber verelim.",
+      "cta": "Panele git"
+    },
+    "monitor_down": {
+      "subject": "{monitor} çöktü",
+      "heading": "{monitor} çöktü",
+      "body": "{url} adresine {time} itibarıyla ulaşılamadı. Neden: {reason}.",
+      "cta": "Monitörü görüntüle"
+    },
+    "monitor_up": {
+      "subject": "{monitor} yeniden ayakta",
+      "heading": "{monitor} yeniden ayakta",
+      "body": "{url} {time} itibarıyla tekrar yanıt veriyor.",
+      "cta": "Monitörü görüntüle"
+    },
+    "payment_succeeded": {
+      "subject": "Ödemeniz alındı",
+      "heading": "Teşekkürler, ödemeniz alındı",
+      "body": "{plan} planı için ödemeniz başarıyla alındı.",
+      "cta": "Faturalamayı görüntüle"
+    },
+    "payment_failed": {
+      "subject": "Ödeme başarısız",
+      "heading": "Ödemenizi alamadık",
+      "body": "{plan} planı için ödemeniz başarısız oldu (deneme {attempt}/3). Planınızı korumak için lütfen ödeme yönteminizi güncelleyin.",
+      "cta": "Ödeme yöntemini güncelle"
+    },
+    "subscription_canceled": {
+      "subject": "Aboneliğiniz iptal edildi",
+      "heading": "Abonelik iptal edildi",
+      "body": "{plan} planınız sona erdi ve hesabınız Free plana geçti. Free limitini aşan monitörler silinmedi, duraklatıldı.",
+      "cta": "Planları görüntüle"
+    },
+    "trial_ending": {
+      "subject": "Ücretsiz denemeniz {days} gün içinde bitiyor",
+      "heading": "Denemeniz yakında bitiyor",
+      "body": "Ücretsiz denemeniz {days} gün içinde bitiyor. İptal etmezseniz ücretli planınız başlar ve ödeme yönteminizden ücret alınır.",
+      "cta": "Aboneliği yönet"
+    },
+    "limit_warning": {
+      "subject": "Plan limitinize ulaştınız",
+      "heading": "Plan limitine ulaşıldı",
+      "body": "Planınızın limitini ({limit}) aşmayı denediniz. Devam etmek için planınızı yükseltin.",
+      "cta": "Planı yükselt"
+    }
+  }
+}

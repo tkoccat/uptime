@@ -3,6 +3,7 @@ import { randomInt } from "node:crypto";
 import { z } from "zod";
 import { encrypt } from "./crypto";
 import { NotFoundError, ValidationError } from "./errors";
+import { DEFAULT_OPTIONS, monitorOptionsSchema, type MonitorOptions } from "./monitor-options";
 import { prisma } from "./prisma";
 import {
   assertCustomDomainAllowed,
@@ -31,8 +32,16 @@ const monitorSchema = z
     keyword: z.string().trim().max(200).optional(),
     // HEARTBEAT: gecikme toleransı (saniye)
     grace: z.number().int().min(0).max(86400).default(0),
+    // Gelişmiş ayarlar (yeniden deneme, durum kodları, başlıklar vb.) ve düzenleme alanları
+    options: monitorOptionsSchema.optional(),
+    tags: z.array(z.string()).max(10).default([]),
+    description: z.string().trim().max(200).optional(),
   })
   .superRefine((v, ctx) => {
+    // İstek zaman aşımı kontrol aralığından uzun olamaz (Kuma'da çakışan kontroller oluşur)
+    if (v.options && v.options.timeout > 0 && v.options.timeout >= v.interval && v.type !== "HEARTBEAT") {
+      ctx.addIssue({ code: "custom", path: ["options", "timeout"], message: "Timeout must be shorter than the check interval" });
+    }
     if (v.type === "HEARTBEAT") {
       if (v.interval < 60) ctx.addIssue({ code: "custom", path: ["interval"], message: "Heartbeat period must be at least 60 seconds" });
     } else {
@@ -48,6 +57,11 @@ export function newPingToken(): string {
 }
 
 export type MonitorInput = z.input<typeof monitorSchema>;
+
+// Veritabanına yazılacak seçenekler: varsayılanlarla tamamlanır, anahtar kelime de eklenir
+function storedOptions(data: { options?: MonitorOptions; keyword?: string }): object {
+  return { ...(data.options ?? DEFAULT_OPTIONS), keyword: data.keyword ?? "" };
+}
 
 async function getUser(userId: string) {
   const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -110,6 +124,8 @@ export async function createMonitor(userId: string, input: MonitorInput) {
     interval: heartbeat ? data.interval + data.grace : data.interval,
     keyword: data.keyword,
     pushToken: pingToken,
+    options: data.options,
+    description: data.description,
   });
 
   try {
@@ -123,6 +139,9 @@ export async function createMonitor(userId: string, input: MonitorInput) {
         interval: data.interval,
         pingToken,
         graceSeconds: heartbeat ? data.grace : 0,
+        options: storedOptions(data),
+        tags: data.tags,
+        description: data.description,
       },
     });
     await logUsage(userId, "monitor.create", { monitorId: monitor.id });
@@ -132,6 +151,198 @@ export async function createMonitor(userId: string, input: MonitorInput) {
     await getAdapter().deleteMonitor(userId, kumaId).catch(() => undefined);
     throw err;
   }
+}
+
+/** Monitörü düzenler. Tür değişmez; heartbeat anahtarı korunur. */
+export async function updateMonitor(userId: string, monitorId: string, input: MonitorInput) {
+  const existing = await getOwnedMonitor(userId, monitorId);
+  // Tür düzenlemede değişmez: gelen değer yok sayılıp kayıttaki tür kullanılır
+  const parsed = monitorSchema.safeParse({ ...input, type: existing.type });
+  if (!parsed.success) throw new ValidationError("Invalid monitor data");
+  const data = parsed.data;
+  await enforceRateLimit(`monitor:${userId}`, LIMITS.monitorMutations.limit, LIMITS.monitorMutations.windowSec);
+
+  const user = await getUser(userId);
+  const limits = await getLimits(user.plan);
+  const heartbeat = data.type === "HEARTBEAT";
+  assertIntervalAllowed(user.plan, data.interval, limits);
+  if (!heartbeat) await validateTarget(data.type, data.url);
+
+  await getAdapter().updateMonitor(userId, existing.uptimeKumaMonitorId, {
+    name: data.name,
+    target: heartbeat ? "heartbeat" : data.url,
+    type: data.type,
+    interval: heartbeat ? data.interval + data.grace : data.interval,
+    keyword: data.keyword,
+    pushToken: existing.pingToken ?? undefined,
+    options: data.options,
+    description: data.description,
+  });
+
+  const monitor = await prisma.monitor.update({
+    where: { id: existing.id },
+    data: {
+      name: data.name,
+      url: heartbeat ? "heartbeat" : data.url,
+      interval: data.interval,
+      graceSeconds: heartbeat ? data.grace : 0,
+      options: storedOptions(data),
+      tags: data.tags,
+      description: data.description ?? null,
+    },
+  });
+  await logUsage(userId, "monitor.update", { monitorId });
+  return monitor;
+}
+
+// --- Özet ve grafik verisi ---
+
+export type MonitorSummary = {
+  id: string;
+  // Son kalp atışları (eskiden yeniye); Kuma'ya ulaşılamazsa boş
+  beats: Heartbeat[];
+  // Son 30 günün uptime yüzdesi (günlük özetlerden; veri yoksa null)
+  uptime30d: number | null;
+};
+
+const BAR_BEATS = 40;
+
+// Aynı anda en çok N Kuma isteği: yüzlerce monitörde socket'i boğmamak için
+async function pool<T, R>(items: T[], size: number, work: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length);
+  let next = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(size, items.length) }, async () => {
+      while (next < items.length) {
+        const i = next++;
+        out[i] = await work(items[i]);
+      }
+    })
+  );
+  return out;
+}
+
+export async function uptimeFromDaily(monitorIds: string[], days: number): Promise<Map<string, number>> {
+  const since = new Date(Date.now() - days * 86_400_000);
+  const rows = await prisma.monitorDaily.groupBy({
+    by: ["monitorId"],
+    where: { monitorId: { in: monitorIds }, day: { gte: since } },
+    _sum: { up: true, down: true },
+  });
+  const out = new Map<string, number>();
+  for (const r of rows) {
+    const up = r._sum.up ?? 0;
+    const total = up + (r._sum.down ?? 0);
+    if (total > 0) out.set(r.monitorId, (up / total) * 100);
+  }
+  return out;
+}
+
+/** Panel listesi için: kullanıcının tüm monitörlerinin son kalp atışları ve 30 günlük uptime'ı. */
+export async function getMonitorSummaries(userId: string): Promise<Map<string, MonitorSummary>> {
+  const monitors = await prisma.monitor.findMany({ where: { userId }, select: { id: true, uptimeKumaMonitorId: true, interval: true, type: true, isActive: true } });
+  const uptime = await uptimeFromDaily(monitors.map((m) => m.id), 30);
+  const adapter = getAdapter();
+
+  const rows = await pool(monitors, 6, async (m): Promise<MonitorSummary> => {
+    let beats: Heartbeat[] = [];
+    if (m.isActive) {
+      try {
+        // Çubuk için yeterli kalp atışı kapsayan en küçük pencere (en çok 24 saat)
+        const hours = Math.min(24, Math.max(1, Math.ceil((BAR_BEATS * Math.max(m.interval, 20)) / 3600)));
+        beats = (await adapter.getMonitorHistory(userId, m.uptimeKumaMonitorId, hours)).slice(-BAR_BEATS);
+      } catch {
+        // Kuma'ya ulaşılamazsa liste yine açılır, çubuk boş kalır
+      }
+    }
+    return { id: m.id, beats, uptime30d: uptime.get(m.id) ?? null };
+  });
+  return new Map(rows.map((r) => [r.id, r]));
+}
+
+export type ChartRange = "24h" | "7d" | "30d";
+export type ChartPoint = { t: number; ping: number | null; down: boolean };
+export type MonitorChart = {
+  range: ChartRange;
+  points: ChartPoint[];
+  avg: number | null;
+  min: number | null;
+  max: number | null;
+  // Aralıktaki başarılı/başarısız kontrol sayısı
+  up: number;
+  down: number;
+  // En son kalp atışları (eskiden yeniye): çubuk ve "son kontroller" listesi için
+  recent: Heartbeat[];
+};
+
+const MAX_POINTS = 120;
+
+/** Kalp atışlarını en çok `buckets` eşit zaman dilimine indirger (ping ortalaması; dilimde çöküş varsa işaretli). */
+export function downsample(beats: Heartbeat[], from: number, to: number, buckets = MAX_POINTS): ChartPoint[] {
+  const size = (to - from) / buckets;
+  const groups: { sum: number; n: number; down: boolean }[] = Array.from({ length: buckets }, () => ({ sum: 0, n: 0, down: false }));
+  for (const b of beats) {
+    const t = new Date(b.time).getTime();
+    if (t < from || t > to) continue;
+    const g = groups[Math.min(buckets - 1, Math.floor((t - from) / size))];
+    if (b.status === "down") g.down = true;
+    if (b.ping !== null && b.status === "up") {
+      g.sum += b.ping;
+      g.n += 1;
+    }
+  }
+  return groups.map((g, i) => ({ t: Math.round(from + (i + 0.5) * size), ping: g.n ? Math.round(g.sum / g.n) : null, down: g.down }));
+}
+
+export async function getMonitorChart(userId: string, monitorId: string, range: ChartRange): Promise<MonitorChart> {
+  const monitor = await getOwnedMonitor(userId, monitorId);
+  const hours = PERIOD_HOURS[range];
+  const beats = await getAdapter().getMonitorHistory(userId, monitor.uptimeKumaMonitorId, hours);
+  const to = Date.now();
+  const points = downsample(beats, to - hours * 3600_000, to);
+  const pings = beats.filter((b) => b.status === "up" && b.ping !== null).map((b) => b.ping as number);
+  return {
+    range,
+    points,
+    avg: pings.length ? Math.round(pings.reduce((a, b) => a + b, 0) / pings.length) : null,
+    min: pings.length ? Math.min(...pings) : null,
+    max: pings.length ? Math.max(...pings) : null,
+    up: beats.filter((b) => b.status === "up").length,
+    down: beats.filter((b) => b.status === "down").length,
+    recent: beats.slice(-60),
+  };
+}
+
+// --- Planlı bakım ---
+
+const maintenanceSchema = z
+  .object({
+    title: z.string().trim().min(1).max(100),
+    startsAt: z.date(),
+    endsAt: z.date(),
+    monitorIds: z.array(z.string()).min(1).max(200),
+  })
+  .refine((v) => v.endsAt > v.startsAt, { message: "End must be after start" })
+  .refine((v) => v.endsAt.getTime() - v.startsAt.getTime() <= 30 * 86_400_000, { message: "Maintenance can last at most 30 days" });
+
+export async function createMaintenance(userId: string, input: z.input<typeof maintenanceSchema>) {
+  const parsed = maintenanceSchema.safeParse(input);
+  if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid maintenance window");
+  const { title, startsAt, endsAt, monitorIds } = parsed.data;
+
+  // Seçilen monitörlerin hepsi bu kullanıcıya ait olmalı
+  const owned = await prisma.monitor.findMany({ where: { userId, id: { in: monitorIds } }, select: { id: true } });
+  if (owned.length !== new Set(monitorIds).size) throw new NotFoundError("Monitor not found");
+  const count = await prisma.maintenance.count({ where: { userId, endsAt: { gt: new Date() } } });
+  if (count >= 50) throw new ValidationError("Too many scheduled maintenance windows");
+
+  const m = await prisma.maintenance.create({ data: { userId, title, startsAt, endsAt, monitors: { connect: owned.map((x) => ({ id: x.id })) } } });
+  await logUsage(userId, "maintenance.create", { maintenanceId: m.id });
+  return m;
+}
+
+export async function deleteMaintenance(userId: string, id: string) {
+  await prisma.maintenance.deleteMany({ where: { id, userId } });
 }
 
 export async function deleteMonitor(userId: string, monitorId: string) {
@@ -173,6 +384,17 @@ const channelSchemas = {
   TEAMS: z.object({
     webhookUrl: z.string().regex(/^https:\/\/[a-z0-9.-]+\.(?:webhook\.office\.com|logic\.azure\.com|environment\.api\.powerplatform\.com)\/.+$/i, "Microsoft Teams webhook URL required"),
   }),
+  GOOGLE_CHAT: z.object({ webhookUrl: z.string().regex(/^https:\/\/chat\.googleapis\.com\/v1\/spaces\/[\w-]+\/messages\?.+$/, "Google Chat webhook URL required") }),
+  // ntfy: boş sunucu = ntfy.sh; kendi sunucusu için tam adres (genel adres olmalı)
+  NTFY: z.object({
+    serverUrl: z.string().trim().max(200).optional().or(z.literal("")),
+    topic: z.string().regex(/^[A-Za-z0-9_-]{1,64}$/, "ntfy topic: letters, digits, - and _"),
+    token: z.string().trim().max(200).optional().or(z.literal("")),
+  }),
+  PUSHOVER: z.object({
+    userKey: z.string().regex(/^[A-Za-z0-9]{30}$/, "Pushover user key required (30 characters)"),
+    appToken: z.string().regex(/^[A-Za-z0-9]{30}$/, "Pushover app token required (30 characters)"),
+  }),
   TELEGRAM: z.object({
     botToken: z.string().regex(/^\d{5,}:[A-Za-z0-9_-]{30,}$/, "Telegram bot token required"),
     chatId: z.string().regex(/^(?:-?\d{1,20}|@[A-Za-z0-9_]{5,32})$/, "Telegram chat id required"),
@@ -189,9 +411,10 @@ export async function createNotificationChannel(
   const name = input.name.trim().slice(0, 100);
   if (!name) throw new ValidationError("Channel name is required");
 
-  if (input.type === "WEBHOOK") {
+  if (input.type === "WEBHOOK" || (input.type === "NTFY" && (parsed.data as { serverUrl?: string }).serverUrl)) {
     try {
-      await assertPublicUrl((parsed.data as { url: string }).url);
+      const d = parsed.data as { url?: string; serverUrl?: string };
+      await assertPublicUrl((d.url ?? d.serverUrl) as string);
     } catch (err) {
       if (err instanceof UnsafeTargetError) throw new ValidationError(err.message);
       throw err;

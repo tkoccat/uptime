@@ -8,7 +8,8 @@
       "settings": "Einstellungen",
       "billing": "Abrechnung",
       "api": "API",
-      "signOut": "Abmelden"
+      "signOut": "Abmelden",
+      "maintenance": "Wartung"
     },
     "common": {
       "create": "Erstellen",
@@ -65,7 +66,7 @@
       "delete": "Monitor löschen",
       "deleteConfirm": "Diesen Monitor und seinen Verlauf löschen?",
       "last24h": "Letzte 24 Stunden",
-      "uptime": "Uptime (24 Std.)",
+      "uptime": "Verfügbarkeit",
       "avgPing": "Durchschnittliche Antwortzeit",
       "recentChecks": "Letzte Prüfungen",
       "noChecks": "Noch keine Prüfungen.",
@@ -88,7 +89,57 @@
       "lastPing": "Letzter Ping",
       "neverPinged": "Noch kein Ping empfangen",
       "keepSecret": "Halte diese URL geheim: Wer sie kennt, kann Pings senden.",
-      "noGrace": "Keine"
+      "noGrace": "Keine",
+      "search": "Monitore suchen…",
+      "filter": "Nach Status filtern",
+      "filterAll": "Alle",
+      "allTags": "Alle Tags",
+      "noMatch": "Keine Monitore entsprechen Ihren Filtern.",
+      "edit": "Bearbeiten",
+      "editTitle": "Monitor bearbeiten",
+      "saveChanges": "Änderungen speichern",
+      "advanced": "Erweiterte Einstellungen",
+      "retries": "Wiederholungen",
+      "retriesHelp": "Fehlgeschlagene Prüfungen in Folge, bevor der Monitor als ausgefallen gilt. Vermeidet Fehlalarme.",
+      "retryInterval": "Wiederholungsintervall (Sekunden)",
+      "retryIntervalHelp": "0 = wie das Prüfintervall.",
+      "timeout": "Timeout (Sekunden)",
+      "timeoutHelp": "Wie lange auf eine Antwort gewartet wird. 0 = automatisch.",
+      "resend": "Alarm alle N Prüfungen wiederholen",
+      "resendHelp": "0 = nur einmal beim Ausfall alarmieren.",
+      "method": "HTTP-Methode",
+      "accepted": "Akzeptierte Statuscodes",
+      "acceptedHelp": "Zum Beispiel 200-299, 301. Alles andere gilt als ausgefallen.",
+      "headers": "Request-Header (JSON)",
+      "body": "Request-Body",
+      "followRedirects": "Weiterleitungen folgen",
+      "ignoreTls": "TLS/SSL-Fehler ignorieren",
+      "certExpiry": "Vor Ablauf des SSL-Zertifikats warnen",
+      "upsideDown": "Umgekehrter Modus",
+      "upsideDownHelp": "Der Monitor gilt als ausgefallen, wenn das Ziel erreichbar ist.",
+      "dnsType": "Eintragstyp",
+      "dnsServer": "DNS-Server",
+      "tags": "Tags",
+      "tagsHelp": "Durch Komma getrennt, z. B. production, api. Zum Filtern der Liste.",
+      "description": "Beschreibung",
+      "current": "Aktuelle Antwortzeit",
+      "range": {
+        "24h": "24 Stunden",
+        "7d": "7 Tage",
+        "30d": "30 Tage"
+      },
+      "responseTime": "Antwortzeit",
+      "chartEmpty": "Noch nicht genug Daten.",
+      "fastest": "Schnellste",
+      "slowest": "Langsamste",
+      "checks": "Prüfungen",
+      "incidents": "Vorfälle",
+      "noIncidents": "Keine Vorfälle erfasst.",
+      "duration": "Dauer",
+      "ongoing": "Laufend",
+      "recentChecksList": "Letzte Prüfungen",
+      "inMaintenance": "Geplante Wartung „{title}“ läuft bis {end}. Alarme sind pausiert.",
+      "settingsSummary": "Methode {method} · akzeptiert {status} · {retries} Wiederholungen bis Ausfall"
     },
     "statusPages": {
       "title": "Statusseiten",
@@ -132,10 +183,18 @@
         "WEBHOOK": "Webhook",
         "DISCORD": "Discord",
         "TELEGRAM": "Telegram",
-        "TEAMS": "Microsoft Teams"
+        "TEAMS": "Microsoft Teams",
+        "NTFY": "ntfy",
+        "PUSHOVER": "Pushover",
+        "GOOGLE_CHAT": "Google Chat"
       },
       "botToken": "Telegram-Bot-Token",
-      "chatId": "Telegram-Chat-ID oder @Kanal"
+      "chatId": "Telegram-Chat-ID oder @Kanal",
+      "ntfyTopic": "ntfy-Topic",
+      "ntfyServer": "ntfy-Server (optional)",
+      "ntfyToken": "Zugriffstoken (optional)",
+      "pushoverUser": "Pushover-Benutzerschlüssel",
+      "pushoverApp": "Pushover-App-Token"
     },
     "settings": {
       "title": "Einstellungen",
@@ -203,6 +262,23 @@
       "validation": "Bitte prüfe deine Eingaben. Adressen müssen öffentlich und gültig sein.",
       "delete_incomplete": "Wir konnten noch nicht alles entfernen. Bitte versuche es erneut.",
       "unknown": "Etwas ist schiefgelaufen. Bitte versuche es erneut."
+    },
+    "maintenance": {
+      "title": "Wartung",
+      "intro": "Planen Sie Wartungsfenster. Alarme für die gewählten Monitore werden stummgeschaltet, und es werden keine Vorfälle erfasst.",
+      "new": "Wartung planen",
+      "titleField": "Titel",
+      "starts": "Beginn",
+      "ends": "Ende",
+      "timezoneNote": "Zeiten gelten in Ihrer Zeitzone ({tz}).",
+      "monitors": "Monitore",
+      "create": "Planen",
+      "empty": "Keine Wartung geplant.",
+      "active": "Läuft",
+      "upcoming": "Geplant",
+      "past": "Beendet",
+      "delete": "Löschen",
+      "noMonitors": "Fügen Sie zuerst einen Monitor hinzu."
     }
   }
 }

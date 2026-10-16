@@ -1,4 +1,5 @@
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/navigation";
 import { AnnouncementBar } from "@/components/site/announcement-bar";
@@ -14,6 +15,7 @@ const NAV = [
   { href: "/dashboard", key: "overview" },
   { href: "/dashboard/monitors", key: "monitors" },
   { href: "/dashboard/status-pages", key: "statusPages" },
+  { href: "/dashboard/maintenance", key: "maintenance" },
   { href: "/dashboard/notifications", key: "notifications" },
   { href: "/dashboard/settings", key: "settings" },
   { href: "/dashboard/billing", key: "billing" },
@@ -31,6 +33,7 @@ export default async function DashboardLayout({
   const user = await requireUser(); // oturum yoksa girişe yönlendirir (middleware'e ek savunma)
   const t = await getTranslations("Dash.nav");
   const company = await getCompany();
+  const { Dash } = await getMessages();
 
   return (
     <>
@@ -63,7 +66,10 @@ export default async function DashboardLayout({
           </form>
         </div>
       </aside>
-      <div className="min-w-0 flex-1 space-y-6">{children}</div>
+      {/* Panel formları istemci bileşeni olduğundan yalnızca Dash çevirileri istemciye verilir */}
+      <NextIntlClientProvider locale={locale} messages={{ Dash }}>
+        <div className="min-w-0 flex-1 space-y-6">{children}</div>
+      </NextIntlClientProvider>
       </div>
     </>
   );

@@ -8,7 +8,8 @@
       "settings": "Ayarlar",
       "billing": "Faturalama",
       "api": "API",
-      "signOut": "Çıkış yap"
+      "signOut": "Çıkış yap",
+      "maintenance": "Bakım"
     },
     "common": {
       "create": "Oluştur",
@@ -65,7 +66,7 @@
       "delete": "Monitörü sil",
       "deleteConfirm": "Bu monitör ve geçmişi silinsin mi?",
       "last24h": "Son 24 saat",
-      "uptime": "Uptime (24 sa)",
+      "uptime": "Çalışma süresi",
       "avgPing": "Ortalama yanıt",
       "recentChecks": "Son kontroller",
       "noChecks": "Henüz kontrol yok.",
@@ -88,7 +89,57 @@
       "lastPing": "Son ping",
       "neverPinged": "Henüz ping alınmadı",
       "keepSecret": "Bu adresi gizli tutun: adresi bilen herkes ping gönderebilir.",
-      "noGrace": "Yok"
+      "noGrace": "Yok",
+      "search": "Monitörlerde ara…",
+      "filter": "Duruma göre filtrele",
+      "filterAll": "Tümü",
+      "allTags": "Tüm etiketler",
+      "noMatch": "Filtrelerinize uyan monitör yok.",
+      "edit": "Düzenle",
+      "editTitle": "Monitörü düzenle",
+      "saveChanges": "Değişiklikleri kaydet",
+      "advanced": "Gelişmiş ayarlar",
+      "retries": "Yeniden deneme",
+      "retriesHelp": "Monitör çöktü sayılmadan önce üst üste kaç başarısız kontrol olacağı. Yanlış alarmı önler.",
+      "retryInterval": "Yeniden deneme aralığı (saniye)",
+      "retryIntervalHelp": "0 = kontrol aralığıyla aynı.",
+      "timeout": "Zaman aşımı (saniye)",
+      "timeoutHelp": "Yanıt için beklenecek süre. 0 = otomatik.",
+      "resend": "Her N kontrolde uyarıyı tekrarla",
+      "resendHelp": "0 = çöktüğünde yalnızca bir kez uyar.",
+      "method": "HTTP yöntemi",
+      "accepted": "Kabul edilen durum kodları",
+      "acceptedHelp": "Örneğin 200-299, 301. Diğerleri çöktü sayılır.",
+      "headers": "İstek başlıkları (JSON)",
+      "body": "İstek gövdesi",
+      "followRedirects": "Yönlendirmeleri izle",
+      "ignoreTls": "TLS/SSL hatalarını yok say",
+      "certExpiry": "SSL sertifikası dolmadan önce uyar",
+      "upsideDown": "Ters mod",
+      "upsideDownHelp": "Hedefe ulaşılabildiğinde monitörü çöktü sayar.",
+      "dnsType": "Kayıt türü",
+      "dnsServer": "DNS sunucusu",
+      "tags": "Etiketler",
+      "tagsHelp": "Virgülle ayırın, örneğin production, api. Listeyi süzmek için kullanılır.",
+      "description": "Açıklama",
+      "current": "Anlık yanıt",
+      "range": {
+        "24h": "24 saat",
+        "7d": "7 gün",
+        "30d": "30 gün"
+      },
+      "responseTime": "Yanıt süresi",
+      "chartEmpty": "Henüz yeterli veri yok.",
+      "fastest": "En hızlı",
+      "slowest": "En yavaş",
+      "checks": "Kontrol",
+      "incidents": "Olaylar",
+      "noIncidents": "Kayıtlı olay yok.",
+      "duration": "Süre",
+      "ongoing": "Devam ediyor",
+      "recentChecksList": "Son kontroller",
+      "inMaintenance": "Planlı bakım \"{title}\" {end} tarihine kadar sürüyor. Uyarılar durduruldu.",
+      "settingsSummary": "Yöntem {method} · kabul edilen {status} · çökmeden önce {retries} deneme"
     },
     "statusPages": {
       "title": "Durum sayfaları",
@@ -132,10 +183,18 @@
         "WEBHOOK": "Webhook",
         "DISCORD": "Discord",
         "TELEGRAM": "Telegram",
-        "TEAMS": "Microsoft Teams"
+        "TEAMS": "Microsoft Teams",
+        "NTFY": "ntfy",
+        "PUSHOVER": "Pushover",
+        "GOOGLE_CHAT": "Google Chat"
       },
       "botToken": "Telegram bot anahtarı",
-      "chatId": "Telegram sohbet kimliği veya @kanal"
+      "chatId": "Telegram sohbet kimliği veya @kanal",
+      "ntfyTopic": "ntfy konusu",
+      "ntfyServer": "ntfy sunucusu (isteğe bağlı)",
+      "ntfyToken": "Erişim anahtarı (isteğe bağlı)",
+      "pushoverUser": "Pushover kullanıcı anahtarı",
+      "pushoverApp": "Pushover uygulama anahtarı"
     },
     "settings": {
       "title": "Ayarlar",
@@ -203,6 +262,23 @@
       "validation": "Girdiğiniz değerleri kontrol edin. Adresler herkese açık ve geçerli olmalıdır.",
       "delete_incomplete": "Her şeyi henüz kaldıramadık. Lütfen tekrar deneyin.",
       "unknown": "Bir şeyler ters gitti. Lütfen tekrar deneyin."
+    },
+    "maintenance": {
+      "title": "Bakım",
+      "intro": "Bakım pencereleri planlayın. Seçilen monitörler için uyarılar susturulur ve bu sürede olay kaydı açılmaz.",
+      "new": "Bakım planla",
+      "titleField": "Başlık",
+      "starts": "Başlangıç",
+      "ends": "Bitiş",
+      "timezoneNote": "Saatler saat diliminizi ({tz}) kullanır.",
+      "monitors": "Monitörler",
+      "create": "Planla",
+      "empty": "Planlı bakım yok.",
+      "active": "Sürüyor",
+      "upcoming": "Planlandı",
+      "past": "Bitti",
+      "delete": "Sil",
+      "noMonitors": "Önce bir monitör ekleyin."
     }
   }
 }

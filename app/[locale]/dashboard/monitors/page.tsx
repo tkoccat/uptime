@@ -1,15 +1,14 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Flash } from "@/components/dashboard/flash";
 import { MonitorForm } from "@/components/dashboard/monitor-form";
+import { MonitorList, type DisplayStatus, type MonitorRow } from "@/components/dashboard/monitor-list";
 import { Modal } from "@/components/dashboard/modal";
-import { StatusBadge, type DisplayStatus } from "@/components/dashboard/status-badge";
-import { Link } from "@/i18n/navigation";
 import { requireUser } from "@/lib/auth/current-user";
 import { getLimits } from "@/lib/plans";
 import { prisma } from "@/lib/prisma";
-import { createMonitorAction } from "../actions";
+import { getMonitorSummaries } from "@/lib/uptimeKuma";
+import { createMonitorAction, toggleMonitorAction } from "../actions";
 
-const TYPES = ["HTTP", "KEYWORD", "PING", "PORT", "DNS", "HEARTBEAT"] as const;
 const INTERVALS = [30, 60, 120, 180, 300, 600, 900, 1800, 3600];
 // Heartbeat: işin beklenen çalışma sıklığı (dakikalıktan haftalığa) ve gecikme toleransı
 const PERIODS = [60, 300, 900, 1800, 3600, 21600, 43200, 86400, 604800];
@@ -27,35 +26,50 @@ export default async function MonitorsPage({
   const t = await getTranslations("Dash.monitors");
   const tc = await getTranslations("Dash.common");
 
+  const now = new Date();
   const limits = await getLimits(user.plan);
-  const [monitors, open] = await Promise.all([
+  const [monitors, open, inMaintenance, summaries] = await Promise.all([
     prisma.monitor.findMany({ where: { userId: user.id }, orderBy: { createdAt: "asc" } }),
     prisma.incident.findMany({ where: { resolvedAt: null, monitor: { userId: user.id } }, select: { monitorId: true } }),
+    prisma.monitor.findMany({
+      where: { userId: user.id, maintenances: { some: { startsAt: { lte: now }, endsAt: { gt: now } } } },
+      select: { id: true },
+    }),
+    getMonitorSummaries(user.id).catch(() => new Map()),
   ]);
   const downIds = new Set(open.map((i) => i.monitorId));
-  const statusOf = (m: { id: string; isActive: boolean }): DisplayStatus =>
-    !m.isActive ? "paused" : downIds.has(m.id) ? "down" : "up";
+  const maintIds = new Set(inMaintenance.map((m) => m.id));
 
   // Süre etiketi: saniye / dakika / saat / gün
   const label = (s: number) =>
     s === 0 ? tc("none") : s < 60 ? tc("seconds", { n: s }) : s < 3600 ? tc("minutes", { n: s / 60 }) : s < 86400 ? tc("hours", { n: s / 3600 }) : tc("days", { n: s / 86400 });
   const opt = (s: number) => ({ value: s, label: label(s) });
 
-  const labels = {
-    name: t("name"),
-    type: t("type"),
-    target: t("target"),
-    targetHelp: t("targetHelp"),
-    keyword: t("keyword"),
-    interval: t("interval"),
-    period: t("period"),
-    grace: t("grace"),
-    graceHelp: t("graceHelp"),
-    heartbeatHelp: t("heartbeatHelp"),
-    optional: tc("optional"),
-    create: t("create"),
-    types: Object.fromEntries(TYPES.map((x) => [x, t(`types.${x}`)])),
-  };
+  const rows: MonitorRow[] = monitors.map((m) => {
+    const s = summaries.get(m.id);
+    const beats = s?.beats ?? [];
+    const last = beats[beats.length - 1];
+    const status: DisplayStatus = !m.isActive
+      ? "paused"
+      : maintIds.has(m.id)
+        ? "maintenance"
+        : downIds.has(m.id) || last?.status === "down"
+          ? "down"
+          : (last?.status ?? "pending");
+    return {
+      id: m.id,
+      name: m.name,
+      type: m.type,
+      target: m.type === "HEARTBEAT" ? t("types.HEARTBEAT") : m.url,
+      intervalLabel: label(m.interval),
+      status,
+      isActive: m.isActive,
+      tags: m.tags,
+      beats,
+      lastPing: [...beats].reverse().find((b) => b.ping !== null)?.ping ?? null,
+      uptime30d: s?.uptime30d ?? null,
+    };
+  });
 
   return (
     <>
@@ -67,7 +81,6 @@ export default async function MonitorsPage({
         <Modal trigger={t("new")} title={t("new")} closeLabel={tc("back")}>
           <MonitorForm
             action={createMonitorAction}
-            labels={labels}
             intervals={INTERVALS.filter((i) => i >= limits.minInterval).map(opt)}
             periods={PERIODS.filter((p) => p >= limits.minInterval).map(opt)}
             graces={GRACES.map(opt)}
@@ -78,25 +91,7 @@ export default async function MonitorsPage({
 
       <Flash error={searchParams.error} ok={searchParams.ok} />
 
-      {monitors.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("empty")}</p>
-      ) : (
-        <ul className="divide-y rounded-lg border">
-          {monitors.map((m) => (
-            <li key={m.id} className="flex flex-wrap items-center justify-between gap-2 p-3">
-              <div className="min-w-0">
-                <Link href={`/dashboard/monitors/${m.id}`} className="font-medium underline">
-                  {m.name}
-                </Link>
-                <p className="truncate text-xs text-muted-foreground">
-                  {m.type === "HEARTBEAT" ? t("types.HEARTBEAT") : m.url} · {label(m.interval)}
-                </p>
-              </div>
-              <StatusBadge status={statusOf(m)} />
-            </li>
-          ))}
-        </ul>
-      )}
+      {monitors.length === 0 ? <p className="text-sm text-muted-foreground">{t("empty")}</p> : <MonitorList rows={rows} toggleAction={toggleMonitorAction} />}
     </>
   );
 }

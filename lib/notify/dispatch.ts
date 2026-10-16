@@ -1,3 +1,4 @@
+import { isInMaintenance } from "../maintenance";
 import { prisma } from "../prisma";
 import { renderEmail, type EmailTemplate } from "../email/render";
 import { sendEmail } from "../email/send";
@@ -13,6 +14,9 @@ export async function dispatchAlert(params: { monitorId: string; kind: AlertKind
     include: { user: true },
   });
   if (!monitor) return; // monitör bu arada silinmiş olabilir
+
+  // Planlı bakım sırasında ne olay kaydı açılır ne de bildirim gider
+  if (await isInMaintenance(monitor.id, new Date(params.time))) return;
 
   // Olay geçmişi (status page'deki incident listesi)
   if (params.kind === "down") {

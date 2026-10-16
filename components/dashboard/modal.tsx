@@ -17,7 +17,7 @@ export function Modal({ trigger, title, closeLabel, children }: {
       <Button onClick={() => ref.current?.showModal()}>{trigger}</Button>
       <dialog
         ref={ref}
-        className="w-full max-w-md rounded-lg border bg-background p-6 text-foreground backdrop:bg-black/50"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg border bg-background p-6 text-foreground backdrop:bg-black/50"
       >
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>

@@ -8,7 +8,8 @@
       "settings": "Paramètres",
       "billing": "Facturation",
       "api": "API",
-      "signOut": "Se déconnecter"
+      "signOut": "Se déconnecter",
+      "maintenance": "Maintenance"
     },
     "common": {
       "create": "Créer",
@@ -65,7 +66,7 @@
       "delete": "Supprimer la sonde",
       "deleteConfirm": "Supprimer cette sonde et son historique ?",
       "last24h": "Dernières 24 heures",
-      "uptime": "Disponibilité (24 h)",
+      "uptime": "Disponibilité",
       "avgPing": "Temps de réponse moyen",
       "recentChecks": "Dernières vérifications",
       "noChecks": "Aucune vérification pour l'instant.",
@@ -88,7 +89,57 @@
       "lastPing": "Dernier ping",
       "neverPinged": "Aucun ping reçu pour l'instant",
       "keepSecret": "Gardez cette URL secrète : toute personne qui la connaît peut envoyer des pings.",
-      "noGrace": "Aucun"
+      "noGrace": "Aucun",
+      "search": "Rechercher des moniteurs…",
+      "filter": "Filtrer par statut",
+      "filterAll": "Tous",
+      "allTags": "Toutes les étiquettes",
+      "noMatch": "Aucun moniteur ne correspond à vos filtres.",
+      "edit": "Modifier",
+      "editTitle": "Modifier le moniteur",
+      "saveChanges": "Enregistrer les modifications",
+      "advanced": "Paramètres avancés",
+      "retries": "Nouvelles tentatives",
+      "retriesHelp": "Contrôles échoués consécutifs avant de considérer le moniteur en panne. Évite les fausses alertes.",
+      "retryInterval": "Intervalle entre tentatives (secondes)",
+      "retryIntervalHelp": "0 = identique à l'intervalle de contrôle.",
+      "timeout": "Délai d'attente (secondes)",
+      "timeoutHelp": "Durée d'attente d'une réponse. 0 = automatique.",
+      "resend": "Répéter l'alerte tous les N contrôles",
+      "resendHelp": "0 = une seule alerte lors de la panne.",
+      "method": "Méthode HTTP",
+      "accepted": "Codes de statut acceptés",
+      "acceptedHelp": "Par exemple 200-299, 301. Tout le reste est considéré en panne.",
+      "headers": "En-têtes de requête (JSON)",
+      "body": "Corps de la requête",
+      "followRedirects": "Suivre les redirections",
+      "ignoreTls": "Ignorer les erreurs TLS/SSL",
+      "certExpiry": "Avertir avant l'expiration du certificat SSL",
+      "upsideDown": "Mode inversé",
+      "upsideDownHelp": "Le moniteur est en panne lorsque la cible est joignable.",
+      "dnsType": "Type d'enregistrement",
+      "dnsServer": "Serveur DNS",
+      "tags": "Étiquettes",
+      "tagsHelp": "Séparées par des virgules, par exemple production, api. Sert à filtrer la liste.",
+      "description": "Description",
+      "current": "Réponse actuelle",
+      "range": {
+        "24h": "24 heures",
+        "7d": "7 jours",
+        "30d": "30 jours"
+      },
+      "responseTime": "Temps de réponse",
+      "chartEmpty": "Pas encore assez de données.",
+      "fastest": "Le plus rapide",
+      "slowest": "Le plus lent",
+      "checks": "Contrôles",
+      "incidents": "Incidents",
+      "noIncidents": "Aucun incident enregistré.",
+      "duration": "Durée",
+      "ongoing": "En cours",
+      "recentChecksList": "Derniers contrôles",
+      "inMaintenance": "La maintenance planifiée « {title} » est en cours jusqu'au {end}. Les alertes sont suspendues.",
+      "settingsSummary": "Méthode {method} · acceptés {status} · {retries} tentatives avant panne"
     },
     "statusPages": {
       "title": "Pages de statut",
@@ -132,10 +183,18 @@
         "WEBHOOK": "Webhook",
         "DISCORD": "Discord",
         "TELEGRAM": "Telegram",
-        "TEAMS": "Microsoft Teams"
+        "TEAMS": "Microsoft Teams",
+        "NTFY": "ntfy",
+        "PUSHOVER": "Pushover",
+        "GOOGLE_CHAT": "Google Chat"
       },
       "botToken": "Jeton du bot Telegram",
-      "chatId": "ID de discussion Telegram ou @canal"
+      "chatId": "ID de discussion Telegram ou @canal",
+      "ntfyTopic": "Sujet ntfy",
+      "ntfyServer": "Serveur ntfy (facultatif)",
+      "ntfyToken": "Jeton d'accès (facultatif)",
+      "pushoverUser": "Clé utilisateur Pushover",
+      "pushoverApp": "Jeton d'application Pushover"
     },
     "settings": {
       "title": "Paramètres",
@@ -203,6 +262,23 @@
       "validation": "Vérifiez les valeurs saisies. Les adresses doivent être publiques et valides.",
       "delete_incomplete": "Nous n'avons pas encore pu tout supprimer. Veuillez réessayer.",
       "unknown": "Une erreur s'est produite. Veuillez réessayer."
+    },
+    "maintenance": {
+      "title": "Maintenance",
+      "intro": "Planifiez des fenêtres de maintenance. Les alertes des moniteurs choisis sont coupées et aucun incident n'est enregistré pendant ce temps.",
+      "new": "Planifier une maintenance",
+      "titleField": "Titre",
+      "starts": "Début",
+      "ends": "Fin",
+      "timezoneNote": "Les heures utilisent votre fuseau horaire ({tz}).",
+      "monitors": "Moniteurs",
+      "create": "Planifier",
+      "empty": "Aucune maintenance planifiée.",
+      "active": "En cours",
+      "upcoming": "Planifiée",
+      "past": "Terminée",
+      "delete": "Supprimer",
+      "noMonitors": "Ajoutez d'abord un moniteur."
     }
   }
 }

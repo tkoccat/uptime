@@ -17,12 +17,19 @@ import { prisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { createCheckoutUrl, createPortalUrl } from "@/lib/stripe/checkout";
 import { isCurrency, type Billing, type PaidPlan } from "@/lib/stripe/prices";
+import type { NotificationType } from "@prisma/client";
+import { parseStatusList, parseTags } from "@/lib/monitor-options";
+import { zonedToUtc } from "@/lib/time";
 import {
+  createMaintenance,
   createMonitor,
   createNotificationChannel,
   createStatusPage,
+  deleteMaintenance,
   deleteMonitor,
   setMonitorActive,
+  updateMonitor,
+  type MonitorInput,
 } from "@/lib/uptimeKuma";
 
 // --- Ortak yardımcılar ---
@@ -56,18 +63,76 @@ const str = (fd: FormData, key: string) => String(fd.get(key) ?? "");
 
 // --- Monitörler ---
 
+const optNum = (fd: FormData, key: string) => (str(fd, key).trim() === "" ? undefined : Number(str(fd, key)));
+
+// Form alanlarını servis katmanının beklediği girdiye çevirir (oluşturma ve düzenleme ortak)
+function readMonitorForm(fd: FormData): MonitorInput {
+  // Gelişmiş ayarlar yalnızca form bunları gönderdiyse (heartbeat'te gönderilmez) okunur
+  const hasOptions = fd.get("opt_present") === "1";
+  return {
+    name: str(fd, "name"),
+    url: str(fd, "url"),
+    type: str(fd, "type") as "HTTP",
+    interval: Number(str(fd, "interval")),
+    keyword: str(fd, "keyword") || undefined,
+    grace: str(fd, "grace") ? Number(str(fd, "grace")) : 0,
+    description: str(fd, "description") || undefined,
+    tags: parseTags(str(fd, "tags")),
+    options: hasOptions
+      ? {
+          method: str(fd, "opt_method") as "GET",
+          retries: optNum(fd, "opt_retries"),
+          retryInterval: optNum(fd, "opt_retryInterval"),
+          timeout: optNum(fd, "opt_timeout"),
+          acceptedStatus: parseStatusList(str(fd, "opt_status") || "200-299"),
+          followRedirects: fd.get("opt_followRedirects") === "on",
+          ignoreTls: fd.get("opt_ignoreTls") === "on",
+          upsideDown: fd.get("opt_upsideDown") === "on",
+          certExpiry: fd.get("opt_certExpiry") === "on",
+          headers: str(fd, "opt_headers"),
+          body: str(fd, "opt_body"),
+          resendEvery: optNum(fd, "opt_resendEvery"),
+          dnsType: str(fd, "opt_dnsType") as "A",
+          dnsServer: str(fd, "opt_dnsServer") as "1.1.1.1",
+        }
+      : undefined,
+  };
+}
+
 export async function createMonitorAction(fd: FormData) {
   const user = await requireUser();
   await run("/dashboard/monitors", async () => {
-    await createMonitor(user.id, {
-      name: str(fd, "name"),
-      url: str(fd, "url"),
-      type: str(fd, "type") as "HTTP",
-      interval: Number(str(fd, "interval")),
-      keyword: str(fd, "keyword") || undefined,
-      grace: str(fd, "grace") ? Number(str(fd, "grace")) : 0,
+    await createMonitor(user.id, readMonitorForm(fd));
+  });
+}
+
+export async function updateMonitorAction(fd: FormData) {
+  const user = await requireUser();
+  const id = str(fd, "id");
+  await run(`/dashboard/monitors/${id}`, async () => {
+    await updateMonitor(user.id, id, readMonitorForm(fd));
+  });
+}
+
+// --- Planlı bakım ---
+
+export async function createMaintenanceAction(fd: FormData) {
+  const user = await requireUser();
+  await run("/dashboard/maintenance", async () => {
+    // Tarayıcı yerel saati ("datetime-local") kullanıcının saat dilimi olarak yorumlanır
+    const toDate = (key: string) => zonedToUtc(str(fd, key), user.timezone);
+    await createMaintenance(user.id, {
+      title: str(fd, "title"),
+      startsAt: toDate("startsAt"),
+      endsAt: toDate("endsAt"),
+      monitorIds: fd.getAll("monitorIds").map(String),
     });
   });
+}
+
+export async function deleteMaintenanceAction(fd: FormData) {
+  const user = await requireUser();
+  await run("/dashboard/maintenance", () => deleteMaintenance(user.id, str(fd, "id")));
 }
 
 export async function deleteMonitorAction(fd: FormData) {
@@ -78,7 +143,8 @@ export async function deleteMonitorAction(fd: FormData) {
 export async function toggleMonitorAction(fd: FormData) {
   const user = await requireUser();
   const id = str(fd, "id");
-  await run(`/dashboard/monitors/${id}`, async () => {
+  // Listeden gelen istek listeye, detay sayfasından gelen detaya döner
+  await run(str(fd, "back") === "list" ? "/dashboard/monitors" : `/dashboard/monitors/${id}`, async () => {
     await setMonitorActive(user.id, id, str(fd, "active") === "true");
   });
 }
@@ -118,18 +184,22 @@ async function sendVerificationEmail(userId: string, locale: string, channelId: 
 
 export async function createChannelAction(fd: FormData) {
   const user = await requireUser();
-  const type = str(fd, "type") as "EMAIL" | "SMS" | "SLACK" | "WEBHOOK" | "DISCORD" | "TELEGRAM" | "TEAMS";
+  const type = str(fd, "type") as NotificationType;
   // Her tür yalnızca kendi alanlarını kullanır; formdaki diğer alanlar yok sayılır
   const config =
     type === "EMAIL"
       ? { email: str(fd, "email") }
       : type === "WEBHOOK"
         ? { url: str(fd, "webhookUrl") }
-        : type === "SLACK" || type === "DISCORD" || type === "TEAMS"
-          ? { webhookUrl: str(fd, "webhookUrl") }
+        : type === "SLACK" || type === "DISCORD" || type === "TEAMS" || type === "GOOGLE_CHAT"
+          ? { webhookUrl: str(fd, "webhookUrl").trim() }
           : type === "TELEGRAM"
             ? { botToken: str(fd, "botToken").trim(), chatId: str(fd, "chatId").trim() }
-            : { phone: str(fd, "phone") };
+            : type === "NTFY"
+              ? { serverUrl: str(fd, "serverUrl").trim(), topic: str(fd, "topic").trim(), token: str(fd, "token").trim() }
+              : type === "PUSHOVER"
+                ? { userKey: str(fd, "userKey").trim(), appToken: str(fd, "appToken").trim() }
+                : { phone: str(fd, "phone") };
 
   await run("/dashboard/notifications", async () => {
     const channel = await createNotificationChannel(user.id, { type, name: str(fd, "name"), config });

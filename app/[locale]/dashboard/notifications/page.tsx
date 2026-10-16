@@ -2,13 +2,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ConfirmSubmit } from "@/components/dashboard/confirm-submit";
 import { Flash } from "@/components/dashboard/flash";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { ChannelForm } from "@/components/dashboard/channel-form";
 import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/prisma";
 import { createChannelAction, deleteChannelAction, testChannelAction } from "../actions";
-
-const TYPES = ["EMAIL", "SLACK", "DISCORD", "TELEGRAM", "TEAMS", "WEBHOOK", "SMS"] as const;
 
 export default async function NotificationsPage({
   params: { locale },
@@ -80,46 +77,7 @@ export default async function NotificationsPage({
 
       <section className="space-y-3 rounded-lg border p-4">
         <h2 className="text-lg font-semibold">{t("new")}</h2>
-        <form action={createChannelAction} className="grid gap-3 sm:grid-cols-2">
-          <div className="space-y-1">
-            <Label htmlFor="cname">{t("name")}</Label>
-            <Input id="cname" name="name" maxLength={100} required />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="ctype">{t("type")}</Label>
-            <select id="ctype" name="type" className="h-10 w-full rounded-md border bg-background px-3 text-sm">
-              {TYPES.map((x) => (
-                <option key={x} value={x}>
-                  {t(`types.${x}`)}
-                </option>
-              ))}
-            </select>
-          </div>
-          {/* Yalnızca seçilen türe ait alan doldurulur; diğerleri boş kalır ve yok sayılır */}
-          <div className="space-y-1">
-            <Label htmlFor="cemail">{t("email")}</Label>
-            <Input id="cemail" name="email" type="email" />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="cslack">{t("webhookUrl")}</Label>
-            <Input id="cslack" name="webhookUrl" type="url" />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="cbot">{t("botToken")}</Label>
-            <Input id="cbot" name="botToken" autoComplete="off" />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="cchat">{t("chatId")}</Label>
-            <Input id="cchat" name="chatId" autoComplete="off" />
-          </div>
-          <div className="space-y-1">
-            <Label htmlFor="cphone">{t("phone")}</Label>
-            <Input id="cphone" name="phone" />
-          </div>
-          <div className="flex items-end">
-            <Button type="submit">{t("create")}</Button>
-          </div>
-        </form>
+        <ChannelForm action={createChannelAction} />
       </section>
     </>
   );

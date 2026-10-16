@@ -45,6 +45,9 @@ enum NotificationType {
   DISCORD
   TELEGRAM
   TEAMS
+  NTFY
+  PUSHOVER
+  GOOGLE_CHAT
 }
 
 model User {
@@ -79,6 +82,7 @@ model User {
   usageLogs            UsageLog[]
   auditLogs            AuditLog[]
   apiKeys              ApiKey[]
+  maintenances         Maintenance[]
 
   @@index([createdAt])
   @@index([utmSource])
@@ -124,11 +128,17 @@ model Monitor {
   graceSeconds        Int         @default(0)
   // HEARTBEAT: son ping zamanı (panelde "son ping" göstermek için)
   lastPingAt          DateTime?
+  // Kuma'daki gelişmiş ayarlar (yöntem, yeniden deneme, kabul edilen kodlar, başlıklar vb.); doğrulama lib/monitor-options.ts'te
+  options             Json        @default("{}")
+  // Panelde gruplama/filtreleme için serbest etiketler
+  tags                String[]    @default([])
+  description         String?
 
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  statusPages StatusPage[]
-  daily       MonitorDaily[]
-  incidents   Incident[]
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  statusPages  StatusPage[]
+  daily        MonitorDaily[]
+  incidents    Incident[]
+  maintenances Maintenance[]
 
   // Aynı Kuma monitörü iki kez eşlenemez
   @@unique([uptimeKumaMonitorId])
@@ -145,6 +155,20 @@ model MonitorDaily {
   monitor Monitor @relation(fields: [monitorId], references: [id], onDelete: Cascade)
 
   @@id([monitorId, day])
+}
+
+// Planlı bakım penceresi: seçili monitörler için bu aralıkta uyarı gönderilmez, durum sayfasında duyurulur
+model Maintenance {
+  id        String    @id @default(cuid())
+  userId    String
+  title     String
+  startsAt  DateTime
+  endsAt    DateTime
+  createdAt DateTime  @default(now())
+  monitors  Monitor[]
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startsAt])
 }
 
 model Incident {

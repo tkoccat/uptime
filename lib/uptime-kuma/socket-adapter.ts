@@ -1,3 +1,4 @@
+import { DEFAULT_OPTIONS } from "../monitor-options";
 import { KumaConnection, KumaError } from "./connection";
 import type { Heartbeat, HeartbeatStatus, KumaMonitorInput, MonitorKind, UptimeKumaAdapter } from "./types";
 
@@ -76,9 +77,9 @@ export class SocketUptimeKumaAdapter implements UptimeKumaAdapter {
     return res.id;
   }
 
-  async createMonitor(tenantId: string, input: KumaMonitorInput): Promise<{ kumaId: number }> {
-    const webhookId = await this.ensureAlertWebhook();
-
+  // Uygulama monitörünü Kuma'nın beklediği nesneye çevirir (oluşturma ve düzenleme ortak kullanır)
+  private buildMonitor(tenantId: string, input: KumaMonitorInput, webhookId: number) {
+    const o = input.options ?? DEFAULT_OPTIONS;
     // PORT için "host:port" ayrıştırılır
     let hostname: string | undefined;
     let port: number | undefined;
@@ -90,42 +91,54 @@ export class SocketUptimeKumaAdapter implements UptimeKumaAdapter {
       hostname = input.target;
     }
 
-    const monitor = {
+    const http = input.type === "HTTP" || input.type === "KEYWORD";
+    return {
       type: KUMA_TYPE[input.type],
       name: input.name,
       parent: null,
-      url: input.type === "HTTP" || input.type === "KEYWORD" ? input.target : "https://",
-      method: "GET",
+      url: http ? input.target : "https://",
+      method: http ? o.method : "GET",
       hostname,
       port,
       keyword: input.keyword ?? "",
       // Push (heartbeat) monitörü: Kuma bu anahtara gelen istekleri bekler, gelmezse çöktü sayar
       pushToken: input.pushToken,
       interval: input.interval,
-      retryInterval: input.interval,
-      resendInterval: 0,
-      maxretries: 0,
-      timeout: Math.min(48, Math.floor(input.interval * 0.8)),
+      retryInterval: o.retryInterval || input.interval,
+      resendInterval: o.resendEvery,
+      maxretries: o.retries,
+      timeout: o.timeout || Math.min(48, Math.floor(input.interval * 0.8)),
       notificationIDList: { [webhookId]: true },
-      ignoreTls: false,
-      upsideDown: false,
-      expiryNotification: false,
-      maxredirects: 10,
-      accepted_statuscodes: ["200-299"],
-      dns_resolve_type: "A",
-      dns_resolve_server: "1.1.1.1",
+      ignoreTls: o.ignoreTls,
+      upsideDown: o.upsideDown,
+      expiryNotification: http && o.certExpiry,
+      maxredirects: o.followRedirects ? 10 : 0,
+      accepted_statuscodes: o.acceptedStatus,
+      dns_resolve_type: o.dnsType,
+      dns_resolve_server: o.dnsServer,
       proxyId: null,
       authMethod: null,
       httpBodyEncoding: "json",
-      body: null,
-      headers: null,
-      description: `tenant:${tenantId}`,
+      body: o.body.trim() || null,
+      headers: o.headers.trim() || null,
+      // Kiracı işareti denetim içindir; kullanıcı açıklaması varsa sonuna eklenir
+      description: input.description ? `tenant:${tenantId} ${input.description}` : `tenant:${tenantId}`,
       conditions: [],
     };
+  }
+
+  async createMonitor(tenantId: string, input: KumaMonitorInput): Promise<{ kumaId: number }> {
+    const webhookId = await this.ensureAlertWebhook();
+    const monitor = this.buildMonitor(tenantId, input, webhookId);
 
     const res = await this.conn.call<{ ok: boolean; monitorID?: number }>("add", monitor);
     if (typeof res.monitorID !== "number") throw new KumaError("Uptime Kuma monitör kimliği dönmedi");
     return { kumaId: res.monitorID };
+  }
+
+  async updateMonitor(tenantId: string, kumaId: number, input: KumaMonitorInput): Promise<void> {
+    const webhookId = await this.ensureAlertWebhook();
+    await this.conn.call("editMonitor", { ...this.buildMonitor(tenantId, input, webhookId), id: kumaId });
   }
 
   async deleteMonitor(_tenantId: string, kumaId: number): Promise<void> {

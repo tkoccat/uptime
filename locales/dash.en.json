@@ -8,7 +8,8 @@
       "settings": "Settings",
       "billing": "Billing",
       "api": "API",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "maintenance": "Maintenance"
     },
     "common": {
       "create": "Create",
@@ -65,7 +66,7 @@
       "delete": "Delete monitor",
       "deleteConfirm": "Delete this monitor and its history?",
       "last24h": "Last 24 hours",
-      "uptime": "Uptime (24h)",
+      "uptime": "Uptime",
       "avgPing": "Average response",
       "recentChecks": "Recent checks",
       "noChecks": "No checks yet.",
@@ -88,7 +89,57 @@
       "lastPing": "Last ping",
       "neverPinged": "No ping received yet",
       "keepSecret": "Keep this URL secret: anyone who has it can send pings.",
-      "noGrace": "None"
+      "noGrace": "None",
+      "search": "Search monitors…",
+      "filter": "Filter by status",
+      "filterAll": "All",
+      "allTags": "All tags",
+      "noMatch": "No monitors match your filters.",
+      "edit": "Edit",
+      "editTitle": "Edit monitor",
+      "saveChanges": "Save changes",
+      "advanced": "Advanced settings",
+      "retries": "Retries",
+      "retriesHelp": "Failed checks in a row before the monitor is marked down. Avoids false alarms.",
+      "retryInterval": "Retry interval (seconds)",
+      "retryIntervalHelp": "0 = same as the check interval.",
+      "timeout": "Timeout (seconds)",
+      "timeoutHelp": "How long to wait for a response. 0 = automatic.",
+      "resend": "Repeat alert every N checks",
+      "resendHelp": "0 = alert only once when it goes down.",
+      "method": "HTTP method",
+      "accepted": "Accepted status codes",
+      "acceptedHelp": "For example 200-299, 301. Anything else counts as down.",
+      "headers": "Request headers (JSON)",
+      "body": "Request body",
+      "followRedirects": "Follow redirects",
+      "ignoreTls": "Ignore TLS/SSL errors",
+      "certExpiry": "Warn before the SSL certificate expires",
+      "upsideDown": "Upside-down mode",
+      "upsideDownHelp": "Marks the monitor down when the target is reachable.",
+      "dnsType": "Record type",
+      "dnsServer": "DNS server",
+      "tags": "Tags",
+      "tagsHelp": "Comma separated, for example production, api. Used to filter the list.",
+      "description": "Description",
+      "current": "Current response",
+      "range": {
+        "24h": "24 hours",
+        "7d": "7 days",
+        "30d": "30 days"
+      },
+      "responseTime": "Response time",
+      "chartEmpty": "Not enough data yet.",
+      "fastest": "Fastest",
+      "slowest": "Slowest",
+      "checks": "Checks",
+      "incidents": "Incidents",
+      "noIncidents": "No incidents recorded.",
+      "duration": "Duration",
+      "ongoing": "Ongoing",
+      "recentChecksList": "Latest checks",
+      "inMaintenance": "Scheduled maintenance \"{title}\" is in progress until {end}. Alerts are paused.",
+      "settingsSummary": "Method {method} · accepted {status} · {retries} retries before down"
     },
     "statusPages": {
       "title": "Status pages",
@@ -132,10 +183,18 @@
         "WEBHOOK": "Webhook",
         "DISCORD": "Discord",
         "TELEGRAM": "Telegram",
-        "TEAMS": "Microsoft Teams"
+        "TEAMS": "Microsoft Teams",
+        "NTFY": "ntfy",
+        "PUSHOVER": "Pushover",
+        "GOOGLE_CHAT": "Google Chat"
       },
       "botToken": "Telegram bot token",
-      "chatId": "Telegram chat ID or @channel"
+      "chatId": "Telegram chat ID or @channel",
+      "ntfyTopic": "ntfy topic",
+      "ntfyServer": "ntfy server (optional)",
+      "ntfyToken": "Access token (optional)",
+      "pushoverUser": "Pushover user key",
+      "pushoverApp": "Pushover app token"
     },
     "settings": {
       "title": "Settings",
@@ -203,6 +262,23 @@
       "validation": "Please check the values you entered. Addresses must be public and valid.",
       "delete_incomplete": "We could not remove everything yet. Please try again.",
       "unknown": "Something went wrong. Please try again."
+    },
+    "maintenance": {
+      "title": "Maintenance",
+      "intro": "Schedule maintenance windows. Alerts for the selected monitors are silenced and no incidents are recorded while they run.",
+      "new": "Schedule maintenance",
+      "titleField": "Title",
+      "starts": "Starts",
+      "ends": "Ends",
+      "timezoneNote": "Times use your time zone ({tz}).",
+      "monitors": "Monitors",
+      "create": "Schedule",
+      "empty": "No maintenance scheduled.",
+      "active": "In progress",
+      "upcoming": "Scheduled",
+      "past": "Finished",
+      "delete": "Delete",
+      "noMonitors": "Add a monitor first."
     }
   }
 }

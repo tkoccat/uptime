@@ -10,7 +10,21 @@ export type AlertPayload = {
   time: string;
 };
 
-type ChannelSecrets = { email?: string; webhookUrl?: string; url?: string; phone?: string; botToken?: string; chatId?: string };
+type ChannelSecrets = {
+  email?: string;
+  webhookUrl?: string;
+  url?: string;
+  phone?: string;
+  botToken?: string;
+  chatId?: string;
+  // ntfy
+  serverUrl?: string;
+  topic?: string;
+  token?: string;
+  // Pushover
+  userKey?: string;
+  appToken?: string;
+};
 
 export function readChannelConfig(channel: Pick<NotificationChannel, "config">): ChannelSecrets {
   const enc = (channel.config as { enc?: string } | null)?.enc;
@@ -18,10 +32,10 @@ export function readChannelConfig(channel: Pick<NotificationChannel, "config">):
   return JSON.parse(decrypt(enc)) as ChannelSecrets;
 }
 
-async function post(url: string, body: unknown) {
+async function post(url: string, body: unknown, headers: Record<string, string> = {}) {
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(8_000),
     redirect: "error", // yönlendirmelerle iç adrese sıçramayı engeller
@@ -57,6 +71,35 @@ export async function sendToExternalChannel(channel: NotificationChannel, payloa
             },
           },
         ],
+      });
+      return;
+    case "GOOGLE_CHAT":
+      await post(cfg.webhookUrl!, { text: `*${payload.title}*\n${payload.text}`.slice(0, 4000) });
+      return;
+    case "NTFY": {
+      // Kendi ntfy sunucusu da olabilir: gönderim anında adres tekrar doğrulanır
+      const server = (cfg.serverUrl || "https://ntfy.sh").replace(/\/$/, "");
+      await assertPublicUrl(server);
+      await post(
+        server,
+        {
+          topic: cfg.topic,
+          title: payload.title,
+          message: payload.text.slice(0, 1000),
+          priority: payload.event === "monitor.down" ? 4 : 3,
+          tags: [payload.event === "monitor.down" ? "rotating_light" : payload.event === "monitor.up" ? "white_check_mark" : "bell"],
+        },
+        cfg.token ? { Authorization: `Bearer ${cfg.token}` } : {}
+      );
+      return;
+    }
+    case "PUSHOVER":
+      await post("https://api.pushover.net/1/messages.json", {
+        token: cfg.appToken,
+        user: cfg.userKey,
+        title: payload.title,
+        message: payload.text.slice(0, 1000),
+        priority: payload.event === "monitor.down" ? 1 : 0,
       });
       return;
     case "TELEGRAM":

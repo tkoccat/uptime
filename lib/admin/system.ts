@@ -1,6 +1,7 @@
 import { getRedis } from "../redis";
 import { prisma } from "../prisma";
 import { getStripe } from "../stripe/client";
+import { isStripeConfigured } from "../stripe/config";
 import { getAdapter } from "../uptime-kuma";
 
 export type Check = { name: string; ok: boolean; detail: string };
@@ -30,8 +31,8 @@ export async function runConnectionChecks(): Promise<Check[]> {
       return `connected, alert webhook notification #${id}`;
     }),
     attempt("Stripe", async () => {
-      if (!has(process.env.STRIPE_SECRET_KEY)) throw new Error("STRIPE_SECRET_KEY not set");
-      const balance = await getStripe().balance.retrieve();
+      if (!(await isStripeConfigured())) throw new Error("Stripe keys not set (Admin > Integrations)");
+      const balance = await (await getStripe()).balance.retrieve();
       return `connected (${balance.livemode ? "live" : "test"} mode)`;
     }),
   ]);

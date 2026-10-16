@@ -32,7 +32,7 @@ export async function deleteAccount(userId: string): Promise<void> {
 
   // 2) Stripe: aktif abonelikleri iptal et (müşteri kaydı fatura saklama için kalır)
   if (user.stripeCustomerId) {
-    const stripe = getStripe();
+    const stripe = await getStripe();
     const subs = await stripe.subscriptions.list({ customer: user.stripeCustomerId, status: "all", limit: 20 });
     for (const s of subs.data) {
       if (s.status !== "canceled" && s.status !== "incomplete_expired") await stripe.subscriptions.cancel(s.id);

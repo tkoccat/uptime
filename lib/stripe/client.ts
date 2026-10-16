@@ -1,11 +1,14 @@
 import Stripe from "stripe";
+import { getStripeKeys } from "./config";
 
-const globalForStripe = globalThis as unknown as { stripe?: Stripe };
+const globalForStripe = globalThis as unknown as { stripe?: { key: string; client: Stripe } };
 
-export function getStripe(): Stripe {
-  if (globalForStripe.stripe) return globalForStripe.stripe;
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) throw new Error("STRIPE_SECRET_KEY tanımlı değil");
-  globalForStripe.stripe = new Stripe(key);
-  return globalForStripe.stripe;
+// Anahtar admin panelinden değişirse yeni istemci oluşturulur
+export async function getStripe(): Promise<Stripe> {
+  const { secretKey } = await getStripeKeys();
+  if (!secretKey) throw new Error("Stripe is not configured (add the keys in Admin > Integrations)");
+  if (globalForStripe.stripe?.key === secretKey) return globalForStripe.stripe.client;
+  const client = new Stripe(secretKey);
+  globalForStripe.stripe = { key: secretKey, client };
+  return client;
 }

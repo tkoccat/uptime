@@ -205,3 +205,26 @@ describe("kullanıcı yönetimi (gerçek veritabanı)", () => {
     expect(await prisma.monitor.count({ where: { userId: u.id } })).toBe(0);
   });
 });
+
+describe("Stripe anahtarları (admin paneli)", () => {
+  it("anahtarlar şifreli saklanır, ortam değişkeninin önüne geçer, silinince env'e dönülür", async () => {
+    const { clearStripeKeys, getStripeKeys, invalidateStripeKeys, saveStripeKeys, validateStripeKeyShapes } = await import("@/lib/stripe/config");
+    process.env.STRIPE_SECRET_KEY = "sk_test_fromenv";
+    invalidateStripeKeys();
+    expect((await getStripeKeys()).source).toBe("env");
+
+    await saveStripeKeys({ secretKey: "sk_test_fromadmin1234", webhookSecret: "whsec_abc123" });
+    const keys = await getStripeKeys();
+    expect(keys).toMatchObject({ secretKey: "sk_test_fromadmin1234", webhookSecret: "whsec_abc123", source: "admin" });
+    const raw = JSON.stringify((await prisma.siteSetting.findUniqueOrThrow({ where: { key: "stripe" } })).value);
+    expect(raw).not.toContain("fromadmin"); // veritabanında düz metin yok
+
+    await saveStripeKeys({ publishableKey: "pk_test_abc" }); // boş alanlar mevcut değeri korur
+    expect(await getStripeKeys()).toMatchObject({ secretKey: "sk_test_fromadmin1234", publishableKey: "pk_test_abc" });
+
+    await clearStripeKeys();
+    expect((await getStripeKeys()).secretKey).toBe("sk_test_fromenv");
+    expect(validateStripeKeyShapes({ secretKey: "pk_test_x" })).toMatch(/Secret key/);
+    expect(validateStripeKeyShapes({ webhookSecret: "whsec_ok1" })).toBeNull();
+  });
+});

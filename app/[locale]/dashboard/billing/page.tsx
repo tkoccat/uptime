@@ -3,6 +3,7 @@ import { Flash } from "@/components/dashboard/flash";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireUser } from "@/lib/auth/current-user";
+import { isStripeConfigured } from "@/lib/stripe/config";
 import { parsePlanIntent } from "@/lib/auth/intent";
 import { formatMoney, getPlanConfigs } from "@/lib/plan-config";
 import { getLimits } from "@/lib/plans";
@@ -31,7 +32,7 @@ export default async function BillingPage({
   ]);
   const [limits, configs] = await Promise.all([getLimits(user.plan), getPlanConfigs()]);
   const date = (d: Date) => new Intl.DateTimeFormat(user.locale, { dateStyle: "long", timeZone: user.timezone }).format(d);
-  const configured = Boolean(process.env.STRIPE_SECRET_KEY);
+  const configured = await isStripeConfigured();
   // Fiyat sayfasından gelen seçim (kayıt sonrası): ilgili plan vurgulanır, dönem önceden seçilir
   const intent = parsePlanIntent(searchParams.select, searchParams.billing);
 

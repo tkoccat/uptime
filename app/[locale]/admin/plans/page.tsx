@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireAdmin } from "@/lib/admin/guard";
 import { getPlanConfigs, PLAN_ORDER, yearlyDiscountPct } from "@/lib/plan-config";
+import { isStripeConfigured } from "@/lib/stripe/config";
 import { savePlanAction } from "../actions";
 
 export default async function PlansPage({
@@ -16,7 +17,7 @@ export default async function PlansPage({
   setRequestLocale(locale);
   await requireAdmin();
   const configs = await getPlanConfigs();
-  const stripeReady = Boolean(process.env.STRIPE_SECRET_KEY);
+  const stripeReady = await isStripeConfigured();
 
   return (
     <>

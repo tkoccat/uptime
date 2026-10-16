@@ -11,6 +11,8 @@ const stripe = vi.hoisted(() => ({
   prices: { create: vi.fn() },
 }));
 vi.mock("../stripe/client", () => ({ getStripe: () => stripe }));
+// Anahtar durumu testte ortam değişkeninden okunur (veritabanı ve önbellek yok)
+vi.mock("../stripe/config", () => ({ isStripeConfigured: async () => Boolean(process.env.STRIPE_SECRET_KEY) }));
 
 import { ValidationError } from "../errors";
 import { invalidatePlanConfigs } from "../plan-config";

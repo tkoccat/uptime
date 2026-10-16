@@ -7,7 +7,9 @@ import { redirect } from "@/i18n/navigation";
 import { isLocale, routing } from "@/i18n/routing";
 import { loadMessages } from "@/i18n/messages";
 import { logAdmin, requireAdmin } from "@/lib/admin/guard";
-import { createDiscount, deactivateDiscount } from "@/lib/admin/coupons";
+import { createDiscount, deactivateDiscount, setAutoDiscount, setDiscountActive } from "@/lib/admin/coupons";
+import { getStripe } from "@/lib/stripe/client";
+import { clearStripeKeys, isStripeConfigured, saveStripeKeys, validateStripeKeyShapes } from "@/lib/stripe/config";
 import { CONTENT_KEYS, fromEditorText, getByPath, toEditorText } from "@/lib/admin/content-keys";
 import { parseMoney, savePlanConfig } from "@/lib/admin/pricing";
 import { deleteUserByAdmin, extendTrial, setSuspended, setUserPlan, unlockUserPlan } from "@/lib/admin/users";
@@ -108,6 +110,62 @@ export async function deactivateDiscountAction(fd: FormData) {
     await deactivateDiscount(str(fd, "id"));
     await logAdmin(admin.id, "discount.deactivate", { id: str(fd, "id") });
     return "Discount code deactivated";
+  });
+}
+
+export async function reactivateDiscountAction(fd: FormData) {
+  const admin = await requireAdmin();
+  await run("/admin/discounts", async () => {
+    await setDiscountActive(str(fd, "id"), true);
+    await logAdmin(admin.id, "discount.reactivate", { id: str(fd, "id") });
+    return "Discount code re-activated";
+  });
+}
+
+// Otomatik indirim: seçilen kod tüm ödemelere uygulanır; boş değer kapatır
+export async function setAutoDiscountAction(fd: FormData) {
+  const admin = await requireAdmin();
+  await run("/admin/discounts", async () => {
+    const id = str(fd, "id");
+    await setAutoDiscount(id || null);
+    await logAdmin(admin.id, "discount.auto", { id: id || null });
+    refreshSite();
+    return id ? "Automatic discount turned on: it now applies to every checkout" : "Automatic discount turned off";
+  });
+}
+
+// --- Entegrasyonlar (Stripe) ---
+
+export async function saveStripeKeysAction(fd: FormData) {
+  const admin = await requireAdmin();
+  await run("/admin/integrations", async () => {
+    const input = { secretKey: str(fd, "secretKey").trim(), webhookSecret: str(fd, "webhookSecret").trim(), publishableKey: str(fd, "publishableKey").trim() };
+    const problem = validateStripeKeyShapes(input);
+    if (problem) throw new AppError(problem, "validation", 400);
+    if (!input.secretKey && !input.webhookSecret && !input.publishableKey) throw new AppError("Enter at least one key", "validation", 400);
+    await saveStripeKeys(input);
+    // Anahtarlar değerleri loglanmadan yalnızca hangi alanların değiştiği kaydedilir
+    await logAdmin(admin.id, "stripe.keys", { secretKey: Boolean(input.secretKey), webhookSecret: Boolean(input.webhookSecret), publishableKey: Boolean(input.publishableKey) });
+    refreshSite();
+    return "Stripe keys saved. Use “Test connection” to verify.";
+  });
+}
+
+export async function clearStripeKeysAction() {
+  const admin = await requireAdmin();
+  await run("/admin/integrations", async () => {
+    await clearStripeKeys();
+    await logAdmin(admin.id, "stripe.keys.clear", {});
+    return "Keys saved in the admin panel were removed (environment variables are used again, if set)";
+  });
+}
+
+export async function testStripeAction() {
+  await requireAdmin();
+  await run("/admin/integrations", async () => {
+    if (!(await isStripeConfigured())) throw new AppError("Add a secret key first", "validation", 400);
+    const balance = await (await getStripe()).balance.retrieve();
+    return `Stripe connected (${balance.livemode ? "LIVE" : "test"} mode)`;
   });
 }
 

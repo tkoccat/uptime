@@ -1,6 +1,7 @@
 import type { User } from "@prisma/client";
 import { prisma } from "../prisma";
 import { getPlanConfigs } from "../plan-config";
+import { getAutoDiscount } from "../admin/coupons";
 import { getStripe } from "./client";
 import { priceIdFor, type Billing, type Currency, type PaidPlan } from "./prices";
 
@@ -8,7 +9,7 @@ const STRIPE_LOCALES = ["en", "de", "fr", "tr"] as const;
 
 async function ensureCustomer(user: User): Promise<string> {
   if (user.stripeCustomerId) return user.stripeCustomerId;
-  const customer = await getStripe().customers.create({
+  const customer = await (await getStripe()).customers.create({
     email: user.email,
     name: user.name ?? undefined,
     metadata: { userId: user.id },
@@ -37,7 +38,8 @@ export async function createCheckoutUrl(params: {
   const locale = (STRIPE_LOCALES as readonly string[]).includes(user.locale) ? user.locale : "auto";
   const prefix = user.locale === "en" ? "" : `/${user.locale}`;
 
-  const session = await getStripe().checkout.sessions.create({
+  const auto = await getAutoDiscount();
+  const session = await (await getStripe()).checkout.sessions.create({
     mode: "subscription",
     customer,
     client_reference_id: user.id,
@@ -46,7 +48,8 @@ export async function createCheckoutUrl(params: {
     automatic_tax: { enabled: true },
     tax_id_collection: { enabled: true },
     customer_update: { address: "auto", name: "auto" },
-    allow_promotion_codes: true,
+    // Otomatik indirim (admin panelinden) varsa o uygulanır, yoksa müşteri kod girebilir
+    ...(auto ? { discounts: [{ coupon: auto.couponId }] } : { allow_promotion_codes: true }),
     // Çoklu para birimi: fiyatta currency_options tanımlıysa seçilen birim kullanılır
     ...(currency && currency !== "gbp" ? { currency } : {}),
     subscription_data: {
@@ -65,7 +68,7 @@ export async function createCheckoutUrl(params: {
 export async function createPortalUrl(user: User, appUrl: string): Promise<string> {
   if (!user.stripeCustomerId) throw new Error("Stripe müşterisi yok");
   const prefix = user.locale === "en" ? "" : `/${user.locale}`;
-  const session = await getStripe().billingPortal.sessions.create({
+  const session = await (await getStripe()).billingPortal.sessions.create({
     customer: user.stripeCustomerId,
     return_url: `${appUrl}${prefix}/dashboard/billing`,
   });

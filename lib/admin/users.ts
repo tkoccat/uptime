@@ -84,7 +84,7 @@ export async function extendTrial(userId: string, days: number) {
 
   const from = Math.max(Date.now(), sub.trialEnd?.getTime() ?? 0);
   const next = new Date(from + days * 86_400_000);
-  await getStripe().subscriptions.update(sub.stripeSubscriptionId, {
+  await (await getStripe()).subscriptions.update(sub.stripeSubscriptionId, {
     trial_end: Math.floor(next.getTime() / 1000),
     proration_behavior: "none",
   });

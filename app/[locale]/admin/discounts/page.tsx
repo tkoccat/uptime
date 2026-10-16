@@ -4,8 +4,10 @@ import { ConfirmSubmit } from "@/components/dashboard/confirm-submit";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireAdmin } from "@/lib/admin/guard";
-import { listDiscounts, type DiscountRow } from "@/lib/admin/coupons";
-import { createDiscountAction, deactivateDiscountAction } from "../actions";
+import { getAutoDiscount, listDiscounts, type DiscountRow } from "@/lib/admin/coupons";
+import { isStripeConfigured } from "@/lib/stripe/config";
+import { Link } from "@/i18n/navigation";
+import { createDiscountAction, deactivateDiscountAction, reactivateDiscountAction, setAutoDiscountAction } from "../actions";
 
 export default async function DiscountsPage({
   params: { locale },
@@ -17,7 +19,7 @@ export default async function DiscountsPage({
   setRequestLocale(locale);
   await requireAdmin();
 
-  const stripeReady = Boolean(process.env.STRIPE_SECRET_KEY);
+  const stripeReady = await isStripeConfigured();
   let rows: DiscountRow[] = [];
   let loadError: string | undefined;
   if (stripeReady) {
@@ -27,6 +29,7 @@ export default async function DiscountsPage({
       loadError = `Could not load discounts from Stripe: ${(err as Error).message}`;
     }
   }
+  const auto = await getAutoDiscount();
   const fmt = new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" });
 
   return (
@@ -38,7 +41,28 @@ export default async function DiscountsPage({
         </p>
       </div>
       <AdminFlash ok={searchParams.ok} error={searchParams.error ?? loadError} />
-      {!stripeReady && <p className="rounded-md bg-amber-500/10 p-3 text-sm">Connect Stripe (STRIPE_SECRET_KEY) to manage discount codes.</p>}
+      {!stripeReady && (
+        <p className="rounded-md bg-amber-500/10 p-3 text-sm">
+          Connect Stripe to manage discount codes: add your keys under{" "}
+          <Link href="/admin/integrations" className="underline">
+            Integrations
+          </Link>
+          .
+        </p>
+      )}
+      {auto && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-md bg-emerald-500/10 p-3 text-sm">
+          <span>
+            Automatic discount ON: <strong>{auto.label}</strong> applies to every checkout (the promo-code box is hidden).
+          </span>
+          <form action={setAutoDiscountAction}>
+            <input type="hidden" name="id" value="" />
+            <Button type="submit" variant="outline" size="sm">
+              Turn off
+            </Button>
+          </form>
+        </div>
+      )}
 
       {stripeReady && (
         <Card>
@@ -114,12 +138,29 @@ export default async function DiscountsPage({
                   <td className="p-3">{r.expiresAt ? fmt.format(r.expiresAt) : "–"}</td>
                   <td className="p-3">{r.active ? "Active" : "Inactive"}</td>
                   <td className="p-3">
-                    {r.active && (
-                      <form action={deactivateDiscountAction}>
-                        <input type="hidden" name="id" value={r.id} />
-                        <ConfirmSubmit label="Deactivate" message={`Deactivate ${r.code}?`} />
-                      </form>
-                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {r.active ? (
+                        <>
+                          <form action={setAutoDiscountAction}>
+                            <input type="hidden" name="id" value={r.id} />
+                            <Button type="submit" variant="outline" size="sm" title="Apply this discount to every checkout automatically">
+                              Apply to all
+                            </Button>
+                          </form>
+                          <form action={deactivateDiscountAction}>
+                            <input type="hidden" name="id" value={r.id} />
+                            <ConfirmSubmit label="Deactivate" message={`Deactivate ${r.code}?`} />
+                          </form>
+                        </>
+                      ) : (
+                        <form action={reactivateDiscountAction}>
+                          <input type="hidden" name="id" value={r.id} />
+                          <Button type="submit" variant="outline" size="sm">
+                            Re-activate
+                          </Button>
+                        </form>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -5,6 +5,7 @@ import { DEFAULT_PLAN_CONFIGS, getPlanConfig, invalidatePlanConfigs, type PlanCo
 import { prisma } from "../prisma";
 import { getCompany } from "../site-config";
 import { getStripe } from "../stripe/client";
+import { isStripeConfigured } from "../stripe/config";
 
 // Admin panelinde plan fiyatı ve limitlerinin kaydedilmesi.
 // Stripe'ta bir fiyat sonradan değiştirilemez: fiyat değişince yeni bir Stripe fiyatı oluşturulur,
@@ -55,7 +56,7 @@ async function createStripePrice(productId: string, c: PriceCall): Promise<strin
   if (c.eur !== null) currencyOptions.eur = { unit_amount: c.eur, tax_behavior: "exclusive" };
   if (c.usd !== null) currencyOptions.usd = { unit_amount: c.usd, tax_behavior: "exclusive" };
 
-  const price = await getStripe().prices.create({
+  const price = await (await getStripe()).prices.create({
     product: productId,
     currency: "gbp",
     unit_amount: c.gbp,
@@ -89,14 +90,14 @@ export async function savePlanConfig(plan: Plan, raw: unknown): Promise<SavePlan
   const history = [...before.stripePriceHistory];
 
   if (plan !== "FREE") {
-    const stripeReady = Boolean(process.env.STRIPE_SECRET_KEY);
+    const stripeReady = await isStripeConfigured();
     const mChanged = needsNewPrice(before, input, "monthly");
     const yChanged = needsNewPrice(before, input, "yearly");
 
     if (!stripeReady) {
       if (mChanged || yChanged) warnings.push("Stripe is not configured: prices were saved but no Stripe price was created, so checkout will not use them yet.");
     } else if (mChanged || yChanged) {
-      const stripe = getStripe();
+      const stripe = await getStripe();
       if (!stripeProductId) {
         const company = await getCompany();
         const product = await stripe.products.create({ name: `${company.productName} ${plan[0]}${plan.slice(1).toLowerCase()}`, metadata: { plan } });

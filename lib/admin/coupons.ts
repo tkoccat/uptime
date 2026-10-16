@@ -2,6 +2,8 @@ import type Stripe from "stripe";
 import { z } from "zod";
 import { ValidationError } from "../errors";
 import { getPlanConfigs } from "../plan-config";
+import { prisma } from "../prisma";
+import { getSetting, invalidateSiteConfig } from "../site-config";
 import { getStripe } from "../stripe/client";
 
 // İndirim kodları Stripe kupon + promosyon kodu olarak yönetilir. Checkout `allow_promotion_codes` ile kodları kabul eder.
@@ -45,7 +47,7 @@ function describe(c: Stripe.Coupon | null): { text: string; duration: string } {
 }
 
 export async function listDiscounts(): Promise<DiscountRow[]> {
-  const res = await getStripe().promotionCodes.list({ limit: 50, expand: ["data.promotion.coupon"] });
+  const res = await (await getStripe()).promotionCodes.list({ limit: 100, expand: ["data.promotion.coupon"] });
   return res.data.map((p) => {
     const coupon = typeof p.promotion.coupon === "object" ? p.promotion.coupon : null;
     const d = describe(coupon);
@@ -66,7 +68,7 @@ export async function createDiscount(raw: unknown) {
   const parsed = couponInputSchema.safeParse(raw);
   if (!parsed.success) throw new ValidationError(parsed.error.issues[0]?.message ?? "Invalid discount");
   const v = parsed.data;
-  const stripe = getStripe();
+  const stripe = await getStripe();
 
   let applies: { products: string[] } | undefined;
   if (v.plans.length > 0) {
@@ -94,7 +96,33 @@ export async function createDiscount(raw: unknown) {
   return { couponId: coupon.id, promoId: promo.id, code: promo.code };
 }
 
-export async function deactivateDiscount(promoId: string) {
+export async function setDiscountActive(promoId: string, active: boolean) {
   if (!/^promo_[A-Za-z0-9]+$/.test(promoId)) throw new ValidationError("Invalid promotion code id");
-  await getStripe().promotionCodes.update(promoId, { active: false });
+  await (await getStripe()).promotionCodes.update(promoId, { active });
+}
+
+export const deactivateDiscount = (promoId: string) => setDiscountActive(promoId, false);
+
+// Otomatik indirim: tüm ödemelere kod girilmeden uygulanan bir kupon (ör. lansman kampanyası).
+// Stripe, `discounts` ile `allow_promotion_codes` değerini birlikte kabul etmez; otomatik indirim varken kod alanı gizlenir.
+export type AutoDiscount = { couponId: string; label: string } | null;
+
+export async function getAutoDiscount(): Promise<AutoDiscount> {
+  const v = await getSetting<{ couponId?: string; label?: string } | null>("autoDiscount", null);
+  return v?.couponId ? { couponId: v.couponId, label: v.label ?? "" } : null;
+}
+
+export async function setAutoDiscount(promoId: string | null) {
+  if (promoId === null) {
+    await prisma.siteSetting.deleteMany({ where: { key: "autoDiscount" } });
+    invalidateSiteConfig();
+    return;
+  }
+  if (!/^promo_[A-Za-z0-9]+$/.test(promoId)) throw new ValidationError("Invalid promotion code id");
+  const promo = await (await getStripe()).promotionCodes.retrieve(promoId, { expand: ["promotion.coupon"] });
+  const coupon = typeof promo.promotion.coupon === "object" ? promo.promotion.coupon : null;
+  if (!coupon) throw new ValidationError("Coupon not found");
+  const value = { couponId: coupon.id, label: `${promo.code} (${describe(coupon).text})` };
+  await prisma.siteSetting.upsert({ where: { key: "autoDiscount" }, create: { key: "autoDiscount", value }, update: { value } });
+  invalidateSiteConfig();
 }

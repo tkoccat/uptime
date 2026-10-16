@@ -131,7 +131,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
   // 3. başarısız denemede aboneliği iptal et ve Free'ye düşür
   if (attempt >= 3) {
     const subId = invoiceSubscriptionId(invoice);
-    if (subId) await getStripe().subscriptions.cancel(subId).catch((e) => console.error("[stripe] iptal edilemedi", e));
+    if (subId) await (await getStripe()).subscriptions.cancel(subId).catch((e) => console.error("[stripe] iptal edilemedi", e));
     await prisma.subscription.updateMany({ where: { userId: user.id, status: { in: ENTITLED } }, data: { status: "CANCELED", canceledAt: new Date() } });
     await applyPlan(user.id, "FREE");
     await queueUserEmail(user.id, "subscription_canceled", { plan: user.plan }, "/pricing");
@@ -145,7 +145,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     await prisma.user.updateMany({ where: { id: userId, stripeCustomerId: null }, data: { stripeCustomerId: cid } });
   }
   const subId = typeof session.subscription === "string" ? session.subscription : session.subscription?.id;
-  if (subId) await syncSubscription(await getStripe().subscriptions.retrieve(subId));
+  if (subId) await syncSubscription(await (await getStripe()).subscriptions.retrieve(subId));
 }
 
 /** Doğrulanmış bir Stripe olayını işler. Aynı olay iki kez gelirse ikincisi atlanır. */

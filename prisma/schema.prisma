@@ -1,0 +1,150 @@
+// Prisma şeması: SaaS katmanı (PostgreSQL).
+// Not: Uptime Kuma kendi MariaDB'sini kullanır, bu şemayla karıştırılmaz.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Neon gibi pooler kullanan servislerde migration için doğrudan bağlantı
+  directUrl = env("DIRECT_URL")
+}
+
+enum Plan {
+  FREE
+  PRO
+  BUSINESS
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  INCOMPLETE
+  UNPAID
+}
+
+enum MonitorType {
+  HTTP
+  KEYWORD
+  PING
+  PORT
+  DNS
+}
+
+enum NotificationType {
+  EMAIL
+  SMS
+  SLACK
+  WEBHOOK
+}
+
+model User {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  name             String?
+  // Supabase Auth kullanıcı kimliği (auth.users.id)
+  supabaseId       String   @unique
+  plan             Plan     @default(FREE)
+  stripeCustomerId String?  @unique
+  locale           String   @default("en")
+  createdAt        DateTime @default(now())
+
+  subscriptions        Subscription[]
+  monitors             Monitor[]
+  notificationChannels NotificationChannel[]
+  statusPages          StatusPage[]
+  usageLogs            UsageLog[]
+  auditLogs            AuditLog[]
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String
+  plan                 Plan
+  status               SubscriptionStatus
+  currentPeriodEnd     DateTime
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  cancelAtPeriodEnd    Boolean            @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model Monitor {
+  id                  String      @id @default(cuid())
+  userId              String
+  // Uptime Kuma tarafındaki monitör kimliği
+  uptimeKumaMonitorId Int
+  name                String
+  url                 String
+  type                MonitorType @default(HTTP)
+  // Kontrol aralığı (saniye)
+  interval            Int         @default(180)
+  isActive            Boolean     @default(true)
+  createdAt           DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Aynı Kuma monitörü iki kez eşlenemez
+  @@unique([uptimeKumaMonitorId])
+  @@index([userId])
+}
+
+model NotificationChannel {
+  id         String           @id @default(cuid())
+  userId     String
+  type       NotificationType
+  // Kanal ayarları (webhook URL, e-posta vb.); hassas alanlar şifreli saklanmalı
+  config     Json
+  isVerified Boolean          @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model StatusPage {
+  id           String  @id @default(cuid())
+  userId       String
+  slug         String  @unique
+  isPublic     Boolean @default(true)
+  customDomain String? @unique
+  config       Json    @default("{}")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model UsageLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  // Kullanıcı silinse bile denetim kaydı kalsın diye SetNull
+  userId    String?
+  action    String
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}

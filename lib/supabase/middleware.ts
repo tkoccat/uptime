@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { routing } from "@/i18n/routing";
 
 // Giriş gerektiren yollar (dil ön eki çıkarıldıktan sonra)
-const PROTECTED_PREFIXES = ["/dashboard", "/settings", "/billing"];
+const PROTECTED_PREFIXES = ["/dashboard", "/settings", "/billing", "/admin"];
 
 // Yolun başındaki dil ön ekini ayırır: "/tr/dashboard" -> { locale: "tr", path: "/dashboard" }
 function splitLocale(pathname: string) {

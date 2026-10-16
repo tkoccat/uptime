@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthShell } from "@/components/auth/auth-shell";
+import { SignupConversion } from "@/components/tracking/analytics";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,8 @@ export default async function LoginPage({
 
   return (
     <AuthShell title={t("signInTitle")} error={searchParams.error} info={searchParams.info}>
+      {/* Kayıt sonrası yönlendirmede dönüşüm olayı (yalnızca çerez onayı varsa çalışır) */}
+      {searchParams.info === "check_email" && <SignupConversion />}
       <form action={signIn} className="space-y-3">
         <input type="hidden" name="next" value={searchParams.next ?? ""} />
         <div className="space-y-1">

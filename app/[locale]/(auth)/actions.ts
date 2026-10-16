@@ -1,6 +1,7 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
+import { SIGNUP_SOURCE_COOKIE, parseSignupSource } from "@/lib/signup-source";
 import { redirect as externalRedirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
@@ -21,6 +22,11 @@ async function go(href: string): Promise<never> {
 
 async function fail(path: string, code: string): Promise<never> {
   return go(`${path}?error=${code}`);
+}
+
+function sourceMetadata() {
+  const src = parseSignupSource(cookies().get(SIGNUP_SOURCE_COOKIE)?.value);
+  return { utm_source: src.utmSource, utm_medium: src.utmMedium, utm_campaign: src.utmCampaign, referrer: src.referrer };
 }
 
 // Kaba kuvvet ve toplu kayıt denemelerine karşı IP başına sınır
@@ -60,7 +66,11 @@ export async function signUp(formData: FormData) {
     options: {
       emailRedirectTo: `${siteUrl()}/auth/callback`,
       // Dil tercihi kullanıcı verisine yazılır; callback'te veritabanına aktarılır (e-postalar bu dilde gider)
-      data: { locale },
+      data: {
+        locale,
+        // Kaynak çerezi yalnızca çerez onayı verildiyse vardır (bkz. components/tracking)
+        ...sourceMetadata(),
+      },
     },
   });
   if (error) await fail("/register", mapSupabaseError(error));

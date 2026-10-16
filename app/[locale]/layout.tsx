@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { CookieBanner } from "@/components/legal/cookie-banner";
+import { Analytics } from "@/components/tracking/analytics";
 import { isLocale, routing } from "@/i18n/routing";
 import "../globals.css";
 
@@ -56,6 +57,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={{ Cookie, Pricing, Nav }}>
           {children}
           <CookieBanner />
+          <Analytics />
         </NextIntlClientProvider>
       </body>
     </html>

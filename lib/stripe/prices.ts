@@ -24,6 +24,16 @@ export function planFromPriceId(priceId: string): PaidPlan | null {
   return null;
 }
 
+/** Stripe fiyat kimliğinin aylık mı yıllık mı olduğunu döndürür (bilinmiyorsa null). */
+export function billingFromPriceId(priceId: string): Billing | null {
+  for (const plan of Object.keys(ENV_KEYS) as PaidPlan[]) {
+    for (const billing of Object.keys(ENV_KEYS[plan]) as Billing[]) {
+      if (process.env[ENV_KEYS[plan][billing]] === priceId) return billing;
+    }
+  }
+  return null;
+}
+
 // Desteklenen para birimleri (fiyatlarda currency_options tanımlı olmalı)
 export const CURRENCIES = ["gbp", "eur", "usd"] as const;
 export type Currency = (typeof CURRENCIES)[number];

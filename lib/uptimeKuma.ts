@@ -180,7 +180,7 @@ export async function createNotificationChannel(
 
 const RESERVED_SLUGS = new Set([
   "www", "app", "api", "admin", "status", "mail", "smtp", "ftp", "dashboard", "login", "support", "help", "blog",
-  "docs", "static", "assets", "cdn", "billing", "auth", "dev", "staging", "test",
+  "docs", "static", "assets", "cdn", "billing", "auth", "dev", "staging", "test", "cname", "custom-domain",
 ]);
 
 const statusPageSchema = z.object({
